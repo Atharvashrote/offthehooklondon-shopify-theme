@@ -1,0 +1,258 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign current_variant = product.selected_or_first_available_variant
+    assign compareprice = current_variant.compare_at_price
+    assign price = current_variant.price
+    if product == blank
+        assign price = 1999
+    endif
+    assign money_price = price | money
+    if settings.curCode
+        assign money_price = price | money_with_currency
+    endif
+-%}
+{%- unless settings.hide-price and settings.catalog-mode -%}
+    <div id="price-{{ section.id }}" class="priceSingle mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" style="--pcl:{{ block_st.pcl }};--pcls:{{ block_st.pcls }};--prfs:{{ block_st.fs }}px;--prfsm:{{ block_st.fsm }}px;--prfw:{{ block_st.pfw }};--cmpr:40%;--sale_badge:{{ block_st.sale_badge }};--sale_badge_bg:{{ block_st.sale_badge_bg }};--bfs:{{ block_st.bfs }}px;--brad:{{ block_st.brad }}px;" {{ block.shopify_attributes }}>
+        <p class="mb5 fl f-aic price__container col-gap" style="--gap:5px">
+            {%- if compareprice > price -%}
+                <span class="hidden_txt">{{ 'products.product.regular_price' | t }}</span>
+                <span class="product-price price-item orpr sale">{{ money_price }}</span>
+                <s class="product-price cmpr">{{ compareprice | money }}</s>
+            {%- else -%}
+                <span class="hidden_txt">{{ 'products.product.regular_price' | t }}</span>
+                <span class="product-price price-item orpr">{{ money_price }}</span>
+                <s class="product-price cmpr hide">{{ compareprice | money }}</s>
+            {%- endif -%}
+
+            {%- if block_st.saved and compareprice != blank -%}
+                <span class="salebadge {{ block_st.fw }}{% unless current_variant.compare_at_price > price %} hide{% endunless %}">			
+                    {% comment %} <span itemprop="name">{{ 'products.product.you_save' | t }} </span><span id="save">{{ compareprice | minus: price | money }}</span> {% endcomment %}                                            
+                    <span class="off"><span>{{ compareprice | minus: price | times: 100 | divided_by: compareprice }}</span>% {{ 'products.product.off' | t }}</span>
+                </span>
+            {%- endif -%}
+        </p>
+        <span class="price__unit{% unless current_variant.unit_price_measurement %} hide{% endunless %}">
+            <br />
+            <span data-unit-price>{{ current_variant.unit_price | money }}</span> /
+            <span data-unit-base>
+                {%- if current_variant.unit_price_measurement -%}
+                    {%- if current_variant.unit_price_measurement.reference_value != 1 -%}{{ current_variant.unit_price_measurement.reference_value }}{%- endif -%}
+                    {{ current_variant.unit_price_measurement.reference_unit }}
+                {%- endif -%}
+            </span>
+        </span>
+        {%- if block_st.tax_msg and shop.taxes_included or block_st.ship_msg and shop.shipping_policy.body != blank -%}
+            <div class="product__policies" data-product-policies>
+                {% if block_st.tax_msg and shop.taxes_included %}{{ 'products.product.include_taxes' | t }} &nbsp;{% endif %}
+                {% if block_st.ship_msg and shop.shipping_policy.body != blank %}{{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}{% endif %}
+            </div>
+        {%- endif -%}
+        {%- if block_st.installments and product != blank -%}
+            <div>
+            {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
+            {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
+                <input type="hidden" name="id" value="{{ current_variant.id }}">
+                {{ form | payment_terms }}
+            {%- endform -%}
+            </div>
+        {%- endif -%}
+    </div>
+{%- endunless -%}
+{% schema %}
+{
+  "name": "Price",
+  "tag": null,
+  "settings": [
+    {
+      "type": "color",
+      "id": "pcl",
+      "label": "Price",
+      "default": "#111"
+    },
+    {
+      "type": "color",
+      "id": "pcls",
+      "label": "Sale price",
+      "default": "#F44336"
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "label": "Font size (mobile)",
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "pfw",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Discount badge",
+      "info": "Display right after price if product have compare price"
+    },
+    {
+      "type": "checkbox",
+      "id": "saved",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "bfs",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.saved }}"
+    },
+    {
+      "type": "color",
+      "id": "sale_badge",
+      "label": "Badge text",
+      "default": "#fff",
+      "visible_if": "{{ block.settings.saved }}"
+    },
+    {
+      "type": "color",
+      "id": "sale_badge_bg",
+      "label": "Badge background",
+      "default": "#F44336",
+      "visible_if": "{{ block.settings.saved }}"
+    },
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "fw-500",
+      "options": [
+        {
+          "value": "fw-300",
+          "label": "Light"
+        },
+        {
+          "value": "fw-400",
+          "label": "Regular"
+        },
+        {
+          "value": "fw-500",
+          "label": "Medium"
+        },
+        {
+          "value": "fw-600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "fw-700",
+          "label": "Bold"
+        }
+      ],
+      "visible_if": "{{ block.settings.saved }}"
+    },
+    {
+      "type": "range",
+      "id": "brad",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "label": "Corner radius",
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ block.settings.saved }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "checkbox",
+      "id": "tax_msg",
+      "label": "Show tax label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "ship_msg",
+      "label": "Show shipping information label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "installments",
+      "label": "Show Installments message",
+      "default": true,
+      "info": "To display installments banner, your store needs to support Shop Pay Installments. [Learn more](https:\/\/help.shopify.com\/en\/manual\/payments\/shop-pay-installments)."
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Price",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

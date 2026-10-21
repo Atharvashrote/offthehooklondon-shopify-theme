@@ -1,0 +1,245 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+-%}
+{%- capture styles -%}
+    {%- if block_st.preset == 'custom-hd' -%}
+      --fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--ff:var(--{{ block_st.ff }});--fw:{{ block_st.fw }};--lh:{{ block_st.lh }};--ls:{{ block_st.ls }};
+    {%- endif -%}
+{%- endcapture -%}
+<{{ block_st.htag }} id="blk-{{ block.id }}" class="head {{ block_st.preset }} wd-fit wd-fit-md text-block--{{ block.id }} {{ block_st.rounded }} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.text-upper %} text-upper{% endif %}" style="--hdcl:{{ block_st.cl }};{{ styles }}" {{ block.shopify_attributes }}>
+    {%- if product == blank -%}{{ 'homepage.onboarding.product_title' | t }}{%-  else -%}{{- product.title -}}{%- endif -%}
+</{{ block_st.htag }}>
+{% schema %}
+{
+  "name": "Title",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "htag",
+      "label": "Heading tag",
+     "info": "Specify heading type to improve SEO and accessibility.",
+      "default": "h1",
+      "options": [
+        {
+          "value": "p",
+          "label": "P"
+        },
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "div",
+          "label": "Div"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 22,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },    
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "600",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default": 0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+     {
+      "type": "checkbox",
+      "id": "text-upper",
+      "label": "Use uppercase text",
+      "default": false      
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Title",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

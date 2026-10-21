@@ -1,0 +1,357 @@
+{%- liquid
+    assign block_st = block.settings
+    assign expire_timer = false
+    if block_st.date != blank
+        assign month = block_st.date | date: '%m'
+        assign day   = block_st.date | date: '%d'
+        assign year  = block_st.date | date: '%Y'
+        assign time = block_st.date | date: 'T%H:%M:%S'
+        assign formatted_date = year | append: '-' | append: month | append: '-' | append: day | append: time
+        assign expiry_date = formatted_date | date: "%s"
+        assign today = 'now' | date: "%s"
+        if today > expiry_date
+            assign expire_timer = true
+        endif
+    endif
+-%}
+{%- capture styles -%}
+    --cl:{{ block_st.cl }};--fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--fsl:{{ block_st.fsl }}px;--fw:{{block_st.fw}};--gap:25px;--mwidth:50px;
+    {%- if block_st.isbg -%}
+      --gap:15px;--gapm:10px;
+      --gr_bg:{%- if block_st.bgg != blank -%}{{ block_st.bgg }}{%- else -%}{{ block_st.bg }}{%- endif -%};
+      --gr_bd:1px solid {{ block_st.bdr-cl }};
+    {%- else -%}
+        --gap:10px;--gapm:5px;
+    {%- endif -%}
+{%- endcapture -%}
+{%- if block_st.date != blank -%}
+<div id="blk-{{ block.id }}" class="dbi mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}" style="{{ styles | strip_newlines }}" {{ block.shopify_attributes }}>
+    <countdown-time class="adth-timer countdown{% unless block_st.isbg %} countdown-colon{% endunless %}{% if expire_timer %} hide{% endif %}{% if section.settings.align == 'center' %} f-jcc{% endif %}" data-date="{{ block_st.date | date: "%Y-%m-%dT%H:%M:%S" }}" data-complete="{{ block_st.hide_complete }}">
+        {% if block_st.title != blank %}<div class="db mb15 head {{ block_st.preset }}"style="{%- if block_st.preset == 'custom-hd' -%} --fs:{{ block_st.fs-ttl }}px;--fw:{{ block_st.fw-ttl }};{% endif %}--hdcl:{{ block_st.cl-ttl }};">{{ block_st.title }}</div>{% endif %}
+        <div class="timer dif f-aic tc text-upper gap">
+            <span class="{% if block_st.isbg %}pd15 bg-custom {{ block_st.rounded }}{% endif %}">
+                <span class="tm days">00</span>
+                {%- if block_st.show_label %}{{ 'date_formats.days' | t }}{% endif -%}
+            </span>
+            {% unless block_st.isbg %}<span class="colon">:</span>{% endunless %}
+            <span class="{% if block_st.isbg %}pd15 bg-custom {{ block_st.rounded }}{% endif %}">
+                <span class="tm hours">00</span>
+                {%- if block_st.show_label %}{{ 'date_formats.hours' | t }}{% endif -%}
+            </span>
+            {% unless block_st.isbg %}<span class="colon">:</span>{% endunless %}
+            <span class="{% if block_st.isbg %}pd15 bg-custom {{ block_st.rounded }}{% endif %}">
+                <span class="tm minutes">00</span>
+                {%- if block_st.show_label %}{{ 'date_formats.minuts' | t }}{% endif -%}
+            </span>
+            {% unless block_st.isbg %}<span class="colon">:</span>{% endunless %}
+            <span class="last {% if block_st.isbg %}pd15 bg-custom {{ block_st.rounded }}{% endif %}">
+                <span class="tm seconds">00</span>
+                {%- if block_st.show_label %}{{ 'date_formats.seconds' | t }}{% endif -%}
+            </span>
+        </div>
+    </countdown-time>
+    {%- if block_st.complete_msg != blank -%}
+        <div class="adth-timer complete-msg mt15{% unless expire_timer %} hide{% endunless %}" style="color:{{ block_st.msg_cl }};">{{ block_st.complete_msg }}</div>
+    {%- endif -%}
+</div>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Countdown",
+  "tag": null,
+  "settings": [    
+    {
+      "type":"text",
+      "id":"title",
+      "label": "Title",
+      "info": "optional (show on collection banner and product page)"
+    },
+     {
+      "type": "color",
+      "id": "cl-ttl",
+      "label": "Color",
+      "default": "#111",
+      "visible_if": "{{  block.settings.title  }}"    
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Title preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ],
+      "visible_if": "{{ block.settings.title != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "fs-ttl",
+      "label": "Title font size",
+      "default": 15,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' and block.settings.title != blank }}"
+    },   
+    {
+      "type": "select",
+      "id": "fw-ttl",
+      "label": "Title font weight",
+      "default": "500",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' and block.settings.title != blank }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },       
+     {
+      "type": "paragraph",
+      "content": "--------------------------------------------",
+      "visible_if": "{{  block.settings.title  }}"     
+    }, 
+    {
+      "type": "text",
+      "id": "date",
+      "label": "Enter date",
+      "info": "Format: yyyy-mm-dd hh:mm:ss",
+      "default": "2026-12-31"
+    }, 
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#555555"
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "label": "Number size",
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "label": "Number size (mobile)",
+      "unit": "px",
+      "default": 18
+    },
+    {
+        "type": "select",
+        "id": "fw",
+        "label": "Font weight",
+        "default": "600",
+        "options": [
+          {
+            "value": "300",
+            "label": "Light"
+          },
+          {
+            "value": "400",
+            "label": "Regular"
+          },
+          {
+            "value": "500",
+            "label": "Medium"
+          },
+          {
+            "value": "600",
+            "label": "Semi bold"
+          },
+          {
+            "value": "700",
+            "label": "Bold"
+          }
+        ]
+      },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Show label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "fsl",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "label": "Label size",
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.show_label }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background color",
+      "alpha": true,
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "alpha": true,
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+    "type": "header",
+    "content": "Hide timer"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_complete",
+      "default": false,
+      "label": "Hide timer on complete"
+    },
+    {
+      "type": "text",
+      "id": "complete_msg",
+      "label": "Timer complete message",
+      "default": "This promotion has expired!"
+    },
+    {
+      "type": "color",
+      "id": "msg_cl",
+      "label": "Message color",
+      "default": "#e60909",
+    },
+    {
+    "type": "paragraph",
+    "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Countdown"     
+    }
+  ]
+}
+{% endschema %}

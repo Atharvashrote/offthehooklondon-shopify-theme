@@ -1,0 +1,54 @@
+{%- capture block_style -%}
+    --gap:{{ section_st.gap }}px;--gapm:{{ section_st.gapm }}px;
+    {%- if section_st.width == 'custom' -%}
+        --wd:{{ section_st.ct_width }}px;
+    {%- endif -%}
+    {%- if section_st.widthm == 'custom' -%}
+        --wdm:{{ section_st.ct_widthm }}px;
+    {%- endif -%}
+
+    {%- if section_st.isbg -%}
+    --gr_bg:{% if section_st.box_bgg != blank %}{{ section_st.box_bgg }}{% else %}{{ section_st.box_bg }}{% endif %};
+    --gr_bd:{% if section_st.bdr == 'solid' %}{{ section_st.brd_sz }}px solid {{ section_st.bdr-cl }}{% else %}0{% endif %};
+    {%- endif -%}
+    {%- if section_st.ispd -%}
+    --gr_pd:{{ section_st.pd-tb }}px {{ section_st.pd-lr }}px;--gr_pdm:{{ section_st.pd-tbm }}px {{ section_st.pd-lrm }}px;
+    {%- endif -%}
+{%- endcapture -%}
+{%- liquid
+  capture classes
+    if block_st.direction == 'f-row-md' and block_st.wrap
+        echo "f-wrap "
+    endif
+    if section_st.width
+        echo "wd-" | append: section_st.width | append: "-md "
+        echo "wd-" | append: section_st.widthm | append: " "
+    endif
+    if section_st.isbg
+        echo "bg-custom "
+    endif
+    if section_st.ispd
+        echo "pd-custom "
+    endif
+    if section_st.alignm == 'left'
+        echo "f-ais "
+    elsif section_st.alignm == 'center'
+        echo "f-aic "
+    elsif section_st.alignm == 'right'
+        echo "f-aie "
+    endif
+    if section_st.align == 'left'
+        echo "f-ais-md "
+    elsif section_st.align == 'center'
+        echo "f-aic-md "
+    elsif section_st.align == 'right'
+        echo "f-aie-md "
+    endif
+  endcapture
+
+  if class
+    echo classes
+  elsif styles
+    echo block_style
+  endif
+-%}

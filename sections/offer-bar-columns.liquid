@@ -1,0 +1,644 @@
+{%- capture text_bar -%}
+{% assign section_st = section.settings %}
+{%- capture style -%}
+    --grsp:{{ section_st.col-gap | divided_by: 2.0 }}px;--grspm:{{ section_st.row-gap | divided_by: 2.0 }}px;
+    {%- if section_st.tpreset == 'custom' -%}--fs:{{ section_st.tfs }}px;--fsm:{{ section_st.tfsm }}px;--ff:var(--{{ section_st.tff }});--fw:{{ section_st.tfw }};--lh:{{ section_st.tlh }};{%- endif -%}
+{%- endcapture -%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}">   
+        <div class="grid gspace" style="{{ style }}">
+            {%- for block in section.blocks limit: section.blocks.size -%}
+                {%- assign block_st = block.settings -%}
+                {%- capture block_style -%}
+                  --gap:20px;--gapm:15px;--cl:{{block_st.cl }};--box_bg:{% if block_st.boxbgg != blank %}{{ block_st.boxbgg }}{% else %}{{ block_st.boxbg }}{% endif %};--border:{{ block_st.bdr }};--btn:{{ block_st.btn-cl }};--btnbg:{{ block_st.btn-bg }};--brds:{{ block_st.bdr-style }};--brad:{{ block_st.brad }}px;    	
+                {%- endcapture -%}
+                <div class="gitem {{ block_st.width }}-md reg-text {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+                    <div class="offer-content fl f-aic f-col f-row-md {{ section_st.rounded }} t-center t-left-md h-100 gap" style="{{ block_style }}">
+                        <div class="fl1{% if block_st.btn == blank and block_st.url == blank %} tc{% endif %}">
+                            {% if block_st.title != blank %}<{{ section_st.htag }} class="head {{ section_st.preset }} mb0" {% if section_st.preset == 'custom-hd' %}style="--fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;--ff:var(--{{ section_st.ff }});--fw:{{ section_st.fw }};--lh:{{ section_st.lh }};"{%- endif -%}>{{ block_st.title }}</{{ section_st.htag }}>{% endif %}
+                            {% if block_st.text != blank %}<div class="reg-text">{{ block_st.text }}</div>{% endif %}
+                        </div>
+                        {%- if block_st.btn != blank and block_st.url != blank -%}
+                          <a class="btn {{ section_st.btn-size }} border-0" {% if block_st.newtab1 %}target="_blank"{% endif %} href="{{ block_st.url }}">{{ block_st.btn }}</a>
+                        {%- endif -%}
+                    </div>
+                </div>
+            {%- endfor -%}
+        </div>
+        {%- if section.blocks.size == 0 -%}{%- render 'no-blocks' -%}{%- endif -%}
+    </div>
+</div>
+{%- endcapture -%}
+{{- text_bar | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Offer bar",
+  "disabled_on": {
+    "groups": ["custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "range",
+      "id": "col-gap",
+      "label": "Column gap",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "row-gap",
+      "label": "Column gap (mobile)",
+      "default": 10,
+      "min": 10,
+      "max": 50,
+      "step": 1
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "round-xs",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text appearance"
+    },
+    {
+      "type": "paragraph",
+      "content": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "htag",
+      "label": "Heading tag",
+      "info": "Specify heading type to improve SEO and accessibility.",
+      "default": "h3",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "p",
+          "label": "P"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },        
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "700",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,      
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Text"
+    },
+    {
+      "type": "select",
+      "id": "tpreset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "tff",
+      "label": "Font",
+      "default": "ft1",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },    
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "400",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tlh",
+      "label": "Line height",
+      "default": 1.5,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,      
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },
+    {
+          "type": "select",
+          "id": "btn-size",
+          "label": "Button size",
+          "default": "btn-md",
+          "options": [
+            {
+              "label": "Small",
+              "value": "btn-sm"
+            },
+            {
+              "label": "Medium",
+              "value": "btn-md"
+            },
+            {
+              "label": "Large",
+              "value": "btn-lg"
+            }
+          ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+     "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    }, 
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },  
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 10
+    }  
+  ],
+  "blocks": [
+    {
+      "type": "text_block",
+      "name": "Column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Unbeatable Deals On Best Seller"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "text",
+          "id": "btn",
+          "label": "Button label",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Url",
+          "default": "/"
+        },        
+      {
+        "type": "paragraph",
+        "content": "----------------------------------------------"
+      },
+        {
+          "type": "color",
+          "id": "cl",
+          "label": "Text color",
+          "default": "#333"
+        },
+        {
+          "type": "color",
+          "id": "btn-cl",
+          "label": "Button label",
+          "default": "#fff"
+        },
+        {
+          "type": "color",
+          "id": "btn-bg",
+          "label": "Button background",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "boxbg",
+          "label": "Background",
+          "default": "#fafafa"
+        },
+        {
+          "type": "color_background",
+          "id": "boxbgg",
+          "label": "Background gradient"
+        },
+        {
+          "type": "color",
+          "id": "bdr",
+          "label": "Box border",
+          "default": "#ccc"
+        },
+        {
+          "type": "select",
+          "id": "bdr-style",
+          "label": "Border style",
+          "default": "dashed",
+          "options": [
+            {
+              "label": "Solid",
+              "value": "solid"
+            },
+            {
+              "label": "Dashed",
+              "value": "dashed"
+            },
+            {
+              "label": "Dotted",
+              "value": "dotted"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Column width",
+          "default": "wd50",
+          "options": [
+            {
+              "value": "wd25",
+              "label": "25%"
+            },
+            {
+              "value": "wd33",
+              "label": "33%"
+            },
+            {
+              "value": "wd40",
+              "label": "40%"
+            },
+            {
+              "value": "wd50",
+              "label": "50%"
+            },
+            {
+              "value": "wd60",
+              "label": "60%"
+            },
+            {
+              "value": "wd66",
+              "label": "66%"
+            },
+            {
+              "value": "wd75",
+              "label": "75%"
+            },
+            {
+              "value": "w-100",
+              "label": "100%"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Offer bar : columns",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "text_block",
+          "settings": {
+            "title": "Unbeatable Deals On Best Seller",
+            "boxbgg": "linear-gradient(241deg, rgba(255, 248, 232, 1), rgba(255, 236, 254, 1) 100%)",
+            "cl": "#D8598C",
+            "btn-bg": "#D8598C",
+            "btn-cl": "#fff"
+          }
+        },
+        {
+          "type": "text_block",
+          "settings": {
+            "title": "Minimum 25% off for Spring Summer",
+            "boxbgg": "linear-gradient(251deg, rgba(234, 255, 245, 1), rgba(255, 252, 226, 1) 99%)",
+            "cl": "#249B70",
+            "btn-bg": "#249B70",
+            "btn-cl": "#fff"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

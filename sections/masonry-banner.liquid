@@ -1,0 +1,1150 @@
+{%- capture banners -%}
+{%- liquid 
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+
+    assign lazy_img = 'lazy'
+    assign fetch_priority = 'auto'
+    if section.index < 3
+        assign lazy_img = 'eager'
+        assign fetch_priority = 'high'
+    endif
+-%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="collection-banners {% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" id="{{ section.id }}">        
+       {% render 'sec-title' %}
+       <grid-masonary class="grid grid-masonary gspace" style="--grsp:{{ section_st.gspace | divided_by: 2.0 }}px;--grspm:{{ section_st.gspacem | divided_by: 2.0 }}px;{% if section_st.width %}--wd:{{ section_st.equal_width }}%;{% endif %}">
+            <div class="grid-sizer pa wd50 col-md-{{ section_st.col }} pa"></div>
+            {%- for block in section.blocks limit: section.blocks.size -%}
+                {% assign block_st = block.settings %}
+                {%- capture sizes -%}
+                    {%- if block_st.width == 'wd20' -%}
+                        (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:4 }}px) / 5),(min-width:768px) calc((100vw - {{ section_st.gspace | times:4 }}px) / 5), calc(100vw - 15px)
+                    {%- elsif block_st.width == 'wd25' -%}
+                        (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:3 }}px) / 4),(min-width:768px) calc((100vw - {{ section_st.gspace | times:3 }}px) / 4), calc(100vw - 15px)
+                    {%- elsif block_st.width == 'wd33' -%}
+                        (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:2 }}px) / 3),(min-width:768px) calc((100vw - {{ section_st.gspace | times:2 }}px) / 3), calc(100vw - 15px)
+                    {%- elsif block_st.width == 'wd50' -%}
+                      (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 2),(min-width:768px) calc((100vw - {{ section_st.gspace }}px) / 2), calc(100vw - 15px)
+                    {%- elsif block_st.width == 'wd66' -%}
+                      (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2), calc(100vw - 15px)
+                    {%- elsif block_st.width == 'wd75' -%}
+                      (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3), calc(100vw - 15px)
+                    {%- elsif block_st.width == 'w-100' -%}
+                      (min-width:1024px) {{ page_width }}, 100vw
+                    {%- endif -%}
+                {%- endcapture -%}
+                {% capture title_styles %}
+                    --hdcl:{{ block_st.cl }};
+                  {%- if block_st.preset == 'custom-hd' -%}
+                    --fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--ff:var(--{{ block_st.ff }});--fw:{{ block_st.fw }};--lh:{{ block_st.lh }};--ls:{{ block_st.ls }};
+                    {%- endif -%}
+                {% endcapture %}
+                {%- capture text_styles -%}
+                    --cl:{{ block_st.tcl }};
+                    {%- if block_st.tpreset == 'custom' -%}
+                    --fs:{{ block_st.tfs }}px;--fsm:{{ block_st.tfsm }}px;--fw:{{ block_st.tfw }};--lh:{{ block_st.tlh }};
+                    {%- endif -%}
+                {%- endcapture -%}
+                <div class="gitem msitem {{ block_st.widthm }} {{ block_st.width }}-md it{{ block.id }}{% if block_st.hidem %} hide-sm{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+                      {% assign collection = collections[block_st.collection] -%}
+                      {% assign collection_image = block_st.image | default:collection.image | default: collection.products.first.featured_image %}                    
+                      <div class="pr of-hidden{% if section_st.zoom %} zoom-hov{% endif%}">
+                        <a href="{{ block_st.url | default:collection.url }}" title="{{ block_st.title }}">                      
+                          <div class="img pr of-hidden {{ section_st.rounded }} overlay {{ block_st.ovr-direction }}" style="--overlay:{{ block_st.ovr }};--overlay-down:{{ block_st.ovr | color_to_hex }}00;">
+                            {%- if collection_image != blank -%}
+                                {{ collection_image | image_url: width: collection_image.width | image_tag: loading: lazy_img, fetchpriority: fetch_priority, width:collection_image.width, height:collection_image.height, class:'img-fill', sizes:sizes, widths:"180,320,400,560,740,900,1200" }}
+                            {%- else -%}
+                               {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'collection-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                            {%- endif -%}
+                          </div>                        
+                          <div class="fl pd20 all0 pa {{ block_st.text_pos }} zi1">                  
+                              <div class="details {{ block_st.text-align }} brad" style="--pd-x:{{ block_st.box_padding_side }}px;--pd-y:{{ block_st.box_padding_tb }}px;--bg:{{ block_st.bg }};--rounded:{{ block_st.radius }}px;">     	       
+                                {%- if block_st.pre_show and block_st.pre_text != blank -%}
+                                {%- liquid
+                                    assign pre_bg_val = 'transparent'
+                                    assign pre_pdx_val = 0
+                                    assign pre_pdy_val = 0
+                                    assign pre_radius_val = 0
+                                    assign pre_bordered = false
+                                    if block_st.pre_bgbdr
+                                        assign pre_bg_val = block_st.pre_bg
+                                        assign pre_pdx_val = block_st.pre_pdx
+                                        assign pre_pdy_val = block_st.pre_pdy
+                                        assign pre_radius_val = block_st.pre_radius
+                                        if block_st.pre_border
+                                            assign pre_bordered = true
+                                        endif
+                                    endif
+                                -%}
+                                <div class="pre-heading{% if pre_bordered %} bordered{% endif %} mb{{ block_st.pre_mbm }} mb{{ block_st.pre_mb }}-md" style="--pcl:{{ block_st.pre_cl }};--picncl:{{ block_st.pre_icn_cl }};--icns:{{ block_st.pre_icn_size }}px;--pbg:{{ pre_bg_val }};--pbdcl:{{ block_st.pre_border_cl }};--ppdx:{{ pre_pdx_val }}px;--ppdy:{{ pre_pdy_val }}px;--prad:{{ pre_radius_val }}px;--pfs:{{ block_st.pre_fs }}px;--pfsm:{{ block_st.pre_fsm }}px;--pfw:{{ block_st.pre_fw }};--pls:{{ block_st.pre_ls }}px;">
+                                    {%- if block_st.pre_icon != 'none' -%}
+                                    <span class="pre-heading__icon">
+                                        {%- if block_st.pre_icon == 'custom' and block_st.pre_icon_image != blank -%}
+                                            {% assign pre_icon_alt = block_st.pre_icon_image.alt | default: block_st.pre_text | escape %}
+                                            {{ block_st.pre_icon_image | image_url: width: block_st.pre_icon_image.width | image_tag: loading: 'lazy', width: block_st.pre_icn_size, height: block_st.pre_icn_size, class: 'img-fill svg-icon', alt: pre_icon_alt }}
+                                        {%- else -%}
+                                            {%- render 'icons', icon: block_st.pre_icon -%}
+                                        {%- endif -%}
+                                    </span>
+                                    {%- endif -%}
+                                    <span class="pre-heading__text">{{ block_st.pre_text }}</span>
+                                </div>
+                                {%- endif -%}
+                                {%- if block_st.title != blank -%}
+                                    <div class="head {{ block_st.preset }} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" style="{{ title_styles }}">{{ block_st.title }}</div>
+                                {%- endif -%}
+                                {% if block_st.text != blank %}
+                                    <div class="reg-text {{ block_st.tff }} mb{{ block_st.mbm1 }} mb{{ block_st.mb1 }}-md{% if block_st.hidetm %} hide-sm{% endif %}" style="{{ text_styles }}">{{ block_st.text }}</div>
+                                {% endif %}
+                                {% if section_st.count %}<span class="db counts" style="--cl:{{ section_st.ttl }};">{{ 'collections.general.items_with_count' | t: count: collection.all_products_count }}</span>{% endif %}
+                                {% if block_st.btntxt != blank %}
+                                  <button class="{% if block_st.linkst %}btn-link anim mb5{% else %}btn {{ section_st.btn-size }} {{ section_st.btn-style }}{% endif %}{% if block_st.hidebtn %} hide-sm{% endif %}" style="--btncl:{{ block_st.btn }};--btnclh:{{ block_st.btnh }};" type="button">{{ block_st.btntxt }}</button>
+                                {% endif %}                  
+                              </div>                        
+                          </div>   
+                        </a>
+                      </div>                  
+                </div>
+            {%- endfor -%}
+            {%- if section.blocks.size == 0 -%}{% render 'no-blocks' %}{%- endif -%}
+        </grid-masonary>      
+    </div>   
+</div>
+{%- endcapture -%}
+{{- banners | strip_newlines | remove: '	' -}}
+{% schema %}
+{
+  "name": "Masonry banner",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "max_blocks": 15,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Set numerous banner style with different settings for each block and flexible image size.[What is masonry layout?](https://isotope.metafizzy.co/layout-modes/masonry.html)"
+    },
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "SUBHEADING"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Masonry Banner"
+    },
+     {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Highlight the best collections, products or describe inspiration, promotions.</p> "
+    },         
+    {
+      "type": "header",
+      "content": "Grid appearance"
+    }, 
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Grid gap",
+      "default": 30,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Grid gap (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 15,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "col",
+      "label": "Grid columns",
+      "default": 2,
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "info": "[Column selection guide](https://www.adornthemes.com/masonry-column-selection/)"
+    },
+     {
+      "type": "checkbox",
+      "id": "width",
+      "label": "Equal width text box",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "equal_width",
+      "label": "Box minimum width",
+      "default": 50,
+      "min": 40,
+      "max": 100,
+      "step": 1,
+      "unit": "%"
+    },
+    {
+      "type": "checkbox",
+      "id": "zoom",
+      "label": "Image zoom on hover",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    }, 
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+         {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "btn-size",
+      "label": "Button size",
+      "default": "btn-sm",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ]
+    },      
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"            
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Gradient background",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },    
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "featured_collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Column width",
+          "default": "wd50",
+          "options": [
+            { "value": "wd20", "label": "20%" },
+            { "value": "wd25", "label": "25%" },
+            { "value": "wd33", "label": "33%" },
+            { "value": "wd40", "label": "40%" },
+            { "value": "wd50", "label": "50%" },
+            { "value": "wd60", "label": "60%" },
+            { "value": "wd66", "label": "66%" },
+            { "value": "wd75", "label": "75%" },
+            { "value": "wd80", "label": "80%" },
+            { "value": "w-100", "label": "100%" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "widthm",
+          "label": "Column width (mobile)",
+          "default": "wd100",
+          "options": [
+            { "value": "wd50", "label": "50%" },
+            { "value": "wd100", "label": "100%" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "hidem",
+          "label": "Hide on mobile",
+          "default": false
+        }, 
+         {
+          "type": "paragraph",
+          "content": "----------------------------------------------"
+        },      
+        {
+          "label": "Collection",
+          "id": "collection",
+          "type": "collection"
+        },
+         {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Flexible image size as this [masonry](https://www.smashingmagazine.com/native-css-masonry-layout-css-grid/) style section."
+        },
+         {
+          "type": "color",
+          "id": "ovr",
+          "label": "Image overlay",
+          "alpha": true,
+          "default": "#00000060"     
+        },
+         {
+          "type": "select",
+          "id": "ovr-direction",
+          "label": "Overlay direction",
+          "default": "bottom",
+          "options": [
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" }
+          ]
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link (optional)",
+          "info": "Keep empty to use 'collection url'."
+        },
+        {
+          "type": "paragraph",
+          "content": "----------------------------------------------"
+        },        
+        {
+          "type": "checkbox",
+          "id": "pre_show",
+          "label": "Show pre-heading",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "pre_text",
+          "label": "Text",
+          "default": "Fresh Everyday",
+          "visible_if": "{{ block.settings.pre_show }}"
+        },
+        {
+          "type": "select",
+          "id": "pre_icon",
+          "label": "Icon",
+          "default": "leaf",
+          "visible_if": "{{ block.settings.pre_show }}",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "custom", "label": "Custom icon" },
+            { "value": "check", "label": "Check" },
+            { "value": "check2", "label": "Check 2" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "email", "label": "Email" },
+            { "value": "phone", "label": "Phone" },
+            { "value": "phone2", "label": "Phone 2" },
+            { "value": "comment", "label": "Comment" },
+            { "value": "support", "label": "Support" },
+            { "value": "dollar", "label": "Dollar" },
+            { "value": "package", "label": "Package" },
+            { "value": "return", "label": "Return" },
+            { "value": "rocket", "label": "Rocket" },
+            { "value": "plan", "label": "Plane" },
+            { "value": "measure", "label": "Measure" },
+            { "value": "file", "label": "File" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "lock", "label": "Lock" },
+            { "value": "payment", "label": "Payment" },
+            { "value": "progress", "label": "Progress" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "star", "label": "Star" },
+            { "value": "like", "label": "Like" },
+            { "value": "tag", "label": "Tag" },
+            { "value": "tag2", "label": "Tag" },
+            { "value": "info", "label": "Info." },
+            { "value": "globe", "label": "Globe" },
+            { "value": "earth", "label": "Earth" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "location", "label": "Location" },
+            { "value": "shop", "label": "Shop" },
+            { "value": "rain", "label": "Rain" },
+            { "value": "sun", "label": "Sun" },
+            { "value": "cloud", "label": "Cloud" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "care2", "label": "Care" },
+            { "value": "rabit", "label": "Rabbit" },
+            { "value": "paraben", "label": "Paraben" }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "pre_icon_image",
+          "label": "Custom icon",
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_icon == 'custom' }}"
+        },
+        {
+          "type": "range",
+          "id": "pre_icn_size",
+          "label": "Icon size",
+          "default": 14,
+          "min": 10,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_icon != 'none' }}"
+        },
+        {
+          "type": "color",
+          "id": "pre_icn_cl",
+          "label": "Icon color",
+          "default": "#fff",
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_icon != 'none' }}"
+        },
+        {
+          "type": "color",
+          "id": "pre_cl",
+          "label": "Text color",
+          "default": "#fff",
+          "visible_if": "{{ block.settings.pre_show }}"
+        },
+        {
+          "type": "range",
+          "id": "pre_fs",
+          "label": "Font size",
+          "default": 12,
+          "min": 8,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show }}"
+        },
+        {
+          "type": "range",
+          "id": "pre_fsm",
+          "label": "Font size (mobile)",
+          "default": 11,
+          "min": 8,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show }}"
+        },
+        {
+          "type": "select",
+          "id": "pre_fw",
+          "label": "Font weight",
+          "default": "600",
+          "visible_if": "{{ block.settings.pre_show }}",
+          "options": [
+            { "value": "300", "label": "Light" },
+            { "value": "400", "label": "Regular" },
+            { "value": "500", "label": "Medium" },
+            { "value": "600", "label": "Semi Bold" },
+            { "value": "700", "label": "Bold" }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "pre_ls",
+          "label": "Letter spacing",
+          "default": 0.5,
+          "min": 0,
+          "max": 10,
+          "step": 0.5,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "pre_bgbdr",
+          "label": "Add background or border",
+          "default": false,
+          "visible_if": "{{ block.settings.pre_show }}"
+        },
+        {
+          "type": "color",
+          "id": "pre_bg",
+          "label": "Background",
+          "alpha": true,
+          "default": "#00000000",
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_bgbdr }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "pre_border",
+          "label": "Add border",
+          "default": false,
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_bgbdr }}"
+        },
+        {
+          "type": "color",
+          "id": "pre_border_cl",
+          "label": "Border color",
+          "default": "#fff",
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_bgbdr and block.settings.pre_border }}"
+        },
+        {
+          "type": "range",
+          "id": "pre_pdx",
+          "label": "Horizontal padding",
+          "default": 15,
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_bgbdr }}"
+        },
+        {
+          "type": "range",
+          "id": "pre_pdy",
+          "label": "Vertical padding",
+          "default": 6,
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_bgbdr }}"
+        },
+        {
+          "type": "range",
+          "id": "pre_radius",
+          "label": "Corner radius",
+          "default": 30,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show and block.settings.pre_bgbdr }}"
+        },
+        {
+          "type": "range",
+          "id": "pre_mb",
+          "label": "Bottom margin",
+          "default": 10,
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show }}"
+        },
+        {
+          "type": "range",
+          "id": "pre_mbm",
+          "label": "Bottom margin (mobile)",
+          "default": 10,
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.pre_show }}"
+        },
+        {
+          "type": "paragraph",
+          "content": "----------------------------------------------"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "FOREVER NEW"
+        },
+        {
+          "type": "color",
+          "id": "cl",
+          "label": "Color",
+          "default": "#000",
+          "alpha": true
+        },       
+        {
+          "type": "select",
+          "id": "preset",
+          "label": "Preset",
+          "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+          "default": "custom-hd",
+          "options": [
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "h5",
+              "label": "H5"
+            },
+            {
+              "value": "h6",
+              "label": "H6"
+            },
+           {
+              "value": "text-1",
+              "label": "Text 1"
+            },
+            {
+              "value": "text-2",
+              "label": "Text 2"
+            },
+            {
+              "value": "custom-hd",
+              "label": "Custom"
+            }
+          ]
+        },
+         {
+        "type": "select",
+        "id": "ff",
+        "label": "Font",
+        "default": "ft2",
+        "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+        "options": [
+          {
+            "value": "ft1",
+            "label": "Body font"
+          },
+          {
+            "value": "ft2",
+            "label": "Heading font"
+          },
+          {
+            "value": "ft3",
+            "label": "Accent font"
+          }
+        ]
+      },
+        {
+          "type": "range",
+          "id": "fs",
+          "label": "Font size",
+          "default": 18,
+          "min": 10,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+        },
+        {
+          "type": "range",
+          "id": "fsm",
+          "label": "Font size (mobile)",
+          "default": 16,
+          "min": 10,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+        },        
+        {
+          "type": "select",
+          "id": "fw",
+          "label": "Font weight",
+          "default": "600",
+          "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+          "options": [
+            {
+              "value": "300",
+              "label": "Light"
+            },
+            {
+              "value": "400",
+              "label": "Regular"
+            },
+            {
+              "value": "500",
+              "label": "Medium"
+            },
+            {
+              "value": "600",
+              "label": "Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "Bold"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "lh",
+          "label": "Line height",
+          "default": 1.2,
+          "min": 0.7,
+          "max": 2.0,
+          "step": 0.1,          
+          "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+        },
+        {
+          "type": "range",
+          "id": "ls",
+          "label": "Letter spacing",
+          "default": 0,
+          "min": 0,
+          "max": 10,
+          "step": 0.5,
+          "unit": "px",       
+          "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+        },
+        {
+          "type": "range",
+          "id": "mb",
+          "label": "Bottom margin",
+          "default": 5,
+          "min": 0,
+          "max": 50,
+          "step": 5,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "mbm",
+          "label": "Bottom margin (mobile)",
+          "default": 5,
+          "min": 0,
+          "max": 50,
+          "step": 5,
+          "unit": "px"
+        },
+        {
+          "type": "paragraph",
+          "content": "----------------------------------------------"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "All exclusive only for you"
+        },
+        {
+          "type": "checkbox",
+          "id": "hidetm",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "tcl",
+          "label": "Color",
+          "default": "#000"
+        },
+        {
+          "type": "select",
+          "id": "tpreset",
+          "label": "Preset",
+          "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+          "default": "default",
+          "options": [
+            {
+              "value": "default",
+              "label": "Default"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "tfs",
+          "label": "Font size",
+          "default": 13,
+          "min": 10,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.tpreset == 'custom' }}"
+        },
+        {
+          "type": "range",
+          "id": "tfsm",
+          "label": "Font size (mobile)",
+          "default": 13,
+          "min": 10,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "visible_if": "{{ block.settings.tpreset == 'custom' }}"
+        },
+        {
+          "type": "select",
+          "id": "tff",
+          "label": "Font family",
+          "default": "ft1",
+          "visible_if": "{{ block.settings.tpreset == 'custom' }}",
+          "options": [
+            {
+              "value": "ft1",
+              "label": "Font 1"
+            },
+            {
+              "value": "ft2",
+              "label": "Font 2"
+            },
+            {
+              "value": "ft3",
+              "label": "Font 3"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "tfw",
+          "label": "Font weight",
+          "default": "400",
+          "visible_if": "{{ block.settings.tpreset == 'custom' }}",
+          "options": [
+            {
+              "value": "300",
+              "label": "Light"
+            },
+            {
+              "value": "400",
+              "label": "Regular"
+            },
+            {
+              "value": "500",
+              "label": "Medium"
+            },
+            {
+              "value": "600",
+              "label": "Semi Bold"
+            },
+            {
+              "value": "700",
+              "label": "Bold"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "tlh",
+          "label": "Line height",
+          "default": 1.5,
+          "min": 0.7,
+          "max": 2.0,
+          "step": 0.1,        
+          "visible_if": "{{ block.settings.tpreset == 'custom' }}"
+        },
+        {
+          "type": "range",
+          "id": "mb1",
+          "label": "Bottom margin",
+          "default": 15,
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "mbm1",
+          "label": "Bottom margin (mobile)",
+          "default": 15,
+          "min": 0,
+          "max": 50,
+          "step": 5,
+          "unit": "px"
+        },
+        {
+          "type": "paragraph",
+          "content": "----------------------------------------------"
+        },
+        {
+          "type": "text",
+          "id": "btntxt",
+          "label": "Button labl",
+          "default": "Shop Now",
+          "info": "Keep empty to hide"
+        },
+        {
+          "type": "checkbox",
+          "id": "hidebtn",
+          "label": "Hide button on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "linkst",
+          "label": "Use link style",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "btn",
+          "label": "Link",
+          "default": "#000",
+          "visible_if": "{{ block.settings.linkst }}"
+        },
+        {
+          "type": "color",
+          "id": "btnh",
+          "label": "Link hover",
+          "default": "#CA192C",
+          "visible_if": "{{ block.settings.linkst }}"
+        },
+        {
+          "type": "header",
+          "content": "Text appearance"
+        },
+        {
+          "type": "select",
+          "id": "text-align",
+          "label": "Text alignment",
+          "default": "tc",
+          "options": [
+            { "value": "tl", "label": "Left" },
+            { "value": "tc", "label": "Center" },
+            { "value": "tr", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "text_pos",
+          "label": "Text position",
+          "default": "f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "f-ais f-jcs" },
+            { "label": "Top center", "value": "f-jcc f-ais" },
+            { "label": "Top right", "value": "f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "f-aie f-jcs" },
+            { "label": "Bottom center", "value": "f-jcc f-aie" },
+            { "label": "Bottom right", "value": "f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "bg",
+          "label": "Background",
+          "alpha": true,
+          "default": "#fff"
+        },
+        {
+          "type": "range",
+          "id": "box_padding_side",
+          "label": "Horizontal padding",
+          "default": 30,
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "box_padding_tb",
+          "label": "Vertical padding",
+          "default": 30,
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "radius",
+          "label": "Corner radius",
+          "default": 5,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Masonry banners",
+       "category":"Banners",
+      "blocks": [
+        {
+          "type": "featured_collection"
+        },
+        {
+          "type": "featured_collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,103 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign product_form_id = 'product-form-' | append: section.id
+-%}
+{%- render 'variant-picker', product:product, block_st:block_st, section_id:section.id, product_form_id:product_form_id -%}
+{% schema %}
+{
+  "name": "Variant picker",
+  "tag": null,
+  "settings": [
+    {
+        "type": "checkbox",
+        "id": "sold",
+        "label": "Hide sold out variants",
+        "default": false
+    },
+    {
+        "type": "select",
+        "id": "cltype",
+        "label": "Variant style (color)",
+        "default": "vi",
+        "info": "Add [color variant](https://www.adornthemes.com/knowledge-base/add-product-colors-using-category-metafields/) to show color swatches or variant images",
+        "options": [
+        {
+            "value": "cs",
+            "label": "Color swatch"
+        },
+        {
+            "value": "vi",
+            "label": "Variant image"
+        },
+        {
+            "value": "ts",
+            "label": "Label swatch"
+        },
+        {
+            "value": "tc",
+            "label": "Label with color"
+        },
+        {
+            "value": "dd",
+            "label": "Dropdown"
+        }
+        ]
+    },
+    {
+        "type": "select",
+        "id": "othervr",
+        "label": "Variant style (non-color)",
+        "default": "sw",              
+        "options": [
+        {
+            "value": "sw",
+            "label": "Label swatch"
+        },
+        {
+            "value": "dd",
+            "label": "Dropdown"
+        }
+        ]
+    },
+    {
+        "type": "paragraph",
+        "content": "Manage swatch style from [theme settings](/editor?context=theme&category=Product swatches)"
+    },
+    {
+        "type": "paragraph",
+        "content": "Follow steps from [given article](https://www.adornthemes.com/knowledge-base/how-to-display-color-variant-media-gallery/) to show color variant image gallery"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Variant picker",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

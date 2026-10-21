@@ -1,0 +1,174 @@
+{%- capture newsletter_popup -%}
+{%- liquid 
+    assign section_st = section.settings
+    assign imgsize = '450px'
+    if section_st.style == 'st1'
+      assign imgsize = '700px'
+    endif
+-%}
+{%- capture showexitpp -%}{% if section_st.index %}index,{% endif %}{% if section_st.product %}product,{% endif %}{% if section_st.collection %}collection,{% endif %}{% if section_st.article %}article,{% endif %}{% if section_st.blog %}blog,{% endif %}{% if section_st.cart %}cart,{% endif %}{% if section_st.page %}page{% endif %}{%- endcapture -%}
+{%- if showexitpp contains request.page_type -%}
+<newsletter-popup id="{{ section.id }}" class="tinglebox {{ section_st.style }} pp-hide of-hidden" data-time="{{ section_st.seconds | times: 1000 }}" style="--bg:{% if section_st.bgg != blank %}{{ section_st.bgg }}{% else %}{{ section_st.bg }}{% endif %};--bdr:{{ section_st.brad }}px;">
+    <div id="news-modal" class="{{ section_st.style }} m-auto{% if section_st.style == "st2" %} fl f-aic f-col f-row-md{% endif %}">
+        {%- if section_st.image != blank -%}
+            <div class="news-modal__img pr{% if section_st.style == "st2" %} col-1 wd50-md{% endif %}">
+                {{ section_st.image | image_url: width: section_st.image.width | image_tag: loading:'lazy', class:'img-fill', sizes: imgsize, widths:"320,460,600,760,900,1200" }}
+            </div>
+        {%- endif -%}
+        <div class="news-modal__txt fl1 fl f-col t-{{ section_st.talign }}{% if section_st.talign == 'center' %} f-aic{% elsif section_st.talign == "right" %} f-aie{% endif %}">
+            {%- content_for 'blocks' -%}
+            {%- if section_st.c_msg != blank -%}
+                <label class="donotnwpp reg-text cpointer mb0 mt25" style="--fs:11px;--fsm:11px;--fw:400;">
+                    <input type="checkbox" id="dontshowpp" class="custCheck" checked /><span class="checkbox"></span>
+                    {{ section_st.c_msg }}
+                </label>
+            {%- endif -%}
+        </div>
+    </div>
+</newsletter-popup>
+{%- endif -%}
+{%- endcapture -%}
+{{- newsletter_popup | strip_newlines | remove: '	' | replace: "  "," " | replace: "  "," " -}}
+{% schema %}
+{
+  "name": "Newsletter popup",
+  "class": "hide newsletter-popup",
+  "limit": 1,
+  "enabled_on": {
+    "groups": ["custom.overlay"]
+  },
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "range",
+      "id": "seconds",
+      "label": "Show after",
+      "default": 5,
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "unit": "sec"
+    },    
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "st2",
+      "options": [
+        {
+          "value": "st1",
+          "label": "Horizontal image "
+        },
+        {
+          "value": "st2",
+          "label": "Vertical image"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Horizontal image --> maximum width:1000px. Vertical image --> width:500px, height:650px."
+    },
+    {
+      "type": "text_alignment",
+      "id": "talign",
+      "label": "Text alignment",
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient"
+    },    
+    {
+        "type": "text",
+        "id": "c_msg",
+        "label": "Close text",
+        "default": "No,Thanks! Don't show this again.",
+        "info": "Keep empty to disable this option"
+    },
+    {
+      "type": "header",
+      "content": "Display on"
+    },
+    {
+      "type": "checkbox",
+      "id": "index",
+      "label": "Home page",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "product",
+      "label": "Product page"
+    },
+    {
+      "type": "checkbox",
+      "id": "collection",
+      "label": "Collection page"
+    },
+    {
+      "type": "checkbox",
+      "id": "article",
+      "label": "Article page"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog",
+      "label": "Blog page"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart",
+      "label": "Cart page"
+    },
+    {
+      "type": "checkbox",
+      "id": "page",
+      "label": "Other page"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter popup",
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "text": "<b>Join Our Mailing List<b></b></b>",
+            "mb": 10,
+            "mbm":10
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "<p>Stay Informed! Monthly Tips, Trends and Discounts.</p>",
+            "mb": 20,
+            "mbm":15
+          }
+        },
+        {
+          "type": "email-signup",
+          "settings": {}
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

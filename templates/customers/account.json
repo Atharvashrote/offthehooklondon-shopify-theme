@@ -1,0 +1,34 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "cl": "#111111",
+        "bg": "#f9f9f9",
+        "fsz": 13,
+        "case": false,
+        "fullwidth": false,
+        "tc": false,
+        "hidemb": false
+      }
+    },
+    "main": {
+      "type": "account",
+      "settings": {
+        "fs": 20,
+        "fsm": 18,
+        "fw": "600",
+        "btn": "btn1",
+        "btnsz": "btn-md",
+        "sst": 50,
+        "ssb": 80,
+        "sstm": 30,
+        "ssbm": 30
+      }
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "main"
+  ]
+}

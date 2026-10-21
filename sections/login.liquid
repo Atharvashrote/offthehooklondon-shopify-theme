@@ -1,0 +1,229 @@
+{{- 'customer.css' | asset_url | stylesheet_tag -}}
+<script src="{{ 'customer.js' | asset_url }}" defer></script>
+{%- assign section_st = section.settings -%}
+<div class="section-cover" style="--sbg:{{ section_st.bg }};--sst:{{ section_st.sst }}px;--ssb:{{ section_st.ssb }}px;--sstm:{{ section_st.sstm }}px;--ssbm:{{ section_st.ssbm }}px">
+  <div class="page-width" style="--cl:{{ section_st.cl }};--fbg:{{ section_st.fbg }};--border_color:{{ section_st.bd }};max-width:1000px;">
+      <h1 class="page-title tc mb20 mb40-md">{{ 'customer.login.page_title' | t }}</h1>
+      <div class="grid">
+        <div class="gitem wd50-md mb20 mb0-md">
+            <div id="recover" class="customerform h-100 mb30 hide">
+                <h4 class="text-upper">{{ 'customer.recover_password.title' | t }}</h4>
+                <p>{{ 'customer.recover_password.subtext' | t }}</p>
+                <div class="form-vertical">
+                  {%- form 'recover_customer_password' -%}
+                  {{ form.errors | default_errors }}
+                  {% if form.posted_successfully? %} <span class="hide reset-password-success"></span> {% endif %}
+                  <label for="RecoverEmail" class="hide">{{ 'customer.recover_password.email' | t }}</label>
+                  <input type="email" value="" name="email" id="RecoverEmail" placeholder="{{ 'customer.recover_password.email' | t }}" class="input-full" autocorrect="off" autocapitalize="off">
+                  <div class="fl gap f-aic" style="--gap:15px;">
+                    <button type="submit" class="btn {{ section_st.lgbtn }} {{ section_st.cabtnsz }}">{{ 'customer.recover_password.submit' | t }}</button>
+                    <a href="#LoginForm" id="HideRecoverPassword" class="btn-link cancel">{{- 'customer.recover_password.cancel' | t -}}</a>
+                  </div>
+                  {%- endform -%}
+                </div>
+            </div>
+            <div id="LoginForm">            
+              <div class="customerform form-vertical h-100">
+                  <h4 class="text-upper">{{ 'customer.login.page_title' | t }}</h4>
+                 <p>{{ 'customer.login.sub_title' | t }}</p>
+                <div class="border form-success hide" id="ResetSuccess">{{ 'customer.recover_password.success' | t }}</div>
+                {%- form 'customer_login' -%}
+                  {{ form.errors | default_errors }}
+                  <label for="CustomerEmail" class="hide">{{ 'customer.login.email' | t }}</label>
+                  <input type="email" name="customer[email]" placeholder="{{ 'customer.login.email' | t }}" id="CustomerEmail" class="{% if form.errors contains 'email' %} input--error{% endif %}" autocorrect="off" autocapitalize="off" autofocus>
+                  {% if form.password_needed %}
+                    <label for="CustomerPassword" class="hide">{{ 'customer.login.password' | t }}</label>
+                    <input type="password" value="" name="customer[password]" placeholder="{{ 'customer.login.password' | t }}" id="CustomerPassword" class="{% if form.errors contains 'password' %} input--error{% endif %}">
+                  {% endif %}
+                  <div class="fl hover-line f-aic f-jcsb">
+                    <button type="submit" class="btn {{ section_st.lgbtn }} {{ section_st.cabtnsz }}">{{ 'customer.login.sign_in' | t }}</button>
+                    {% if form.password_needed %}<a href="#recover" class="color-body">{{ 'customer.login.forgot_password' | t }}</a>{% endif %}
+                  </div>
+                {%- endform -%}
+                {%- if shop.checkout.guest_login -%}
+                <hr>
+                <div class="fl f-wrap f-aic f-jcsb">
+                  <h5 class="mb0" style="color:{{ section_st.cl }};">{{ 'customer.login.guest_title' | t }}</h5>
+                  {%- form 'guest_login' -%}
+                    <button type="submit" class="btn {{ section_st.lgbtn }} {{ section_st.cabtnsz }}">{{ 'customer.login.guest_continue' | t }}</button>
+                  {%- endform -%}
+                </div>
+              {%- endif -%}
+            </div>
+            </div>
+            {% comment %}
+            If accounts are set as optional, the following will be shown as an option
+            during checkout, not on the default /login page.
+            {% endcomment %}                       
+        </div>
+        <div class="gitem wd50-md">
+           <div class="customerform h-100">
+            <h4 class="text-upper">{{ 'customer.register.form_title' | t }}</h4>
+            <p>{{ 'customer.register.sub_text' | t }}</p>
+            <a href="{{ routes.account_register_url }}" class="btn {{ section_st.cabtn }} {{ section_st.cabtnsz }}">{{- 'customer.register.button' | t -}}</a>                                   
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Login page",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Box"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "bd",
+      "label": "Border",
+      "default": "#eee"
+    },
+    {
+      "type": "color",
+      "id": "fbg",
+      "label": "Background",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "select",
+      "id": "lgbtn",
+      "label": "Login",
+      "default": "btn1",
+      "options": [
+         {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },      
+    {
+      "type": "select",
+      "id": "cabtn",
+      "label": "Create an account",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },    
+    {
+      "type": "select",
+      "id": "cabtnsz",
+      "label": "Button size",
+      "default": "btn-sm",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ]
+    },
+   {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ]
+}
+{% endschema %}

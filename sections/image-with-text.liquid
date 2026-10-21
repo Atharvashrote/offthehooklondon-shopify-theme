@@ -1,0 +1,270 @@
+{%- capture info_banner -%}
+{%- assign section_st = section.settings -%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}"> 			
+        {% if section_st.carousel %}
+            <slide-section class="image-with-text swiper" 
+              data-swiper='{ "slidesPerView":"1", "loop":true, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "effect":"{% if section_st.fade %}fade{% else %}slide{% endif %}","preloadImages":false, "lazy":true, "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+                <div class="swiper-wrapper">
+        {% endif %}
+            {%- content_for 'blocks' -%}          
+        {% if section_st.carousel %}
+                </div>
+                {%- render 'swiper-navigation', id:section.id, section_st:section_st -%}
+          </slide-section>
+        {% endif %}
+    </div>
+</div>
+{%- endcapture -%}
+{{- info_banner | strip_newlines | remove: '  ' | remove: '	' -}}
+{%- schema -%}
+{
+  "name": "Image with text",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "blocks": [{ "type": "_image-text-row" }],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel",
+      "label": "Enable",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate slides",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 1,
+      "max": 60,
+      "step": 1,
+      "unit": "sec",
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "fade",
+      "label": "Slide fade effect",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+
+    {
+      "type": "checkbox",
+      "id": "arrow",
+      "label": "Show arrows on desktop",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrowm",
+      "label": "Show arrows on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Show dots on desktop",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dotm",
+      "label": "Show dots on mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },       
+    {
+      "type": "header",
+      "content": "Layout"
+    },    
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+   {
+          "type": "checkbox",
+          "id": "npd",
+          "label": "Remove side margins",
+          "default": true,
+          "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+          "visible_if": "{{ section.settings.fullwidth }}"            
+      },
+      {
+          "type": "select",
+          "id": "srounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+              {
+              "value": "none",
+              "label": "None"
+              },
+              {
+              "value": "round-xs",
+              "label": "Extra small"
+              },
+              {
+              "value": "round-sm",
+              "label": "Small"
+              },
+              {
+              "value": "round-md",
+              "label": "Medium"
+              },
+              {
+              "value": "round-lg",
+              "label": "Large"
+              },
+              {
+              "value": "round-full",
+              "label": "Full"
+              }
+          ],
+          "visible_if": "{{ section.settings.npd == false or section.settings.fullwidth == false }}"
+      },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg }}"
+    },   
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }    
+  ],
+  "presets": [
+    {
+      "name": "Image with text",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "_image-text-row",
+          "blocks": [
+            {
+              "type": "heading",
+              "settings": {
+                "text": "Talk about your brand",
+                "preset": "h3",
+                "mb": 15,
+                "mbm":10
+              }
+            },
+            {
+              "type": "text",
+              "settings": {
+                "text": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
+                "mb": 30,
+                "mbm":20
+              }
+            },
+            {
+              "type": "button",
+              "settings": {
+                "text": "Shop Now",
+                "url": "/collections/all"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{%- endschema -%}

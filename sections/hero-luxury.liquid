@@ -1,0 +1,91 @@
+<section class="luxury-hero">
+
+  {% if section.settings.hero_image != blank %}
+    <img
+      src="{{ section.settings.hero_image | image_url: width: 2500 }}"
+      alt="{{ section.settings.heading }}"
+      class="hero-image"
+    >
+  {% endif %}
+
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+
+    {% if section.settings.subheading != blank %}
+      <p class="hero-subtitle">
+        {{ section.settings.subheading }}
+      </p>
+    {% endif %}
+
+    <h1 class="hero-title">
+      {{ section.settings.heading }}
+    </h1>
+
+    <div class="hero-buttons">
+
+      <a href="{{ section.settings.button_1_link }}" class="btn-outline">
+        {{ section.settings.button_1 }}
+      </a>
+
+      <a href="{{ section.settings.button_2_link }}" class="btn-white">
+        {{ section.settings.button_2 }}
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "Luxury Hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Small Text",
+      "default": "WIND, HAIL OR HEAT"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "NEW RUNNER ARRIVAL"
+    },
+    {
+      "type": "text",
+      "id": "button_1",
+      "label": "Button 1",
+      "default": "SHOP MEN"
+    },
+    {
+      "type": "url",
+      "id": "button_1_link",
+      "label": "Button 1 Link"
+    },
+    {
+      "type": "text",
+      "id": "button_2",
+      "label": "Button 2",
+      "default": "SHOP WOMEN"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Button 2 Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Luxury Hero"
+    }
+  ]
+}
+{% endschema %}

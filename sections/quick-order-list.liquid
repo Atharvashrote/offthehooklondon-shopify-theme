@@ -1,0 +1,367 @@
+{%- if product.options.size > 1 -%}
+{{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{% # theme-check-disable %}
+{%- assign items_in_cart = cart | line_items_for: product | sum: 'quantity' -%}
+{% # theme-check-enable %}
+{%- liquid
+    assign section_st = section.settings
+    assign show_image = section.settings.show_image
+    assign show_sku = section.settings.show_sku
+-%}
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}" id="{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="upsale">
+        {%- render 'sec-title' -%}
+
+        <div class="quick-order-list-container m-auto" style="--table-width:{{ section_st.page_width }}px;--cbg:{{ section_st.cbg }};--border:{{ section_st.border }};--brad:{{ section_st.brad }}px;">
+            <quick-order-list class="db" id="{{ section.id }}-{{ product.id }}" data-section="{{ section.id }}" data-product-id="{{ product.id }}" data-url="{{ product.url }}">
+                <form action="{{ routes.cart_update_url }}" class="quick-order-list__contents pr critical-hidden" method="post" id="QuickOrderList">
+                    <div class="quick-order-list__container m0" id="main-variant-items">
+                        <div class="js-contents">
+                            <table class="quick-order-list__table m0">
+                                <caption class="hidden_txt">{{ 'cart.general.title' | t }}</caption>
+                                <thead>
+                                    <tr>
+                                        <th class="caption-with-letter-spacing" scope="col">
+                                            {%- if product.has_only_default_variant -%}
+                                                {{ 'sections.quick_order_list.product' | t }}
+                                            {%- else -%}
+                                                {{ 'sections.quick_order_list.variant' | t }}
+                                            {%- endif -%}
+                                        </th>
+                                        <th class="hide-lg tr caption-with-letter-spacing" scope="col">
+                                            {%- if product.has_only_default_variant -%}
+                                                {{ 'sections.quick_order_list.product_total' | t }}
+                                            {%- else -%}
+                                                {{ 'sections.quick_order_list.variant_total' | t }}
+                                            {%- endif -%}
+                                        </th>
+                                        <th class="quick-order-list__table-heading--wide hide-sm hide-md caption-with-letter-spacing" scope="col">{{ 'products.product.quantity.label' | t }}</th>
+                                        <th class="quick-order-list__table-heading--wide hide-sm hide-md caption-with-letter-spacing" scope="col">{{ 'cart.label.price' | t }}</th>
+                                        <th class="hide-sm hide-md tr caption-with-letter-spacing" scope="col">
+                                            {%- if product.has_only_default_variant -%}
+                                                {{ 'sections.quick_order_list.product_total' | t }}
+                                            {%- else -%}
+                                                {{ 'sections.quick_order_list.variant_total' | t }}
+                                            {%- endif -%}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {%- if product.has_only_default_variant -%}
+                                        {%- render 'quick-order-list-row', 
+                                            item: product,
+                                            image: product.featured_media,
+                                            sku: product.selected_or_first_available_variant.sku,
+                                            variant: product.selected_or_first_available_variant,
+                                            show_image: show_image,
+                                            show_sku: show_sku
+                                        -%}
+                                    {%- else -%}
+                                        {%- for variant in product.variants -%}
+                                            {%- render 'quick-order-list-row',
+                                                item: variant,
+                                                image: variant.image,
+                                                sku: variant.sku,
+                                                variant: variant,
+                                                show_image: show_image,
+                                                show_sku: show_sku
+                                            -%}
+                                        {%- endfor -%}
+                                    {%- endif -%}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <p class="visually-hidden hidden_txt" id="quick-order-list-live-region-text-{{ product.id }}" aria-live="polite" role="status"></p>
+                    <p class="visually-hidden hidden_txt" id="shopping-cart-variant-item-status" aria-live="polite" aria-hidden="true" role="status">{{ 'accessibility.loading' | t }}</p>
+                </form>
+
+                {%- if product.has_only_default_variant or product.variants.size == 1 -%}
+                    <span class="quick-order-list-error">
+                        {% comment %} Populated by JS {% endcomment %}
+                    </span>
+                {%- else -%}
+                    <div class="quick-order-list__total" id="quick-order-list-total-{{ product.id }}-{{ section.id }}">
+                        <div class="quick-order-list-total__info fl f-aic f-col">
+                            <div class="fl f-aic quick-order-list-total__column">
+                                <div class="quick-order-list-buttons fl gap" style="--gap:15px;">
+                                    <a href="{{ routes.cart_url }}" class="btn {{ section_st.btn-viewcart }} quick-order-list__button">
+                                        <span class="quick-order-list__button-text">{{- 'sections.quick_order_list.view_cart' | t -}}</span>
+                                    </a>
+                                    <div class="variant-remove-total{% if items_in_cart == 0 %} variant-remove-total--empty{% endif %}">
+                                        <span class="loading__spinner hidden"><svg class="at-icon at-spin"><use xlink:href="#icon-loading"></use></svg></span>
+                                        <quick-order-list-remove-all-button class="no-js-hidden" data-action="confirm">
+                                            <button class="button button--tertiary btn {{ section_st.btn-remove }}" type="button">
+                                                <svg class="at-icon"><use xlink:href="#icon-remove"></use></svg>
+                                                <span class="text-body">{{ 'sections.quick_order_list.remove_all' | t }}</span>
+                                            </button>
+                                        </quick-order-list-remove-all-button>
+                                    </div>
+                                </div>
+                                <span class="quick-order-list__message tc caption-large" role="status">
+                                    <span class="quick-order-list__message-icon hidden"><span class="svg-wrapper">{{- 'icon-checkmark.svg' | inline_asset_content -}}</span></span>
+                                    <span class="quick-order-list__message-text"></span>
+                                </span>
+                                <span class="quick-order-list-error">
+                                    {% comment %} Populated by JS {% endcomment %}
+                                </span>
+                            </div>
+                            <div class="quick-order-list__total-items mb10 fw-500 fs14 text-upper">{{ 'sections.quick_order_list.total_items' | t }} : {{ items_in_cart }}</div>
+                            <div class="quick-order-list-total__price fl f-wrap f-jce">
+                                <div class="totals__product-tota fs14 fw-500 text-upper">
+                                    {{ 'sections.quick_order_list.product_total' | t }}:
+                                    <span class="totals__subtotal-value">
+                                        {% comment %} TODO: enable theme-check once `line_items_for` is accepted as valid filter {% endcomment %}
+                                        {% # theme-check-disable %}
+                                            {{ cart | line_items_for: product | sum: 'original_line_price' | money }}
+                                        {% # theme-check-enable %}
+                                    </span>
+                                </div>
+                                <small class="tax-note caption-large">
+                                    {%- if cart.taxes_included and shop.shipping_policy.body != blank -%}
+                                        {{ 'cart.general.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                                    {%- elsif cart.taxes_included -%}
+                                        {{ 'cart.general.taxes_included_but_shipping_at_checkout' | t }}
+                                    {%- elsif shop.shipping_policy.body != blank -%}
+                                        {{ 'cart.general.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+                                    {%- else -%}
+                                        {{ 'cart.general.taxes_and_shipping_at_checkout' | t }}
+                                    {%- endif -%}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="quick-order-list-total__confirmation hide fl f-aic gap" style="--gap:15px">
+                            <span class="text-body">{{ 'sections.quick_order_list.remove_all_items_confirmation' | t: quantity: items_in_cart }}</span>
+                            <quick-order-list-remove-all-button data-action="remove">
+                                <button class="btn quick-order-list__button-confirm button button--secondary" type="button">{{- 'sections.quick_order_list.remove_all' | t -}}</button>
+                            </quick-order-list-remove-all-button>
+                            <quick-order-list-remove-all-button data-action="cancel">
+                                <button class="btn btn2 quick-order-list__button-cancel button button--tertiary" type="button">{{- 'sections.quick_order_list.cancel' | t -}}</button>
+                            </quick-order-list-remove-all-button>
+                        </div>
+                    </div>
+                {%- endif -%}
+            </quick-order-list>
+            <template id="QuickOrderListErrorTemplate-{{ product.id }}">{{ 'icon-error.svg' | inline_asset_content }} <span class="quick-order-list-error-message caption-large" role="alert"></span></template>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% schema %}
+{
+  "name": "Quick order list",
+  "limit": 1,
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "default": false,
+      "label": "Show images"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sku",
+      "default": false,
+      "label": "Show SKU"
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "label": "Content width",
+      "default": 1000,
+      "min": 700,
+      "max": 1600,
+      "step": 100,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "cbg",
+      "label": "Content background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "border",
+      "label": "Border",
+      "default": "#eee"
+    },
+    {
+      "type": "range",
+      "id": "brad",
+      "label": "Corner radius",
+      "default": 0,
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "btn-viewcart",
+      "label": "View cart button",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "btn-remove",
+      "label": "Remove item button",
+      "default": "btn2",
+      "options": [
+       {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+     {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },    
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },   
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quick order list"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,207 @@
+{% liquid
+    assign block_st = block.settings
+    assign block_align = 't-' | append: block_st.align | append: '-md'
+    if block_st.align == 'left'
+        assign block_align = block_align | append: ' f-ais-md'
+    elsif block_st.align == 'center'
+        assign block_align = block_align | append: ' f-aic-md'
+    elsif block_st.align == 'right'
+        assign block_align = block_align | append: ' f-aie-md'
+    endif
+    assign block_align_mb = 't-' | append: block_st.alignm
+    if block_st.alignm == 'left'
+        assign block_align_mb = block_align_mb | append: ' f-ais'
+    elsif block_st.alignm == 'center'
+        assign block_align_mb = block_align_mb | append: ' f-aic'
+    elsif block_st.alignm == 'right'
+        assign block_align_mb = block_align_mb | append: ' f-aie'
+    endif
+%}
+{%- capture styles -%}
+    --cl_bg:{{ block_st.bg }};--cl_pdm:{{ block_st.pad_tbm }}px {{ block_st.pad_lrm }}px;--cl_pd:{{ block_st.pad_tb }}px {{ block_st.pad_lr }}px;
+{%- endcapture -%}
+<div id="{{ block.id }}" class="gitem msitem custom-item cti{{ block.id }} {{ block_st.widthm }} {{ block_st.width }}-md" style="{{ styles | strip_newlines }}" {{ block.shopify_attributes }}>
+    <div class="of-hidden gitem_inner fl f-col {{ block_align_mb }} {{ block_align }} {{ block_st.rounded }}">
+        {%- content_for 'blocks' -%}
+    </div>
+</div>
+{% schema %}
+{
+  "name": "Column",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Size"
+    },	 
+    {
+        "type": "select",
+        "id": "width",
+        "label": "Column width",
+        "default": "wd50",
+        "options": [
+            {
+                "value": "wd20",
+                "label": "20%"
+            },
+            {
+                "value": "wd25",
+                "label": "25%"
+            },
+            {
+                "value": "wd33",
+                "label": "33%"
+            },
+            {
+                "value": "wd50",
+                "label": "50%"
+            },
+            {
+                "value": "wd66",
+                "label": "66%"
+            },
+            {
+                "value": "wd75",
+                "label": "75%"
+            },
+            {
+                "value": "wd100",
+                "label": "100%"
+            }
+        ]
+    },	 
+    {
+        "type": "select",
+        "id": "widthm",
+        "label": "Column width (mobile)",
+        "default": "wd50",
+        "options": [
+            {
+                "value": "wd50",
+                "label": "50%"
+            },
+            {
+                "value": "wd100",
+                "label": "100%"
+            }
+        ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Alignment",
+      "default": "center"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignm",
+      "label": "Alignment (mobile)",
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Rounded",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "pad_lr",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Left/right",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "pad_tb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Top/bottom",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "pad_lrm",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Left/right (mobile)",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "pad_tbm",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Top/bottom (mobile)",
+      "default": 15
+    }
+  ],
+  "presets": [
+    {
+      "name": "Column",
+      "category": "Layout",
+      "blocks": [
+        {
+          "type": "heading"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

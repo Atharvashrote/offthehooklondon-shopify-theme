@@ -1,0 +1,323 @@
+{% liquid
+    assign block_st = block.settings
+    assign current_pr = product
+-%}
+{% if block_st.products != blank %}
+{%- capture styles -%}
+    --hdcl:{{ block_st.cl }};
+    {%- if block_st.preset == 'custom-hd' -%}
+      --fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--ff:var(--{{ block_st.ff }});--fw:{{ block_st.fw }};--lh:{{ block_st.lh }};--ls:{{ block_st.ls }};
+    {%- endif -%}
+{%- endcapture -%}
+<div class="more-colors mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" style="{{ styles }}" {{ block_st.shopify_attributes }}>
+    {% if block_st.title != blank %}
+        <{{ block_st.htag }} id="blk-{{ block.id }}" class="head {{ block_st.preset }} mb15" style="" {{ block.shopify_attributes }}>
+            {{- block.settings.title -}}
+        </{{ block_st.htag }}>
+    {% endif %}
+    <div class="grid gspace" style="--grsp:5px;--grspm:5px;">
+        {%- for product in block_st.products -%}
+            <div class="gitem tc" style="width:{{ block_st.wd }}px">
+                <a href="{{ product.url }}" class="grid-image {{ block_st.rounded }} of-hidden" {% if product == current_pr %}style="border:1px solid {{ block_st.bd }}"{% endif %}>
+                    {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:'lazy', width:product.featured_image.width, height:product.featured_image.height, class:'img-fit primary', sizes:'100px', widths:"130,220,300" }}
+                </a>
+            </div>
+        {%- endfor -%}
+    </div>
+</div>
+{% endif %}
+{% schema %}
+{
+  "name": "Linked products",
+  "tag": null,
+  "settings": [
+    {
+        "type": "paragraph",
+        "content": "To select linked color products, add metafields. [Learn more](https://www.adornthemes.com/knowledge-base/more-color-products-2/)"
+    },
+    {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "More colors"
+    },
+    {
+        "type": "product_list",
+        "id": "products",
+        "label": "Products"
+    },
+    {
+        "type": "header",
+        "content": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "htag",
+      "label": "Heading tag",
+     "info": "Specify heading type to improve SEO and accessibility.",
+      "default": "h4",
+      "options": [
+        {
+          "value": "p",
+          "label": "P"
+        },
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "div",
+          "label": "Div"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },        
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },    
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "700",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,     
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default":0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",     
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },           
+    {
+        "type": "header",
+        "content": "Product Image"
+    },
+    {
+        "type": "range",
+        "id": "wd",
+        "min": 30,
+        "max": 150,
+        "step": 5,
+        "label": "Image width",
+        "unit": "px",
+        "default": 100
+    },
+    {
+        "type": "color",
+        "id": "bd",
+        "label": "Active border",
+        "default": "#000"
+    },     
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Linked products",
+      "category": "Product",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

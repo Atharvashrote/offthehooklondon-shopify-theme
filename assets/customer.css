@@ -1,0 +1,22 @@
+{% comment %} /* Regisration page */ {% endcomment %}
+#recover:target ~ #LoginForm { display:none; }
+.address-new-toggle[aria-expanded=true] + div,
+.address-edit-toggle[aria-expanded=true]~div[id],
+#recover:target { display:block!important; }
+
+.account-links { border:1px solid var(--border_color); margin-bottom: 25px;}
+.account-links a { display: block; padding: 15px 20px; font-weight: 500; }
+.account-links a.active { background-color: #f5f5f5;}
+
+
+.customerform { padding:20px; border:1px solid var(--border_color); background:var(--fbg); color: var(--cl);}
+
+.address { padding:20px; border:1px solid var(--border_color); }
+.address .customerform { margin:20px -20px -20px; border:0 none; border-radius:0; }
+
+@media only screen and (min-width:768px){
+  .account-links { margin-inline-end:20px}
+  .account-links a:not(:last-child) { border-bottom:1px solid var(--border_color) }
+  .address, .customerform { padding:35px 40px 40px; }
+  .address .customerform { margin:0 -40px -40px; border:0 none; }
+}

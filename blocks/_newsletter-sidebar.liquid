@@ -1,0 +1,67 @@
+{%- liquid
+  assign section_st = section.settings
+  assign block_st = block.settings
+-%}
+<div class="sidebar-widget newsbox" {{ block.shopify_attributes }} style="--tf_txt:{{  block_st.cl }};--border_cl:{{ block_st.bdr }};--icns:14px;--icon_cl:{{ block_st.icon_cl }};--btn_radius:{{block_st.corner_radius }}px ">
+    {%- if block_st.title != blank -%}
+        <div class="widget-title head {{ section_st.ttlpreset }}{% if section_st.bottom_border %} border-bottom mb15{% endif %}{% if section_st.text-upper %} text-upper{% endif %}">{{ block_st.title }}</div>
+    {%- endif -%}
+    <div class="widget-content">
+    {% if block_st.subttl != blank %}<p class="mb15">{{ block_st.subttl }}</p>{% endif %}
+    {% render 'newsletter-form', formId: 'blog-newsletter', isicon: true, block:block_st %}
+    </div>
+</div>
+{% schema %}
+{
+  "name": "Newsletter",
+  "tag": null,
+  "settings": [
+    { 
+              "type":"text",
+              "id":"title",
+              "label":"Title",
+			        "default": "Newsletter Signup"
+          	},
+            { 
+              "type":"text",
+              "id":"subttl",
+              "label":"Subtitle",
+			        "default": "Enter your email to receive daily news and get 20% off coupon for all items."
+          	},
+            {
+                "type": "color",
+                "id": "cl",
+                "label": "Text",
+                "default": "#666"
+            },
+            {
+                "type": "color",
+                "id": "icon_cl",
+                "label": "Icon",
+                "default": "#333"
+            },
+            {
+                "type": "color",
+                "id": "bdr",
+                "label": "Border",
+                "default": "#ccc"
+            },
+            {
+                "type": "range",
+                "id": "corner_radius",
+                "label": "Corner radius",
+                "default":0,
+                "min":0,
+                "max": 50,
+                "step": 1,
+                "unit": "px"
+          }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter",
+      "category": "Sidebar"
+    }
+  ]
+}
+{% endschema %}

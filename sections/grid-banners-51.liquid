@@ -1,0 +1,3605 @@
+{%- capture grid_banners -%}
+{% assign section_st = section.settings %}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+  
+        <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" style="--tfs:{{ section_st.tfs }}px;--tfsm:{{ section_st.tfsm }}px;--tfw:{{ section_st.tfw }};--tfs2:{{ section_st.tfs2 }}px;--tfsm2:{{ section_st.tfsm2 }}px;--tfw2:{{ section_st.tfw2 }};--tfs3:{{ section_st.tfs3 }}px;--tfsm3:{{ section_st.tfsm3 }}px;--tfw3:{{ section_st.tfw3 }};--rounded:{{ section_st.brad }}px">
+          
+            {% render 'sec-title' %}
+            {%- for block in section.blocks -%}
+                {%  assign block_set = block.settings %}
+                {%- if block.type == '1' -%}
+                    <div class="grid-banner st{{ block.type }}{% if section_st.zoom %} zoom-hov{% endif %} mb10" {{ block.shopify_attributes }} style="--gtc:4;--gtcm:2;--gtrm:4;">
+                        <div class="img-bnr brad of-hidden pr b1{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:1;--gce:3;--grs:1;--gre:3;--gcsm:1;--gcem:3;--grsm:1;--grem:3;--pd-x:{{ block_set.b1-pd-x }}px;--pd-y:{{ block_set.b1-pd-y }}px;--cl:{{ block_set.b1_txt }};--bg:{{ block_set.b1_bg }};">
+                            {% render 'image-grid', image: block_set.img1, text1: block_set.b1_text1, text2: block_set.b1_text2, text3: block_set.b1_text3, text_a: block_set.b1_ta, pos: block_set.b1_tp, pos_m:block_set.b1_tpm, hidetxt1:block_set.b1t1_hide, hidetxt2:block_set.b1t2_hide, hidetxt3:block_set.b1t3_hide, link:block_set.link1, imgSize:'930x620', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b2{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:3;--gce:4;--grs:1;--gre:2;--gcsm:1;--gcem:2;--grsm:3;--grem:4;--pd-x:{{ block_set.b2-pd-x }}px;--pd-y:{{ block_set.b2-pd-y }}px;--cl:{{ block_set.b2_txt }};--bg:{{ block_set.b2_bg }};">
+                            {% render 'image-grid', image: block_set.img2, fullimg:true, text1: block_set.b2_text1, text2: block_set.b2_text2, text3: block_set.b2_text3, text_a: block_set.b2_ta, pos: block_set.b2_tp, pos_m:block_set.b2_tpm, hidetxt1:block_set.b2t1_hide, hidetxt2:block_set.b2t2_hide, hidetxt3:block_set.b2t3_hide, link: block_set.link2, imgSize:'460x300', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b3{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:4;--gce:5;--grs:1;--gre:2;--gcsm:2;--gcem:3;--grsm:3;--grem:4;--pd-x:{{ block_set.b3-pd-x }}px;--pd-y:{{ block_set.b3-pd-y }}px;--cl:{{ block_set.b3_txt }};--bg:{{ block_set.b3_bg }};">
+                            {% render 'image-grid', image: block_set.img3, fullimg:true, text1: block_set.b3_text1, text2: block_set.b3_text2, text3: block_set.b3_text3, text_a: block_set.b3_ta, pos: block_set.b3_tp, pos_m:block_set.b3_tpm, hidetxt1:block_set.b3t1_hide, hidetxt2:block_set.b3t2_hide, hidetxt3:block_set.b3t3_hide, link: block_set.link3, imgSize:'460x300', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b4{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:3;--gce:5;--grs:2;--gre:3;--gcsm:1;--gcem:3;--grsm:4;--grem:5;--pd-x:{{ block_set.b4-pd-x }}px;--pd-y:{{ block_set.b4-pd-y }}px;--cl:{{ block_set.b4_txt }};--bg:{{ block_set.b4_bg }};">
+                            {% render 'image-grid', image: block_set.img4, fullimg:true, text1: block_set.b4_text1, text2: block_set.b4_text2, text3: block_set.b4_text3, text_a: block_set.b4_ta, pos: block_set.b4_tp, pos_m:block_set.b4_tpm, hidetxt1:block_set.b4t1_hide, hidetxt2:block_set.b4t2_hide, hidetxt3:block_set.b4t3_hide, link: block_set.link4, imgSize:'930x300', block:block %}
+                        </div>
+                    </div>
+                {%- elsif block.type == '2' -%}
+                    <div class="grid-banner st{{ block.type }}{% if section_st.zoom %} zoom-hov{% endif%} mb10" {{ block.shopify_attributes }} style="--gtc:4;--gtcm:2;--gtrm:4;">
+                        <div class="img-bnr brad of-hidden pr b1{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b1-pd-x }}px;--pd-y:{{ block_set.b1-pd-y }}px;--cl:{{ block_set.b1_txt }};--bg:{{ block_set.b1_bg }};">
+                            {% render 'image-grid', image: block_set.img1, fullimg:true, text1: block_set.b1_text1, text2: block_set.b1_text2, text3: block_set.b1_text3, text_a: block_set.b1_ta, pos: block_set.b1_tp, pos_m:block_set.b1_tpm, hidetxt1:block_set.b1t1_hide, hidetxt2:block_set.b1t2_hide, hidetxt3:block_set.b1t3_hide,  link:block_set.link1, imgSize:'460x460', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b2{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b2-pd-x }}px;--pd-y:{{ block_set.b2-pd-y }}px;--cl:{{ block_set.b2_txt }};--bg:{{ block_set.b2_bg }};">
+                            {% render 'image-grid', image: block_set.img2, fullimg:true, text1: block_set.b2_text1, text2: block_set.b2_text2, text3: block_set.b2_text3, text_a: block_set.b2_ta, pos: block_set.b2_tp, pos_m:block_set.b2_tpm, hidetxt1:block_set.b2t1_hide, hidetxt2:block_set.b2t2_hide, hidetxt3:block_set.b2t3_hide,  link: block_set.link2, imgSize:'460x460', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b3{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:2;--gce:4;--grs:1;--gre:3;--gcsm:1;--gcem:3;--grsm:2;--grem:4;--pd-x:{{ block_set.b3-pd-x }}px;--pd-y:{{ block_set.b3-pd-y }}px;--cl:{{ block_set.b3_txt }};--bg:{{ block_set.b3_bg }};">
+                            {% render 'image-grid', image: block_set.img3, text1: block_set.b3_text1, text2: block_set.b3_text2, text3: block_set.b3_text3, text_a: block_set.b3_ta, pos: block_set.b3_tp, pos_m:block_set.b3_tpm, hidetxt1:block_set.b3t1_hide, hidetxt2:block_set.b3t2_hide, hidetxt3:block_set.b3t3_hide,  link: block_set.link3, imgSize:'930x930', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b4{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcsm:1;--gcem:2;--grsm:4;--grem:5;--pd-x:{{ block_set.b4-pd-x }}px;--pd-y:{{ block_set.b4-pd-y }}px;--cl:{{ block_set.b4_txt }};--bg:{{ block_set.b4_bg }};">
+                            {% render 'image-grid', image: block_set.img4, fullimg:true, text1: block_set.b4_text1, text2: block_set.b4_text2, text3: block_set.b4_text3, text_a: block_set.b4_ta, pos: block_set.b4_tp, pos_m:block_set.b4_tpm, hidetxt1:block_set.b4t1_hide, hidetxt2:block_set.b4t2_hide, hidetxt3:block_set.b4t3_hide,  link: block_set.link4, imgSize:'460x460', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b5{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcsm:2;--gcem:3;--grsm:4;--grem:5;--pd-x:{{ block_set.b5-pd-x }}px;--pd-y:{{ block_set.b5-pd-y }}px;--cl:{{ block_set.b5_txt }};--bg:{{ block_set.b5_bg }};">
+                            {% render 'image-grid', image: block_set.img5, fullimg:true, text1: block_set.b5_text1, text2: block_set.b5_text2, text3: block_set.b5_text3, text_a: block_set.b5_ta, pos: block_set.b5_tp, pos_m:block_set.b5_tpm, hidetxt1:block_set.b5t1_hide, hidetxt2:block_set.b5t2_hide, hidetxt3:block_set.b5t3_hide,  link: block_set.link5, imgSize:'460x460', block:block %}
+                        </div>
+                    </div>
+                {%- elsif block.type == '3' -%}
+                    <div class="grid-banner st{{ block.type }}{% if section_st.zoom %} zoom-hov{% endif%} mb10" {{ block.shopify_attributes }} style="--gtc:2;--gtcm:1;--gtrm:4;">
+                        <div class="img-bnr brad of-hidden pr b1{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:1;--gce:2;--grs:1;--gre:3;--grsm:1;--grem:3;--pd-x:{{ block_set.b1-pd-x }}px;--pd-y:{{ block_set.b1-pd-y }}px;--cl:{{ block_set.b1_txt }};--bg:{{ block_set.b1_bg }};">
+                            {% render 'image-grid', image: block_set.img1, text1: block_set.b1_text1, text2: block_set.b1_text2, text3: block_set.b1_text3, text_a: block_set.b1_ta, pos: block_set.b1_tp, pos_m:block_set.b1_tpm, hidetxt1:block_set.b1t1_hide, hidetxt2:block_set.b1t2_hide, hidetxt3:block_set.b1t3_hide, link:block_set.link1, imgSize:'930x930', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b2{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:2;--gce:3;--grs:1;--gre:2;--pd-x:{{ block_set.b2-pd-x }}px;--pd-y:{{ block_set.b2-pd-y }}px;--cl:{{ block_set.b2_txt }};--bg:{{ block_set.b2_bg }};">
+                            {% render 'image-grid', image: block_set.img2, fullimg:true, text1: block_set.b2_text1, text2: block_set.b2_text2, text3: block_set.b2_text3, text_a: block_set.b2_ta, pos: block_set.b2_tp, pos_m:block_set.b2_tpm, hidetxt1:block_set.b2t1_hide, hidetxt2:block_set.b2t2_hide, hidetxt3:block_set.b2t3_hide, link: block_set.link2, imgSize:'930x455', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b3{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:2;--gce:3;--grs:2;--gre:3;--grsm:4;--grem:5;--pd-x:{{ block_set.b3-pd-x }}px;--pd-y:{{ block_set.b3-pd-y }}px;--cl:{{ block_set.b3_txt }};--bg:{{ block_set.b3_bg }};">
+                            {% render 'image-grid', image: block_set.img3, fullimg:true, text1: block_set.b3_text1, text2: block_set.b3_text2, text3: block_set.b3_text3, text_a: block_set.b3_ta, pos: block_set.b3_tp, pos_m:block_set.b3_tpm, hidetxt1:block_set.b3t1_hide, hidetxt2:block_set.b3t2_hide, hidetxt3:block_set.b3t3_hide,  link: block_set.link3, imgSize:'930x455', block:block %}
+                        </div>
+                    </div>
+                {%- elsif block.type == '4' -%}
+                    <div class="grid-banner st{{ block.type }}{% if section_st.zoom %} zoom-hov{% endif%} mb10" {{ block.shopify_attributes }} style="--gtc:4;--gtcm:2;--gtrm:4;">
+                        <div class="img-bnr brad of-hidden pr b1{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:1;--gce:3;--grs:1;--gre:3;--gcsm:1;--gcem:3;--grsm:1;--grem:3;--pd-x:{{ block_set.b1-pd-x }}px;--pd-y:{{ block_set.b1-pd-y }}px;--cl:{{ block_set.b1_txt }};--bg:{{ block_set.b1_bg }};">
+                            {% render 'image-grid', image: block_set.img1, text1: block_set.b1_text1, text2: block_set.b1_text2, text3: block_set.b1_text3, text_a: block_set.b1_ta, pos: block_set.b1_tp, pos_m:block_set.b1_tpm, hidetxt1:block_set.b1t1_hide, hidetxt2:block_set.b1t2_hide, hidetxt3:block_set.b1t3_hide,  link:block_set.link1, imgSize:'930x700', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b2{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:3;--gce:4;--grs:1;--gre:3;--grsm:3;--grem:5;--pd-x:{{ block_set.b2-pd-x }}px;--pd-y:{{ block_set.b2-pd-y }}px;--cl:{{ block_set.b2_txt }};--bg:{{ block_set.b2_bg }};">
+                            {% render 'image-grid', image: block_set.img2, fullimg:true, text1: block_set.b2_text1, text2: block_set.b2_text2, text3: block_set.b2_text3, text_a: block_set.b2_ta, pos: block_set.b2_tp, pos_m:block_set.b2_tpm, hidetxt1:block_set.b2t1_hide, hidetxt2:block_set.b2t2_hide, hidetxt3:block_set.b2t3_hide, link: block_set.link2, imgSize:'460x718', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b3{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b3-pd-x }}px;--pd-y:{{ block_set.b3-pd-y }}px;--cl:{{ block_set.b3_txt }};--bg:{{ block_set.b3_bg }};">
+                            {% render 'image-grid', image: block_set.img3, fullimg:true, text1: block_set.b3_text1, text2: block_set.b3_text2, text3: block_set.b3_text3, text_a: block_set.b3_ta, pos: block_set.b3_tp, pos_m:block_set.b3_tpm, hidetxt1:block_set.b3t1_hide, hidetxt2:block_set.b3t2_hide, hidetxt3:block_set.b3t3_hide,  link: block_set.link3, imgSize:'460x342', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b4{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b4-pd-x }}px;--pd-y:{{ block_set.b4-pd-y }}px;--cl:{{ block_set.b4_txt }};--bg:{{ block_set.b4_bg }};">
+                            {% render 'image-grid', image: block_set.img4, fullimg:true, text1: block_set.b4_text1, text2: block_set.b4_text2, text3: block_set.b4_text3, text_a: block_set.b4_ta, pos: block_set.b4_tp, pos_m:block_set.b4_tpm, hidetxt1:block_set.b4t1_hide, hidetxt2:block_set.b4t2_hide, hidetxt3:block_set.b4t3_hide,  link: block_set.link4, imgSize:'460x342', block:block %}
+                        </div>
+                    </div>
+                {%- elsif block.type == '5' -%}
+                    <div class="grid-banner st{{ block.type }}{% if section_st.zoom %} zoom-hov{% endif%} mb10" {{ block.shopify_attributes }} style="--gtc:5;--gtcm:1;--gtrm:4;">
+                        <div class="img-bnr brad of-hidden pr b1{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:1;--gce:3;--grs:1;--gre:2;--grsm:1;--grem:2;--pd-x:{{ block_set.b1-pd-x }}px;--pd-y:{{ block_set.b1-pd-y }}px;--cl:{{ block_set.b1_txt }};--bg:{{ block_set.b1_bg }};">
+                            {% render 'image-grid', image: block_set.img1, fullimg:true, text1: block_set.b1_text1, text2: block_set.b1_text2, text3: block_set.b1_text3, text_a: block_set.b1_ta, pos: block_set.b1_tp, pos_m:block_set.b1_tpm, hidetxt1:block_set.b1t1_hide, hidetxt2:block_set.b1t2_hide, hidetxt3:block_set.b1t3_hide, link:block_set.link1, imgSize:'715x340', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b2{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:1;--gce:3;--grs:2;--gre:3;--grsm:2;--grem:3;--pd-x:{{ block_set.b2-pd-x }}px;--pd-y:{{ block_set.b2-pd-y }}px;--cl:{{ block_set.b2_txt }};--bg:{{ block_set.b2_bg }};">
+                            {% render 'image-grid', image: block_set.img2, fullimg:true, text1: block_set.b2_text1, text2: block_set.b2_text2, text3: block_set.b2_text3, text_a: block_set.b2_ta, pos: block_set.b2_tp, pos_m:block_set.b2_tpm, hidetxt1:block_set.b2t1_hide, hidetxt2:block_set.b2t2_hide, hidetxt3:block_set.b2t3_hide, link: block_set.link2, imgSize:'715x340', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b3{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:3;--gce:6;--grs:1;--gre:3;--grsm:3;--grem:5;--pd-x:{{ block_set.b3-pd-x }}px;--pd-y:{{ block_set.b3-pd-y }}px;--pd-y:{{ block_set.b3-pd-y }}px;--cl:{{ block_set.b3_txt }};--bg:{{ block_set.b3_bg }};">
+                            {% render 'image-grid', image: block_set.img3, text1: block_set.b3_text1, text2: block_set.b3_text2, text3: block_set.b3_text3, text_a: block_set.b3_ta, pos: block_set.b3_tp, pos_m:block_set.b3_tpm, hidetxt1:block_set.b3t1_hide, hidetxt2:block_set.b3t2_hide, hidetxt3:block_set.b3t3_hide, link: block_set.link3, imgSize:'1070x700', block:block %}
+                        </div>
+                    </div>                    
+                {%- elsif block.type == '6' -%}
+                    <div class="grid-banner st{{ block.type }}{% if section_st.zoom %} zoom-hov{% endif%} mb10" {{ block.shopify_attributes }} style="--gtc:3;--gtcm:1;--gtrm:3;">
+                        <div class="img-bnr brad of-hidden pr b1{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b1-pd-x }}px;--pd-y:{{ block_set.b1-pd-y }}px;--cl:{{ block_set.b1_txt }};--bg:{{ block_set.b1_bg }};">
+                            {% render 'image-grid', image: block_set.img1, text1: block_set.b1_text1, text2: block_set.b1_text2, text3: block_set.b1_text3, text_a: block_set.b1_ta, pos: block_set.b1_tp, pos_m:block_set.b1_tpm, hidetxt1:block_set.b1t1_hide, hidetxt2:block_set.b1t2_hide, hidetxt3:block_set.b1t3_hide,  link:block_set.link1, imgSize:'640x640', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b2{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b2-pd-x }}px;--pd-y:{{ block_set.b2-pd-y }}px;--cl:{{ block_set.b2_txt }};--bg:{{ block_set.b2_bg }};">
+                            {% render 'image-grid', image: block_set.img2, fullimg:true, text1: block_set.b2_text1, text2: block_set.b2_text2, text3: block_set.b2_text3, text_a: block_set.b2_ta, pos: block_set.b2_tp, pos_m:block_set.b2_tpm, hidetxt1:block_set.b2t1_hide, hidetxt2:block_set.b2t2_hide, hidetxt3:block_set.b2t3_hide,link: block_set.link2, imgSize:'640x640', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b3{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b3-pd-x }}px;--pd-y:{{ block_set.b3-pd-y }}px;--cl:{{ block_set.b3_txt }};--bg:{{ block_set.b3_bg }};">
+                            {% render 'image-grid', image: block_set.img3, fullimg:true, text1: block_set.b3_text1, text2: block_set.b3_text2, text3: block_set.b3_text3, text_a: block_set.b3_ta, pos: block_set.b3_tp, pos_m:block_set.b3_tpm, hidetxt1:block_set.b3t1_hide, hidetxt2:block_set.b3t2_hide, hidetxt3:block_set.b3t3_hide,link: block_set.link3, imgSize:'640x640', block:block %}
+                        </div>
+                    </div>
+                {%- elsif block.type == '7' -%}
+                    <div class="grid-banner st{{ block.type }}{% if section_st.zoom %} zoom-hov{% endif%} mb10" {{ block.shopify_attributes }} style="--gtc:3;--gtcm:2;--gtrm:3;">
+                        <div class="img-bnr brad of-hidden pr b1{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:1;--gce:2;--grs:1;--gre:3;--gcsm:1;--gcem:2;--grsm:1;--grem:3;--pd-x:{{ block_set.b1-pd-x }}px;--pd-y:{{ block_set.b1-pd-y }}px;--cl:{{ block_set.b1_txt }};--bg:{{ block_set.b1_bg }};">
+                            {% render 'image-grid', image: block_set.img1, text1: block_set.b1_text1, text2: block_set.b1_text2, text3: block_set.b1_text3, text_a: block_set.b1_ta, pos: block_set.b1_tp, pos_m:block_set.b1_tpm, hidetxt1:block_set.b1t1_hide, hidetxt2:block_set.b1t2_hide, hidetxt3:block_set.b1t3_hide,  link:block_set.link1, imgSize:'650x800', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b2{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b2-pd-x }}px;--pd-y:{{ block_set.b2-pd-y }}px;--cl:{{ block_set.b2_txt }};--bg:{{ block_set.b2_bg }};">
+                            {% render 'image-grid', image: block_set.img2, fullimg:true, text1: block_set.b2_text1, text2: block_set.b2_text2, text3: block_set.b2_text3, text_a: block_set.b2_ta, pos: block_set.b2_tp, pos_m:block_set.b2_tpm, hidetxt1:block_set.b2t1_hide, hidetxt2:block_set.b2t2_hide, hidetxt3:block_set.b2t3_hide, link: block_set.link2, imgSize:'650x400', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b3{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--pd-x:{{ block_set.b3-pd-x }}px;--pd-y:{{ block_set.b3-pd-y }}px;--cl:{{ block_set.b3_txt }};--bg:{{ block_set.b3_bg }};">
+                            {% render 'image-grid', image: block_set.img3, fullimg:true, text1: block_set.b3_text1, text2: block_set.b3_text2, text3: block_set.b3_text3, text_a: block_set.b3_ta, pos: block_set.b3_tp, pos_m:block_set.b3_tpm, hidetxt1:block_set.b3t1_hide, hidetxt2:block_set.b3t2_hide, hidetxt3:block_set.b3t3_hide,  link: block_set.link3, imgSize:'650x400', block:block %}
+                        </div>
+                        <div class="img-bnr brad of-hidden pr b4{{ block.type }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gcs:3;--gce:4;--grs:1;--gre:3;--gcsm:2;--gcem:3;--grsm:2;--grem:4;--pd-x:{{ block_set.b4-pd-x }}px;--pd-y:{{ block_set.b4-pd-y }}px;--cl:{{ block_set.b4_txt }};--bg:{{ block_set.b4_bg }};">
+                            {% render 'image-grid', image: block_set.img4, fullimg:true, text1: block_set.b4_text1, text2: block_set.b4_text2, text3: block_set.b4_text3, text_a: block_set.b4_ta, pos: block_set.b4_tp, pos_m:block_set.b4_tpm, hidetxt1:block_set.b4t1_hide, hidetxt2:block_set.b4t2_hide, hidetxt3:block_set.b4t3_hide,  link: block_set.link4, imgSize:'650x800', block:block %}
+                        </div>
+                    </div>
+                {%- endif -%} 		
+            {%- endfor -%}
+            {%- if section.blocks.size == 0 -%}{% render 'no-blocks' %}{%- endif -%}
+        </div>
+</div>
+{%- endcapture -%}
+{{ grid_banners | strip_newlines | remove: "  " | remove: "	" }}
+{% schema %}
+{
+  "name": "Grid banners",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Highlight the best collections, products or describe inspiration, promotions.</p> "
+    },       
+    {
+      "type": "checkbox",
+      "id": "zoom",
+      "label": "Zoom image on hover",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "brad",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "label": "Image corner radius",
+      "unit": "px",
+      "default": 0
+    },
+    {
+            "type": "color",
+            "id": "ovr",
+            "label": "Overlay color",
+            "alpha": true,
+            "default": "#00000000",            
+    },   
+    {
+      "type": "header",
+      "content": "Text 1"
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "400",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text 2"
+    },
+    {
+      "type": "range",
+      "id": "tfs2",
+      "label": "Font size",
+      "default": 23,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tfsm2",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "tfw2",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text 3"
+    },
+    {
+      "type": "range",
+      "id": "tfs3",
+      "label": "Font size",
+      "default": 16,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tfsm3",
+      "label": "Font size (mobile)",
+      "default": 14,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "tfw3",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+     "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"            
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "1",
+      "name": "Design 1 - 4 Banners",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "img1",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b1_text1",
+          "label": "Text 1",
+          "default": "LIMITED TIME"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text2",
+          "label": "Text 2",
+          "default": "FINAL CLEARANCE"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text3",
+          "label": "Text 3",
+          "default": "Flat 50% off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link1",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b1_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b1_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b1_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "img2",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b2_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link2",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b2_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b2_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b2_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b2-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b2-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "img3",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b3_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link3",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b3_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b3_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b3_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b3-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b3-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "img4",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b4_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b4_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b4_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link4",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b4_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b4_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b4_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b4-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b4-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "round-xs",
+              "label": "Extra small"
+            },
+            {
+              "value": "round-sm",
+              "label": "Small"
+            },
+            {
+              "value": "round-md",
+              "label": "Medium"
+            },
+            {
+              "value": "round-lg",
+              "label": "Large"
+            },
+            {
+              "value": "round-full",
+              "label": "Full"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "2",
+      "name": "Design 2 - 5 Banners",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "img1",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b1_text1",
+          "label": "Text 1",
+          "default": "LIMITED TIME"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text2",
+          "label": "Text 2",
+          "default": "FINAL CLEARANCE"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text3",
+          "label": "Text 3",
+          "default": "Flat 50% off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link1",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b1_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b1_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b1_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "img2",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b2_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link2",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b2_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b2_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b2_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b2-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b2-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "img3",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b3_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link3",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b3_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b3_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b3_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b3-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b3-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "img4",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b4_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b4_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b4_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link4",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b4_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b4_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b4_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b4-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b4-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 5"
+        },
+        {
+          "type": "image_picker",
+          "id": "img5",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b5_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b5t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b5_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b5t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b5_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b5t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link5",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b5_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b5_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b5_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b5_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b5-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b5-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "round-xs",
+              "label": "Extra small"
+            },
+            {
+              "value": "round-sm",
+              "label": "Small"
+            },
+            {
+              "value": "round-md",
+              "label": "Medium"
+            },
+            {
+              "value": "round-lg",
+              "label": "Large"
+            },
+            {
+              "value": "round-full",
+              "label": "Full"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "3",
+      "name": "Design 3 - 3 Banners",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "img1",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b1_text1",
+          "label": "Text 1",
+          "default": "LIMITED TIME"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text2",
+          "label": "Text 2",
+          "default": "FINAL CLEARANCE"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text3",
+          "label": "Text 3",
+          "default": "Flat 50% off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link1",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b1_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b1_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b1_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "img2",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b2_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link2",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b2_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b2_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b2_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+       {
+          "type": "range",
+          "id": "b2-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b2-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "img3",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b3_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link3",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b3_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b3_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b3_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b3-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b3-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "round-xs",
+              "label": "Extra small"
+            },
+            {
+              "value": "round-sm",
+              "label": "Small"
+            },
+            {
+              "value": "round-md",
+              "label": "Medium"
+            },
+            {
+              "value": "round-lg",
+              "label": "Large"
+            },
+            {
+              "value": "round-full",
+              "label": "Full"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "4",
+      "name": "Design 4 - 4 Banners",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "img1",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b1_text1",
+          "label": "Text 1",
+          "default": "LIMITED TIME"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text2",
+          "label": "Text 2",
+          "default": "FINAL CLEARANCE"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text3",
+          "label": "Text 3",
+          "default": "Flat 50% off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link1",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b1_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b1_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b1_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+       {
+          "type": "range",
+          "id": "b1-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "img2",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b2_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link2",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b2_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b2_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b2_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b2-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b2-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "img3",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b3_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link3",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b3_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b3_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b3_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b3-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b3-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "img4",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b4_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b4_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b4_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link4",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b4_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b4_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b4_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b4-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b4-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "round-xs",
+              "label": "Extra small"
+            },
+            {
+              "value": "round-sm",
+              "label": "Small"
+            },
+            {
+              "value": "round-md",
+              "label": "Medium"
+            },
+            {
+              "value": "round-lg",
+              "label": "Large"
+            },
+            {
+              "value": "round-full",
+              "label": "Full"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "5",
+      "name": "Design 5 - 3 Banners",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "img1",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b1_text1",
+          "label": "Text 1",
+          "default": "LIMITED TIME"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text2",
+          "label": "Text 2",
+          "default": "FINAL CLEARANCE"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text3",
+          "label": "Text 3",
+          "default": "Flat 50% off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link1",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Text Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b1_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b1_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b1_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "img2",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b2_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "text",
+          "id": "b2_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "text",
+          "id": "b2_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "url",
+          "id": "link2",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Text Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2_ta",
+
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b2_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "b2_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b2_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b2-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b2-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "img3",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b3_text1",
+          "label": "Text 1",
+          "default": "ITALIAN COLLECTION"
+        },
+        {
+          "type": "text",
+          "id": "b3_text2",
+          "label": "Text 2",
+          "default": "BEST SELLER"
+        },
+        {
+          "type": "text",
+          "id": "b3_text3",
+          "label": "Text 3"
+        },
+        {
+          "type": "url",
+          "id": "link3",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Text Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b3_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "b3_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b3_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+       {
+          "type": "range",
+          "id": "b3-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b3-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "round-xs",
+              "label": "Extra small"
+            },
+            {
+              "value": "round-sm",
+              "label": "Small"
+            },
+            {
+              "value": "round-md",
+              "label": "Medium"
+            },
+            {
+              "value": "round-lg",
+              "label": "Large"
+            },
+            {
+              "value": "round-full",
+              "label": "Full"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "6",
+      "name": "Design 6 - 3 Banners",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "img1",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b1_text1",
+          "label": "Text 1",
+          "default": "LIMITED TIME"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text2",
+          "label": "Text 2",
+          "default": "FINAL CLEARANCE"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text3",
+          "label": "Text 3",
+          "default": "Flat 50% off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link1",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Text Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b1_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b1_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b1_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+       {
+          "type": "range",
+          "id": "b1-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "img2",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b2_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "text",
+          "id": "b2_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "text",
+          "id": "b2_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "url",
+          "id": "link2",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Text Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2_ta",
+
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b2_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "b2_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b2_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b2-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b2-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "img3",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b3_text1",
+          "label": "Text 1",
+          "default": "ITALIAN COLLECTION"
+        },
+        {
+          "type": "text",
+          "id": "b3_text2",
+          "label": "Text 2",
+          "default": "BEST SELLER"
+        },
+        {
+          "type": "text",
+          "id": "b3_text3",
+          "label": "Text 3"
+        },
+        {
+          "type": "url",
+          "id": "link3",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Text Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b3_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "b3_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b3_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b3-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b3-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "round-xs",
+              "label": "Extra small"
+            },
+            {
+              "value": "round-sm",
+              "label": "Small"
+            },
+            {
+              "value": "round-md",
+              "label": "Medium"
+            },
+            {
+              "value": "round-lg",
+              "label": "Large"
+            },
+            {
+              "value": "round-full",
+              "label": "Full"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "7",
+      "name": "Design 7 - 4 Banners",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "img1",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b1_text1",
+          "label": "Text 1",
+          "default": "LIMITED TIME"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text2",
+          "label": "Text 2",
+          "default": "FINAL CLEARANCE"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b1_text3",
+          "label": "Text 3",
+          "default": "Flat 50% off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link1",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b1_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b1_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b1_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b1_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+       {
+          "type": "range",
+          "id": "b1-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b1-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "img2",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b2_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b2_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link2",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b2_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b2_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b2_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b2_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b2-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+        {
+          "type": "range",
+          "id": "b2-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "img3",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b3_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b3_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link3",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b3_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b3_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b3_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b3_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b3-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b3-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "header",
+          "content": "Image 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "img4",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "b4_text1",
+          "label": "Text 1",
+          "default": "SUMMER 2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t1_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b4_text2",
+          "label": "Text 2",
+          "default": "NEW COLLECTION"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t2_hide",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "b4_text3",
+          "label": "Text 3",
+          "default": "Get Flat 10% Off"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4t3_hide",
+          "label": "Hide on mobile",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link4",
+          "label": "Banner link"
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "b4_ta",
+          "label": "Align text left",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "b4_tp",
+          "label": "Text position",
+          "default": "text_bc f-jcc f-aie",
+          "options": [
+            { "label": "Top left", "value": "text_tl f-ais f-jcs" },
+            { "label": "Top center", "value": "text_tc f-jcc f-ais" },
+            { "label": "Top right", "value": "text_tr f-jce f-ais" },
+            { "label": "Left", "value": "f-aic f-jcs" },
+            { "label": "Center", "value": "f-jcc f-aic" },
+            { "label": "Right", "value": "f-jce f-aic" },
+            { "label": "Bottom left", "value": "text_bl f-aie f-jcs" },
+            { "label": "Bottom center", "value": "text_bc f-jcc f-aie" },
+            { "label": "Bottom right", "value": "text_br f-jce f-aie" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "b4_txt",
+          "label": "Text",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "b4_bg",
+          "label": "Background",
+          "default": "#fff",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "b4-pd-x",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Horizontal padding",
+          "unit": "px",
+          "default": 35
+        },
+         {
+          "type": "range",
+          "id": "b4-pd-y",
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "label": "Vertical padding",
+          "unit": "px",
+          "default": 15
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "round-xs",
+              "label": "Extra small"
+            },
+            {
+              "value": "round-sm",
+              "label": "Small"
+            },
+            {
+              "value": "round-md",
+              "label": "Medium"
+            },
+            {
+              "value": "round-lg",
+              "label": "Large"
+            },
+            {
+              "value": "round-full",
+              "label": "Full"
+            }
+          ]
+        }
+      ]
+    },
+  ],
+  "presets": [
+    {
+      "name": "Grid - 5 Banners",
+      "category":"Banners",
+      "blocks": [
+        {
+          "type": "2"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

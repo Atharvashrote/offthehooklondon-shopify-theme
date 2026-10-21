@@ -1,0 +1,71 @@
+{% liquid
+  assign section_st = section.settings
+  assign block_st = block.settings
+%}
+<div class="sidebar-widget categories" {{ block.shopify_attributes }}>
+      {%- if block_st.title != blank -%}
+        <div class="widget-title head {{ section_st.ttlpreset }}{% if section_st.bottom_border %} border-bottom mb15{% endif %}{% if section_st.text-upper %} text-upper{% endif %} {{ section_st.text_case }}">{{ block_st.title }}</div>
+    {%- endif -%}
+      <div class="widget-content">
+        <ul class="sidebar-nav sdBlock {{ section_st.opt_text_case }}" style="--icns:12px;">
+            {% for link in linklists[block_st.side_categories].links %}
+              <li class="lvl-1{% if link.active or link.child_active %} active{% endif %}">
+                <a href="{{ link.url }}" class="fl f-aic f-jcsb{% if link.links != blank %} js-toggle{% endif %}{% if link.active or link.child_active %} active{% endif %}">
+                    {{ link.title | split: '[' | first }}
+                    {%- if link.links != blank -%}
+                        <svg class="at-icon"><use class="plus" xlink:href="#icon-plus"></use><use class="minus" xlink:href="#icon-minus"></use></svg>
+                    {%- endif -%}
+                </a>
+                {%- if link.links != blank -%}
+                <ul class="sublinks{% if link.active or link.child_active %} active{% endif %}">
+                  {%- for childlink in link.links -%}
+                  <li class="lvl-2{% if childlink.active or childlink.child_active %} active{% endif %}">
+                    <a href="{{ childlink.url }}" class="lvl-2">{{ childlink.title }}
+                        {%- if childlink.links != blank -%}
+                            <svg class="at-icon"><use class="plus" xlink:href="#icon-plus"></use><use class="minus" xlink:href="#icon-minus"></use></svg>
+                        {%- endif -%}
+                      </a>
+                    {%- if childlink.links != blank -%}
+                    <ul class="sublinks">{%- for lvl3link in childlink.links -%}<li class="lvl-3 {% if lvl3link.active %}active{% endif %}"><a href="{{ lvl3link.url }}" class="lvl-3">{{ lvl3link.title }}</a></li>{%- endfor -%}</ul>
+                    {%- endif -%}
+                  </li>
+                  {%- endfor -%}
+                </ul>
+                {%- endif -%}
+              </li>
+            {% endfor %}
+          </ul>
+    </div>
+  </div>
+{% schema %}
+{
+  "name": "Menu",
+  "tag": null,
+  "settings": [
+    { 
+        "type":"text",
+        "id":"title",
+        "label":"Title",
+			  "default": "Categories"
+    },
+    {
+      "type": "link_list",
+      "id": "side_categories",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+        "type": "checkbox",
+        "id": "hidemb",
+        "label": "Hide on mobile",
+        "default": true
+    }   
+  ],
+  "presets": [
+    {
+      "name": "Menu",
+      "category": "Sidebar"
+    }
+  ]
+}
+{% endschema %}

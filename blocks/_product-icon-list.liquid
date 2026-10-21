@@ -1,0 +1,301 @@
+{%- liquid
+    assign block_st = block.settings
+    assign mf = block_st.list_metaobject
+    assign icon_field = 'icon'
+    assign text_field = 'text'
+-%}
+{%- capture styles -%}
+    --icns:{{ block_st.icns }}px;--icnsm:{{ block_st.icnsm }}px;
+    {%- if block_st.icon_recolor -%}--icon-color:{{ block_st.icon_cl }};{%- endif -%}
+    --tcl:{{ block_st.text_cl }};--ff:var(--{{ block_st.ff }});--fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--fw:{{ block_st.fw }};--lh:{{ block_st.lh }};
+    {%- if block_st.isbg -%}--ifbg:{{ block_st.bg }};{%- endif -%}
+    --ifbdr:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+    --ifpd-x:{{ block_st.pd_x }}px;--ifpd-y:{{ block_st.pd_y }}px;
+    --igap:{{ block_st.gap }}px;--itgap:{{ block_st.item_gap }}px;
+{%- endcapture -%}
+<div id="blk-{{ block.id }}" class="pmf-list{% if block_st.stack %} pmf-stack{% endif %} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" style="{{ styles }}" {{ block.shopify_attributes }}>
+    {%- if mf.size > 0 -%}
+        {%- for entry in mf -%}
+            {%- liquid
+                assign icon_file = entry[icon_field]
+                assign entry_text = entry[text_field]
+                assign icon_req_width = block_st.icns | at_least: block_st.icnsm | times: 2
+                assign icon_src = icon_file.url | default: icon_file.src
+                unless icon_src != blank
+                    assign icon_src = icon_file | image_url: width: icon_req_width
+                endunless
+            -%}
+            <div class="pmf-item fl f-aic {{ block_st.rounded }}">
+                {%- if icon_src != blank -%}
+                    {%- if block_st.icon_recolor -%}
+                        <span class="pmf-icon pmf-icon-mask" style="--icon-url:url('{{ icon_src }}');"></span>
+                    {%- else -%}
+                        <img class="pmf-icon" src="{{ icon_src }}" alt="{{ icon_file.alt | default: entry_text | escape }}" loading="lazy" width="{{ block_st.icns }}" height="{{ block_st.icns }}">
+                    {%- endif -%}
+                {%- endif -%}
+                {%- if entry_text != blank -%}<span class="pmf-text">{{ entry_text }}</span>{%- endif -%}
+            </div>
+        {%- endfor -%}
+    {%- endif -%}
+</div>
+{% schema %}
+{
+  "name": "Icon list (metaobject)",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "[Read the setup guide](https://www.adornthemes.com/knowledge-base/how-to-set-up-the-icon-list-metaobject-block/)"
+    },
+    {
+      "type": "metaobject_list",
+      "id": "list_metaobject",
+      "label": "Icon list items",
+      "metaobject_type": "icon_text_item",
+      "limit": 12,
+      "info": "Pick entries directly here"
+    },   
+    {
+      "type": "header",
+      "content": "Icon"
+    },
+    {
+      "type": "range",
+      "id": "icns",
+      "label": "Icon size",
+      "default": 28,
+      "min": 12,
+      "max": 80,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "icnsm",
+      "label": "Icon size (mobile)",
+      "default": 22,
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_recolor",
+      "label": "Recolor icon",
+      "info": "Applies a solid color to the icon regardless of its original colors. Works best with simple, single-color icons.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "icon_cl",
+      "label": "Icon color",
+      "default": "#000000",
+      "visible_if": "{{ block.settings.icon_recolor }}"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft1",
+      "options": [
+        { "value": "ft1", "label": "Body font" },
+        { "value": "ft2", "label": "Heading font" },
+        { "value": "ft3", "label": "Accent font" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 14,
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "400",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.4,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1
+    },
+    {
+      "type": "color",
+      "id": "text_cl",
+      "label": "Text color",
+      "default": "#1c1c1c"
+    },
+    {
+      "type": "header",
+      "content": "Item style"
+    },
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "select",
+      "id": "bdr",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "solid", "label": "Solid" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "brd_sz",
+      "label": "Border thickness",
+      "default": 1,
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "default": "#eeeeee",
+      "visible_if": "{{ block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "round-sm",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "round-xs", "label": "Extra small" },
+        { "value": "round-sm", "label": "Small" },
+        { "value": "round-md", "label": "Medium" },
+        { "value": "round-lg", "label": "Large" },
+        { "value": "round-full", "label": "Full" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "pd_x",
+      "label": "Padding (horizontal)",
+      "default": 12,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pd_y",
+      "label": "Padding (vertical)",
+      "default": 10,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between icon and text",
+      "default": 10,
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "stack",
+      "label": "Stack items vertically",
+      "info": "When off, items wrap horizontally like chips",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "label": "Gap between items",
+      "default": 12,
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon text list (metaobject)",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

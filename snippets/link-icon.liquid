@@ -1,0 +1,27 @@
+{%- if settings.mbmenu-img -%}
+{% liquid
+    assign ct_image = link.title | handleize | prepend: 'mm-' | append: '.png'
+    assign ct_image_src = ct_image | file_img_url: '120x' | split: '?v=' | last
+
+    assign link_type = link.url | remove: shop.url
+    if link_type contains '/collections/'
+        assign name = link_type | split: '/collections/' | last | split: '/' | first
+        assign collection = collections[name]
+        assign image = collection.metafields.custom.icon | default:collection.image | default: collection.products.first.featured_image
+    elsif link_type contains '/products/'
+        assign name = link_type | split: '/products/' | last | split: '/' | first
+        assign product = all_products[name]
+        assign image = product.featured_image
+    endif
+%}
+{%- if ct_image_src.size > 6 -%}
+    <span class="icn mr10">
+        <img src="{{ ct_image | file_img_url: '200x' }}" srcset="{{ ct_image | file_img_url: '80x' }} 80w, {{ ct_image | file_img_url: '140x' }} 140w, {{ ct_image | file_img_url: '200x' }} 200w"
+            class="img-fit" loading="lazy" sizes="80px" width="80" height="80" alt="link.title" />
+        </span>
+{%- elsif image != blank -%}
+    <span class="icn mr10">
+        {{- image | image_url: width: image.width | image_tag: loading:'lazy', class:'img-fit', sizes:'80px', widths:"40,80,120,200,300" -}}
+    </span>
+{%- endif -%}
+{%- endif -%}

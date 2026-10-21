@@ -1,0 +1,161 @@
+{% liquid
+  assign block_st = block.settings
+%}
+{%- capture styles -%}
+     --fs:{{ block_st.fs }}rem;--fsm:{{ block_st.fsm }}rem;--lh:{{ block_st.lh }};--fw:{{ block_st.fw }};
+{%- endcapture -%}
+<div id="blk-{{ block.id }}" class="reg-text rte {{ block_st.ff }} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}{% if block_st.hide_br %} hide_br{% endif %}{% if block_st.tac %} t-center{% endif %}" {{ block.shopify_attributes }}
+  style="--cl:{{ block_st.cl }};{{ styles }}">
+  {{- block.settings.text -}}
+</div>
+{% schema %}
+{
+  "name": "Jumbo text",
+  "tag": null,
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Jumbo text</p>",
+      "info": "Shift + Enter to line break."
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_br",
+      "label": "Hide <br> on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+        "type": "header",
+        "content": "Appearance"
+    },
+    {
+        "type": "color",
+        "id": "cl",
+        "label": "Color",
+    },
+     {
+        "type": "select",
+        "id": "ff",
+        "label": "Font",
+        "default": "ft1",       
+        "options": [
+            {
+                "value": "ft1",
+                "label": "Body font"
+            },
+            {
+                "value": "ft2",
+                "label": "Heading font"
+            },
+            {
+                "value": "ft3",
+                "label": "Accent font"
+            }
+        ]
+    },
+    {
+        "type": "range",
+        "id": "fs",
+        "label": "Font size",
+        "default": 20,
+        "min": 5,
+        "max": 30,
+        "step": 1,
+        "unit": "rem",
+        
+    }, 
+  {
+        "type": "range",
+        "id": "fsm",
+        "label": "Font size (mobile)",
+        "default": 5,
+        "min": 1,
+        "max": 8,
+        "step": 1,
+        "unit": "rem",
+        
+    },   
+    {
+        "type": "select",
+        "id": "fw",
+        "label": "Font weight",
+        "default": "400",       
+        "options": [
+            {
+                "value": "300",
+                "label": "Light"
+            },
+            {
+                "value": "400",
+                "label": "Regular"
+            },
+            {
+                "value": "500",
+                "label": "Medium"
+            },
+            {
+                "value": "600",
+                "label": "Semi bold"
+            },
+            {
+                "value": "700",
+                "label": "Bold"
+            }
+        ]
+    }, 	
+    {
+        "type": "range",
+        "id": "lh",
+        "label": "Line height",
+        "default": 0.9,
+        "min": 0.7,
+        "max": 2.0,
+        "step": 0.1              
+    },
+      {
+      "type": "checkbox",
+      "id": "tac",
+      "label": "Center text",
+      "default":false
+    },
+    {
+        "type": "paragraph",
+       "content": "-----------------------------------------------"
+    },
+    {
+        "type": "range",
+        "id": "mb",
+        "label": "Bottom margin",
+        "default":0,
+        "min":0,
+        "max": 50,
+        "step":5,
+        "unit": "px"
+    },
+    {
+        "type": "range",
+        "id": "mbm",
+        "label": "Bottom margin (mobile)",
+        "default":0,
+        "min":0,
+        "max":50,
+        "step":5,
+        "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Jumbo text",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}

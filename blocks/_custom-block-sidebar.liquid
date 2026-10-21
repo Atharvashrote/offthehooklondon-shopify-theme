@@ -1,0 +1,234 @@
+{% liquid
+    assign section_st = section.settings
+    assign block_st = block.settings
+    
+    capture classes
+        echo "wd-fill "
+        if block_st.align == "left"
+            echo "t-left "
+        elsif block_st.align == "center"
+            echo "t-center f-aic "
+        elsif block_st.align == "right"
+            echo "t-right f-aie "
+        endif
+        if block_st.isbg
+          echo "bg-custom "
+        endif
+        if block_st.ispd
+          echo "pd-custom "
+        endif
+    endcapture
+-%}
+{%- capture styles -%}
+    --gap:{{ block_st.gap }}px;
+
+    {%- if block_st.isbg -%}
+      --gr_bg:{% if block_st.bgg != blank %}{{ block_st.bgg }}{% else %}{{ block_st.bg }}{% endif %};
+      --gr_bd:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+    {%- endif -%}
+    {%- if block_st.ispd -%}
+      --gr_pd:{{ block_st.pd-tb }}px {{ block_st.pd-lr }}px;--gr_pdm:{{ block_st.pd-tbm }}px {{ block_st.pd-lrm }}px;
+    {% endif %}
+{%- endcapture -%}
+<div class="sidebar-widget custom_bk" {{ block.shopify_attributes }}>
+    {%- if block_st.title != blank -%}
+        <div class="widget-title head {{ section_st.ttlpreset }}{% if section_st.bottom_border %} border-bottom mb15{% endif %}{% if section_st.text-upper %} text-upper{% endif %} {{ section_st.text_case }}">{{ block_st.title }}</div>
+    {%- endif -%}
+    <div class="widget-content group-bk fl gap f-col {{ block_st.rounded }} {{ classes }}" style="{{ styles | strip_newlines }}">
+        {%- content_for 'blocks' -%}
+    </div>
+  </div>
+{% schema %}
+  {
+    "name": "Custom block",
+    "tag": null,
+    "blocks": [
+        {
+          "type": "@theme"
+        },
+        {
+          "type": "@app"
+        }
+    ],
+    "settings": [
+      { 
+        "type":"text",
+        "id":"title",
+        "label":"Title",
+        "default": "Block title"
+        },
+      {
+        "type": "range",
+        "id": "gap",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Gap",
+        "default": 30
+      },
+      {
+        "type": "text_alignment",
+        "id": "align",
+        "label": "Alignment",
+        "default": "left"
+      },
+      {
+        "type": "header",
+        "content": "Appearance"
+      },
+        {
+            "type": "checkbox",
+            "id": "isbg",
+            "label": "Add background",
+            "default": false
+        },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background color",
+        "alpha": true,
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+          "type": "color_background",
+          "id": "bgg",
+          "label": "Background gradient",
+          "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+        "type": "select",
+        "id": "bdr",
+        "label": "Borders",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "solid",
+            "label": "Solid"
+          }
+        ],
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+            "type": "range",
+            "id": "brd_sz",
+            "label": "Border thickness",
+            "default":1,
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "color",
+        "id": "bdr-cl",
+        "label": "Border color",
+        "alpha": true,
+        "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "select",
+        "id": "rounded",
+        "label": "Corner radius",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "round-xs",
+            "label": "Extra small"
+          },
+          {
+            "value": "round-sm",
+            "label": "Small"
+          },
+          {
+            "value": "round-md",
+            "label": "Medium"
+          },
+          {
+            "value": "round-lg",
+            "label": "Large"
+          },
+          {
+            "value": "round-full",
+            "label": "Full"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Padding"
+      },
+      {
+          "type": "checkbox",
+          "id": "ispd",
+          "label": "Add padding",
+          "default": false
+      },
+      {
+            "type": "range",
+            "id": "pd-lr",
+            "label": "Horizontal",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },                
+       {
+            "type": "range",
+            "id": "pd-tb",
+            "label": "Vertical",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+     }, 
+     {
+            "type": "range",
+            "id": "pd-lrm",
+            "label": "Horizontal (mobile)",
+            "default":20  ,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },    
+       {
+            "type": "range",
+            "id": "pd-tbm",
+            "label": "Vertical (mobile)",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Custom block",
+        "category": "Sidebar",
+        "blocks": {
+            "text": {
+                "type": "text"
+            }
+        },
+        "block_order": ["text"]
+        }
+    ]
+  }
+{% endschema %}

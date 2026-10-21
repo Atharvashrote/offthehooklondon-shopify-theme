@@ -1,0 +1,172 @@
+{% assign section_st = section.settings %}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+{%- capture logobar -%}
+    {% capture alpha %}
+        {% for vendor in shop.vendors %}
+            {{ vendor | split: "" | first | downcase }}{% unless forloop.last %}|{% endunless %}
+        {% endfor %}
+    {% endcapture %}
+    {% assign array = alpha | split: "|" | uniq %}
+    {%- if section_st.navigation -%}      
+        <div class="filterbrand fl f-wrap f-jcc mb30 text-upper" style="--bdr:{{ section_st.bdr }};">
+            <!--a href="#all" role="button">All</a-->
+            {%- for item in array -%}	
+                <a href="#br{{ item | downcase }}" role="button">{{ item }}</a>
+            {%- endfor -%}
+        </div>
+    {%- endif -%}
+
+    {%- for item in array -%}
+    <div class="brand-list mb20 gap fl f-col f-row-md {% render 'animate-data', css:true %}" {% render 'animate-data' %} id="br{{ item | downcase }}" style="--bdr:{{ section_st.bdr }};--gap:10px;">
+        <div class="reg-text text-upper tc" style="color:{{ section_st.alpha }};background-color:{{ section_st.alphabg }};--fs:18px;--fsm:18px;--fw:600;">{{ item }}</div>				
+        <ul class="list fl1 fl f-wrap gap" style="--gap:10px;">
+            {% for vendor in shop.vendors %}
+                {% assign alphabet = item | downcase | strip %}
+                {% assign vendor_name = vendor | slice: 0, 1 | downcase %}
+                {% if alphabet == vendor_name %}
+                    {% assign its_a_match = false %}
+                    {% capture my_collection_handle %}{{ vendor | handleize | strip | escape }}{% endcapture %}
+                    {% assign my_collection_handle_stripped = my_collection_handle | strip | escape %}
+                    {% for collection in collections %}
+                        {% if my_collection_handle_stripped == collection.handle %}
+                            {% assign its_a_match = true %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if its_a_match %}
+                        <li class="fl"><a href="{{ routes.collections_url }}{{ vendor | handleize }}">{{ vendor }}</a></li>
+                    {% else %}
+                        <li class="fl">{{ vendor | link_to_vendor }}</li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    {%- endfor -%}	  	       
+{%- endcapture -%}
+<div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}">
+  {% if section_st.pgttl %}<h1 class="page-title tc{% if settings.ttl_c %} text-upper{% endif %}">{{ page.title }}</h1>{% endif %}
+    <div class="rte">{{ page.content }}</div>
+      {{ logobar | strip_newlines | remove: "  " | remove: "	" }}
+    </div>
+</div>
+{% schema %}
+  {
+    "name": "Brands list page",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "pgttl",
+        "label": "Show page title",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "navigation",
+        "label": "Show navigation",
+        "default": true
+      },
+     {
+        "type": "color",
+        "id": "alpha",
+        "label": "Alphabet",
+        "default": "#111"
+     },
+     {
+        "type": "color",
+        "id": "alphabg",
+        "label": "Alphabet Background",
+        "default": "#f3f3f3"
+     },
+     {
+        "type": "color",
+        "id": "bdr",
+        "label": "Border",
+        "default": "#ccc"
+     },
+    {
+      "type": "header",
+      "content": "Section Design ==="
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "label": "Spacing top",
+      "unit": "px",
+      "default":60
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "label": "Spacing bottom",
+      "unit": "px",
+      "default":60
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "label": "Spacing top (mobile)",
+      "unit": "px",
+      "default":25
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "label": "Spacing bottom (mobile)",
+      "unit": "px",
+      "default":25
+    }        
+    ]
+  }
+{% endschema %}

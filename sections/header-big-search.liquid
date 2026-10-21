@@ -1,0 +1,2247 @@
+{%- liquid
+    assign section_st = section.settings
+
+    assign cnt_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign cnt_width = '100vw'
+    endif
+
+    assign is_rtl = false
+    assign list_rtl = 'ar,dv,ha,he,ku,fa,ur,ug' | split: ','
+    if list_rtl contains request.locale.iso_code or settings.rtl
+        assign is_rtl = true
+    endif
+
+    assign logo = section_st.logo
+-%}
+
+{%- capture header_styles -%}
+    {%- style -%}
+        .big-search {
+            --header_height:{{ section_st.ht }}px;--header_height_mob:{{ section_st.htm }}px;--logowd:{{ section_st.logowd }}px;--logowdm:{{ section_st.logowdm }}px;
+            {%- if section_st.bg-image != blank -%}
+                background:{{ section_st.bg }} url({{ section_st.bg-image | image_url: width:section_st.bg-image.width }}) {{ section_st.bgrepeat }} {{ section_st.bgposition | replace:"_", " " }}/{{ section_st.bgsize }};
+            {%- elsif section_st.bgg != blank -%}
+                background:{{ section_st.bgg }};
+            {%- else -%}
+                background-color:{{ section_st.bg }};
+            {%- endif -%}
+            {%- if section_st.hdrbd -%}
+                border-bottom:1px solid {{ section_st.hdrbd_cl }};
+            {%- endif -%}
+            --cl:{{ section_st.cl }};--clh:{{ section_st.clh }};--icns:{{ section_st.icon }}px;--icnsm:16px;--fs:{{ section_st.fs }}px;
+        }
+
+        {%- if section_st.cntlogo -%}
+            .mbnavCol { min-width:35px; margin-inline-start:-5px }
+        {%- else -%}
+            .nav_toggle { margin--inline-right:-5px }
+            .icons-col { margin-inline-start:auto }
+        {%- endif -%}
+
+        {%- if section_st.stype == "1" -%}
+            @media only screen and (max-width:1024px){
+                .main-search { order:3; width:100%; flex:auto; margin:5px 0 10px }
+            }
+        {%- endif -%}
+        {%- if section_st.icntyp == '3' -%}
+            .cart-count.pp { margin:-2px 0 0 4px }
+        {%- endif -%}
+        .template-index .big-search {border:0;}       
+        {%- if section_st.catnav -%}
+            .catMenu { padding:{{section_st.ttlpd}}px 0 }
+            .catTtl { color:{{ section_st.ctcl }}; font-size:{{ section_st.ctfs }}px; font-weight:{{ section_st.ctfw }}; line-height:1; cursor:pointer; padding-inline-end:25px; border-{% if is_rtl %}left{% else %}right{% endif %}:1px solid {{ section_st.ctsp }}; }
+            .catTtl:hover { color:{{ section_st.ctclh }}; }
+            .catnav,
+            .catnav .sublinks { opacity:0; visibility:hidden; top:120%; inset-inline-start:0; z-index:66; width:280px; padding:15px 25px; background-color:{{ section_st.ctdbg }}; border-radius:{{ section_st.ctdbdr }}px; box-shadow:0 0 15px #00000010; transition:all .3s ease-in-out; }
+            .catMenu:hover .catnav { opacity:1; visibility:visible; top:100%; }
+            .catnav > li:not(:last-child) { border-bottom:1px solid {{ section_st.ctdbd }}; }
+            .catnav a { color:{{ section_st.ctdcl }}; font-size:{{ section_st.ctdfs }}px; font-weight:{{ section_st.ctdfw }}; padding:10px 0; }
+            .catnav a:hover { color:{{ section_st.ctdclh }}; }
+            .catnav .img { width:var(--img); height:var(--img); border-radius:{{ section_st.icnrad }}px; position:relative; overflow:hidden; }
+
+            .catnav .sublinks { position:absolute; top:10%; inset-inline-start:100%; width:600px; min-height:100%; padding:25px; align-content:flex-start; }
+            .catnav li:hover > .sublinks { opacity:1; visibility:visible; top:0; }
+        {%- endif -%}
+
+         .search-drawer { position:absolute; top:100%; padding:15px 0; max-height:70vh;  }   
+            @media only screen and (min-width:1024px){
+                .search-drawer { padding:30px 15px; border-radius:0 0 10px 10px; width:100vw; left: 50%;   transform: translateX(-50%) !important; }
+            }
+            @media only screen and (max-width:1024px){
+               .search-drawer { transform:none; }
+            }
+    {%- endstyle -%}
+{%- endcapture -%}
+
+{%- capture logo -%}
+    <div class="header-logo">
+        <a href="{{ routes.root_url }}" itemprop="url" class="logo_link" title="{{ shop.name }}">
+            {%- assign logo_alt = logo.alt | default: shop.name | escape -%}
+            {%- capture sizes -%}(max-width: {{ section_st.logowd | times: 2 }}px) 50vw, {{ section_st.logowd }}px{%- endcapture -%}
+            {%- capture widths -%}{{ section_st.logowd }}, {{ section_st.logowd | times: 1.5 | round }}, {{ section_st.logowd | times: 2 }}{%- endcapture -%}
+            {%- if section_st.logo != blank -%}
+                {%- assign logo_ht = section_st.logowd | divided_by: section_st.logo.aspect_ratio -%}
+                {{ section_st.logo | image_url: width:600 | image_tag: class:'img-auto stlogo db fw700', widths:widths, height:logo_ht, width:section_st.logowd, alt:logo_alt, sizes:sizes, preload:true }}
+            {%- else -%}
+                {{ shop.name }}
+            {%- endif -%}
+        </a>
+    </div>
+{%- endcapture -%}
+
+{%- capture nav_toggle -%}
+    <a href="#" class="hdicon nav_toggle hide-lg" role="button" title="{{ 'sections.navigation.menu' | t }}">
+        <svg class="at-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 464.205 464.205"><path d="m435.192 406.18h-406.179c-16.024 0-29.013-12.99-29.013-29.013s12.989-29.013 29.013-29.013h406.18c16.023 0 29.013 12.99 29.013 29.013-.001 16.023-12.99 29.013-29.014 29.013z"/><path d="m435.192 261.115h-406.179c-16.024 0-29.013-12.989-29.013-29.012s12.989-29.013 29.013-29.013h406.18c16.023 0 29.013 12.989 29.013 29.013s-12.99 29.012-29.014 29.012z"/><path d="m435.192 116.051h-406.179c-16.024 0-29.013-12.989-29.013-29.013s12.989-29.013 29.013-29.013h406.18c16.023 0 29.013 12.989 29.013 29.013s-12.99 29.013-29.014 29.013z"/></svg>
+    </a>
+{%- endcapture -%}
+
+{%- capture site_header -%}
+    {{- header_styles -}}
+    <header id="header" class="fl f-aic pr main-header gap{% if section_st.stype == "1" %} f-wrap{% endif %}{% if section_st.fullwidth %} fw-section{% else %} page-width{% endif %}"
+        data-sticky="{{ section_st.sticky_type }}" data-section-id="header" style="--gap:{{ section_st.gap }}px;--gapm:5px;">
+        <div class="fl1 fl f-aic mbnavCol hide-lg{% if section_st.cntlogo %} cnt{% else %} hide{% endif %}">
+            {{- nav_toggle -}}
+            {%- if settings.enable_search and section_st.cntlogo and section_st.stype == "2" -%}
+                <a class="hdicon searchIcn" href="{{ routes.search_url }}" title="{{ 'sections.header.search' | t }}"><svg class="at-icon"><use xlink:href="#icon-search"></use></svg></a>
+            {%- endif -%}
+        </div>
+
+        {{- logo -}}
+
+        {%- if settings.enable_search -%}
+            <div class="fl fl1 main-search searchinline{% if section_st.stype == "2" %} hide-sm hide-md{% endif %}">{%- render 'search-form', form_class: 'hdSearch' -%}</div>
+        {%- endif -%}
+
+        <div class="fl f-jce f-aic icons-col{% if section_st.cntlogo %} fl1{% endif %}">
+            {%- if section_st.stype == "2" and section_st.cntlogo == false -%}
+                <a class="hdicon searchIcn hide-lg" href="{{ routes.search_url }}" title="{{ 'sections.header.search' | t }}">
+                    <svg class="at-icon{% if section_st.icntyp == '3' %} hide-lg{% endif %}"><use xlink:href="#icon-search"></use></svg>
+                    <p class="m0 hide">{{ 'sections.header.search' | t }}</p>
+                </a>
+            {%- endif -%}
+
+            {%- if shop.customer_accounts_enabled -%}
+                <a class="hdicon user-menu" href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" title="{{ 'sections.header.account' | t }}">
+                    {%- render 'icon-account', icntyp: section_st.icntyp -%}
+                    <p class="m0{% if section_st.icntyp == '1' %} hide{% else %} hide-sm hide-md{% endif %}{% if section_st.icntyp == '2' %} pdt5{% endif %}">{{ 'sections.header.account' | t }}</p>
+                </a>
+            {%- endif -%}
+
+            {%- if settings.wishlist -%}
+                <a class="hdicon" href="{{ pages[settings.wishlist_page].url }}" title="{{ 'sections.header.wishlist' | t }}">
+                    <svg class="at-icon{% if section_st.icntyp == '3' %} hide-lg{% endif %}"><use xlink:href="#icon-wishlist"></use></svg>
+                    {%- if section_st.icntyp != '3' -%}<b id="wishlistItems" class="cart-count pp">0</b>{%- endif -%}
+                    <p class="m0{% if section_st.icntyp == '1' %} hide{% else %} hide-sm hide-md{% endif %}{% if section_st.icntyp == '2' %} pdt5{% endif %}">{{ 'sections.header.wishlist' | t }}</p>
+                </a>
+            {%- endif -%}
+
+            {%- unless settings.catalog-mode -%}
+                <a href="{{ routes.cart_url }}" class="hdicon" id="cartLink" title="{{ 'sections.header.cart' | t }}">
+                    <svg class="at-icon{% if section_st.icntyp == '3' %} hide-lg{% endif %}"><use xlink:href="#icon-cart"></use></svg>
+                    {% if section_st.icntyp != '3' %}<b id="cart-icon-bubble" class="cart-count pp">{{ cart.item_count }}</b>{% endif %}
+                    <p class="m0{% if section_st.icntyp == '1' %} hide{% else %} hide-sm hide-md{% endif %}{% if section_st.icntyp == '2' %} pdt5{% endif %}">{{ 'sections.header.cart' | t }}{% if section_st.icntyp == '3' %}<b id="cart-icon-bubble" class="cart-count pp">{{ cart.item_count }}</b>{% endif %}</p>
+                </a>
+            {%- endunless -%}
+
+            {%- unless section_st.cntlogo -%}{{ nav_toggle }}{%- endunless -%}
+        </div>
+        {%- if settings.enable_search -%}
+            {%- render 'search-drawer', search_type:'inline', cnt_width:cnt_width, is_rtl:is_rtl -%}
+        {%- endif -%}
+    </header>
+    <nav id="main-nav__wrapper" class="hide-sm hide-md" role="navigation">
+        <div class="fl col-gap{% if section_st.fullwidth %} fw-section{% else %} page-width{% endif %}" style="--gap:15px">
+            {%- if section_st.catnav -%}
+                <div class="catMenu pr fl">
+                    <div class="catTtl fl f-aic">
+                        <svg class="at-icon mr10" style="--icns:14px;" viewBox="0 0 464.205 464.205" xmlns="http://www.w3.org/2000/svg"><g><g id="grip-solid-horizontal_1_"><path d="m435.192 406.18h-406.179c-16.024 0-29.013-12.99-29.013-29.013s12.989-29.013 29.013-29.013h406.18c16.023 0 29.013 12.99 29.013 29.013-.001 16.023-12.99 29.013-29.014 29.013z"/><path d="m435.192 261.115h-406.179c-16.024 0-29.013-12.989-29.013-29.012s12.989-29.013 29.013-29.013h406.18c16.023 0 29.013 12.989 29.013 29.013s-12.99 29.012-29.014 29.012z"/><path d="m435.192 116.051h-406.179c-16.024 0-29.013-12.989-29.013-29.013s12.989-29.013 29.013-29.013h406.18c16.023 0 29.013 12.989 29.013 29.013s-12.99 29.013-29.014 29.013z"/></g></g></svg>
+                        {{ 'sections.navigation.browse_categories' | t }}
+                        <svg class="at-icon arw ml5"><use xlink:href="#icon-arrow"></use></svg>
+                    </div>
+                    <ul class="catnav pa" style="--img:{{ section_st.icnm }}px;">
+                        {%- for link in linklists[section_st.catmenu].links -%}{% render 'cat-links', link: link, section_st:section_st %}{%- endfor -%}
+                    </ul>
+                </div>
+            {%- endif -%}
+            {%- render 'navigation', section_st:section_st, secblk:section.blocks, cnt_width:cnt_width -%}
+            {%- if section_st.dislay_promo -%}
+                <div class="fl f-aic promo_txt hide-sm hide-md gap" style="color:{{ section_st.prcl }};--icns:{{ section_st.icon_size }}px;gap:10px">
+                    {%- if section_st.image != blank and section_st.pricon == 'custom' -%}
+                        {{- section_st.image | image_url: width: 100 | image_tag: class: 'at-icon', height:section_st.icon_size, width:section_st.icon_size, alt:section_st.prico.alt -}}
+                    {%- else -%}
+                        {%- render 'icons', icon: section_st.pricon -%}
+                    {%- endif -%}
+                   <{% if section_st.url != blank %}a href="{{ section_st.url }}"{% else %}div{% endif %} style="font-size:{{ section_st.prfs }}px; line-height:1.3;">
+                        {%- if section_st.promo_head != blank -%}<p class="mb0" style="color:{{ section_st.prtcl }}; font-size:{{ section_st.prtfs }}px; font-weight:{{ section_st.prfw }};">{{ section_st.promo_head }}</p>{%- endif -%}
+                        {%- if section_st.promo_text != blank -%}<span>{{ section_st.promo_text }}</span>{%- endif -%}
+                    </{% if section_st.url != blank %}a{% else %}div{% endif %}>
+                </div>
+            {%- endif -%}
+        </div>
+    </nav>
+    <!--mmobile-->
+    {%- render 'mobile-nav', section_st:section_st, secblk:section.blocks -%}
+{%- endcapture -%}
+{{- site_header | replace: '<!--mmobile-->', '</div>' | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Header - big search",
+  "limit": 1,
+  "class": "header-wrap pr big-search anim",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "range",
+      "id": "ht",
+      "min": 50,
+      "max": 150,
+      "step": 1,
+      "label": "Height",
+      "default": 80
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "logowd",
+      "min": 50,
+      "max": 500,
+      "step": 5,
+      "label": "Logo width",
+      "default": 120
+    },
+    {
+      "type": "select",
+      "id": "icntyp",
+      "label": "Addons",
+      "default": "2",
+      "options": [
+        {
+          "label": "Icons only",
+          "value": "1"
+        },
+        {
+          "label": "Icon with text",
+          "value": "2"
+        },
+        {
+          "label": "Text only",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "icon",
+      "min": 12,
+      "max": 50,
+      "step": 1,
+      "label": "Icon size",
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Icon and text",
+      "default": "#555"
+    },
+    {
+      "type": "color",
+      "id": "clh",
+      "label": "Icon and text (hover)",
+      "default": "#000"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "label": "Column gap",
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "color",
+      "id": "top-border",
+      "label": "Divider color",
+      "default": "#fff"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "paragraph",
+      "content": "Customize under [theme settings](/editor?context=theme&category=Navigation)"
+    },
+    {
+      "type": "paragraph",
+      "content": "---------------------------------------------"
+    },
+    {
+      "type": "checkbox",
+      "id": "catnav",
+      "label": "Show categories menu",
+      "default": true
+    },
+    {
+      "type": "link_list",
+      "id": "catmenu",
+      "label": "Menu",
+      "default": "main-menu",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Menu title",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "range",
+      "id": "ttlpd",
+      "label": "Vertical padding",
+      "default": 20,
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "color",
+      "id": "ctcl",
+      "label": "Color",
+      "default": "#444",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "color",
+      "id": "ctclh",
+      "label": "Hover color",
+      "default": "#000",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "range",
+      "id": "ctfs",
+      "label": "Font size",
+      "default": 14,
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "select",
+      "id": "ctfw",
+      "label": "Font weight",
+      "default": "500",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "color",
+      "id": "ctsp",
+      "label": "Divider color",
+      "default": "#E7E4E4",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Dropdown",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "range",
+      "id": "ctdbdr",
+      "label": "Corner radius",
+      "default": 7,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "color",
+      "id": "ctdbg",
+      "label": "Background",
+      "default": "#fff",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "color",
+      "id": "ctdbd",
+      "label": "Border color",
+      "default": "#ddd",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "color",
+      "id": "ctdcl",
+      "label": "Links",
+      "default": "#444",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "color",
+      "id": "ctdclh",
+      "label": "Links hover",
+      "default": "#000",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "range",
+      "id": "ctdfs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "select",
+      "id": "ctdfw",
+      "label": "Font weight",
+      "default": "500",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sicnm",
+      "label": "Show icons",
+      "default": true,
+      "info": "[How to add?](https://www.adornthemes.com/knowledge-base/icon-image-for-collection/)",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "range",
+      "id": "icnm",
+      "label": "Icon size",
+      "default": 30,
+      "min": 10,
+      "max": 70,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{section.settings.sicnm and section.settings.catnav }}"
+    },
+    {
+      "type": "range",
+      "id": "icnrad",
+      "label": "Corner radius",
+      "default": 30,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{section.settings.sicnm and section.settings.catnav }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Submenu links",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "range",
+      "id": "icnsub",
+      "label": "Icon size",
+      "default": 100,
+      "min": 30,
+      "max": 250,
+      "step": 5,
+      "unit": "px",
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "range",
+      "id": "sub-col",
+      "label": "Columns per row",
+      "default": 4,
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "visible_if": "{{ section.settings.catnav }}"
+    },
+    {
+      "type": "header",
+      "content": "Promotional text"
+    },
+    {
+      "type": "checkbox",
+      "id": "dislay_promo",
+      "label": "Show",
+      "default": true,
+      "info": "Only for desktop and ipad view"
+    },
+    {
+          "type": "select",
+          "id": "pricon",
+          "label": "Icon",
+          "default": "check2",
+          "options": [
+            {
+              "value": "custom",
+              "label": "Custom icon"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "check2",
+              "label": "Check 2"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "email",
+              "label": "Email"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "phone2",
+              "label": "Phone 2"
+            },
+            {
+              "value": "comment",
+              "label": "Comment"
+            },
+            {
+              "value": "support",
+              "label": "Support"
+            },
+            {
+              "value": "service",
+              "label": "Service"
+            },
+            {
+              "value": "dollar",
+              "label": "Dollar"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "return",
+              "label": "Return"
+            },
+            {
+              "value": "return2",
+              "label": "Return 2"
+            },  
+            {
+              "value": "rocket",
+              "label": "Rocket"
+            },
+            {
+              "value": "plan",
+              "label": "Plane"
+            },
+            {
+              "value": "measure",
+              "label": "Measure"
+            },
+            {
+              "value": "file",
+              "label": "File"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "payment",
+              "label": "Payment"
+            },
+            {
+              "value": "progress",
+              "label": "Progress"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "like",
+              "label": "Like"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "tag2",
+              "label": "Tag"
+            },
+            {
+              "value": "info",
+              "label": "Info."
+            },
+            {
+              "value": "globe",
+              "label": "Globe"
+            },
+            {
+              "value": "earth",
+              "label": "Earth"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "location",
+              "label": "Location"
+            },
+            {
+              "value": "shop",
+              "label": "Shop"
+            },
+            {
+              "value": "rain",
+              "label": "Rain"
+            },
+            {
+              "value": "sun",
+              "label": "Sun"
+            },
+            {
+              "value": "cloud",
+              "label": "Cloud"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "care2",
+              "label": "Care"
+            },
+            {
+              "value": "rabit",
+              "label": "Rabbit"
+            },
+            {
+              "value": "paraben",
+              "label": "Paraben"
+            },
+             {
+              "value": "serum",
+              "label": "Serum"
+            }            
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom icon",
+          "visible_if": "{{ section.settings.pricon == 'custom' and section.settings.dislay_promo }}"
+        },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "default": 30,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{section.settings.dislay_promo  }}"
+    },
+    {
+      "type": "text",
+      "id": "promo_head",
+      "label": "Heading",
+      "default": "Expert Support",
+      "visible_if": "{{section.settings.dislay_promo  }}"
+    },
+    {
+      "type": "color",
+      "id": "prtcl",
+      "label": "Color",
+      "default": "#444",
+      "visible_if": "{{section.settings.dislay_promo  }}"
+    },
+    {
+      "type": "range",
+      "id": "prtfs",
+      "label": "Font size",
+      "default": 15,
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{section.settings.dislay_promo  }}"
+    },
+    {
+      "type": "select",
+      "id": "prfw",
+      "label": "Font weight",
+      "default": "500",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "visible_if": "{{section.settings.dislay_promo  }}"
+    },
+    {
+      "type": "text",
+      "id": "promo_text",
+      "label": "Text",
+      "default": "Available 24\/7 via chat",
+      "visible_if": "{{section.settings.dislay_promo  }}"
+    },
+    {
+      "type": "color",
+      "id": "prcl",
+      "label": "Color",
+      "default": "#111",
+      "visible_if": "{{section.settings.dislay_promo  }}"
+    },
+    {
+      "type": "range",
+      "id": "prfs",
+      "label": "Font size",
+      "default": 12,
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{section.settings.dislay_promo  }}"
+    },
+     {
+          "type": "url",
+          "id": "url",
+          "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Sticky header"
+    },
+    {
+      "type": "select",
+      "id": "sticky_type",
+      "label": "Sticky header",
+      "default": "top",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "always",
+          "label": "Always"
+        },
+        {
+          "value": "top",
+          "label": "On scroll up"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Mobile site"
+    },
+    {
+      "type": "range",
+      "id": "htm",
+      "min": 30,
+      "max": 130,
+      "step": 1,
+      "label": "Header height",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "logowdm",
+      "min": 50,
+      "max": 200,
+      "step": 2,
+      "label": "Logo width",
+      "default": 90
+    },
+    {
+      "type": "checkbox",
+      "id": "cntlogo",
+      "label": "Show logo in center",
+      "default": false
+    },
+    {
+      "type": "radio",
+      "id": "stype",
+      "label": "Search option",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Show bar in header"
+        },
+        {
+          "value": "2",
+          "label": "Show icon with drawer"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "spnav",
+      "label": "Use different menu on mobile",
+      "default": false
+    },
+    {
+      "type": "link_list",
+      "id": "mbmenu",
+      "label": "Menu",
+      "default": "main-menu",
+      "visible_if": "{{section.settings.spnav }}"
+    },
+    {
+      "type": "textarea",
+      "id": "help",
+      "label": "Help block"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_shadow",
+      "label": "Show bottom shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#fff"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image"
+    },
+    {
+      "type": "select",
+      "id": "bgrepeat",
+      "label": "Background repeat",
+      "default": "no-repeat",
+      "info": "[how to repeat the background image](https:\/\/w3schools.com\/cssref\/pr_background-repeat.asp)",
+      "options": [
+        {
+          "value": "no-repeat",
+          "label": "No Repeat"
+        },
+        {
+          "value": "repeat",
+          "label": "All Sides"
+        },
+        {
+          "value": "repeat-x",
+          "label": "Horizontally"
+        },
+        {
+          "value": "repeat-y",
+          "label": "Vertically"
+        }
+      ],
+      "visible_if": "{{ section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "select",
+      "id": "bgposition",
+      "label": "Background position",
+      "default": "center_center",
+      "info": "[position of the background images](https:\/\/w3schools.com\/cssref\/pr_background-position.asp)",
+      "options": [
+        {
+          "value": "left_top",
+          "label": "Left Top"
+        },
+        {
+          "value": "left_center",
+          "label": "Left Center"
+        },
+        {
+          "value": "left_bottom",
+          "label": "Left Bottom"
+        },
+        {
+          "value": "center_top",
+          "label": "Center Top"
+        },
+        {
+          "value": "center_center",
+          "label": "Center Center"
+        },
+        {
+          "value": "center_bottom",
+          "label": "Center Bottom"
+        }
+      ],
+      "visible_if": "{{ section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "select",
+      "id": "bgsize",
+      "label": "Background size",
+      "default": "auto",
+      "info": "[Specifies the size of the background image](https:\/\/w3schools.com\/cssref\/css3_pr_background-size.asp)",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "visible_if": "{{ section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hdrbd",
+      "label": "Show bottom border",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "hdrbd_cl",
+      "label": "Border color",
+      "default": "#fff",
+      "visible_if": "{{ section.settings.hdrbd }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "home",
+      "name": "Home link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Home"
+        }
+      ]
+    },
+    {
+      "type": "slink",
+      "name": "Single link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Single link"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "dd",
+      "name": "Dropdown menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Dropdown"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "main-menu"
+        }
+      ]
+    },
+    {
+      "type": "m1",
+      "name": "Mega menu: Modern",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Modern"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Submenu"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "main-menu"
+        },
+        {
+          "type": "range",
+          "id": "mcol",
+          "min": 1,
+          "max": 6,
+          "step": 1,
+          "label": "Menu columns",
+          "default": 2
+        },
+        {
+          "type": "header",
+          "content": "Images column"
+        },
+        {
+          "type": "select",
+          "id": "callPos",
+          "label": "Position",
+          "default": "right",
+          "info": "Show images at right or bottom of links",
+          "options": [
+            { "value": "right", "label": "Right" },
+            {
+              "value": "bottom",
+              "label": "Bottom"
+            }
+          ]
+        },
+
+        {
+          "type": "range",
+          "id": "colWd",
+          "min": 20,
+          "max": 100,
+          "step": 1,
+          "label": "Column width",
+          "default": 30,
+          "unit": "%",
+          "visible_if": "{{ block.settings.callPos == 'right' }}"
+        },
+        {
+          "type": "range",
+          "id": "icol",
+          "min": 1,
+          "max": 4,
+          "step": 1,
+          "label": "Image per row",
+          "default": 2
+        },
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "image1",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "iTtl1",
+          "label": "Title",
+          "visible_if": "{{ block.settings.image1 != blank }}"
+        },
+        {
+          "type": "url",
+          "id": "imgurl1",
+          "label": "Link",
+          "visible_if": "{{ block.settings.image1 != blank }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab",
+          "label": "Open in new tab",
+          "visible_if": "{{ block.settings.image1 != blank }}"
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "image2",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "iTtl2",
+          "label": "Title",
+          "visible_if": "{{ block.settings.image2 != blank }}"
+        },
+        {
+          "type": "url",
+          "id": "imgurl2",
+          "label": "Link",
+          "visible_if": "{{ block.settings.image2 != blank }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab2",
+          "label": "Open in new tab",
+          "visible_if": "{{ block.settings.image2 != blank }}"
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "image3",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "iTtl3",
+          "label": "Title",
+          "visible_if": "{{ block.settings.image3 != blank }}"
+        },
+        {
+          "type": "url",
+          "id": "imgurl3",
+          "label": "Link",
+          "visible_if": "{{ block.settings.image3 != blank }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab3",
+          "label": "Open in new tab",
+          "visible_if": "{{ block.settings.image3 != blank }}"
+        },
+        {
+          "type": "header",
+          "content": "Image 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "image4",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "iTtl4",
+          "label": "Title",
+          "visible_if": "{{ block.settings.image4 != blank }}"
+        },
+        {
+          "type": "url",
+          "id": "imgurl4",
+          "label": "Link",
+          "visible_if": "{{ block.settings.image4 != blank }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab4",
+          "label": "Open in new tab",
+          "visible_if": "{{ block.settings.image4 != blank }}"
+        },
+        {
+          "type": "range",
+          "id": "icnbr",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Image corner radius",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "Image title"
+        },
+        {
+          "type": "checkbox",
+          "id": "overlay_lbl",
+          "label": "Show above image"
+        },
+        {
+          "type": "color",
+          "id": "ttcl",
+          "label": "Color",
+          "default": "#111"
+        },
+        {
+          "type": "color",
+          "id": "ttbg",
+          "label": "Background",
+          "default": "#fff"
+        },
+        {
+          "type": "range",
+          "id": "ttfs",
+          "label": "Font size",
+          "default": 13,
+          "min": 10,
+          "max": 30,
+          "step": 1,
+          "unit": "px"
+        },
+        {
+          "type": "select",
+          "id": "ttfw",
+          "label": "Font weight",
+          "default": "600",
+          "options": [
+            {
+              "value": "300",
+              "label": "Light"
+            },
+            {
+              "value": "400",
+              "label": "Regular"
+            },
+            {
+              "value": "500",
+              "label": "Medium"
+            },
+            {
+              "value": "600",
+              "label": "Semi bold"
+            },
+            {
+              "value": "700",
+              "label": "Bold"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "ttla",
+          "label": "Alignment",
+          "default": "tc",
+          "options": [
+            { "value": "tl", "label": "Left" },
+            { "value": "tc", "label": "Center" },
+            { "value": "tr", "label": "Right" }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Custom size & alignment"
+        },
+        {
+          "type": "checkbox",
+          "id": "cwd",
+          "label": "Enable custom width",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "bxwd",
+          "label": "Width",
+          "default": "600",
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "select",
+          "id": "mmal",
+          "label": "Megamenu align",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "bxsz",
+          "label": "Enable container width",
+          "default": true,
+          "info": "For fullwidth header: Wrap content to layout width",
+          "visible_if": "{{ block.settings.cwd == false  }}"
+        }
+      ]
+    },
+    {
+      "type": "m2",
+      "name": "Mega menu: Links, Pro..",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Products"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Submenu"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "main-menu"
+        },
+        {
+          "type": "range",
+          "id": "lgrid",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Menu columns",
+          "default": 2
+        },
+        {
+          "type": "header",
+          "content": "Products"
+        },
+        {
+          "type": "range",
+          "id": "pcolWd",
+          "min": 20,
+          "max": 100,
+          "step": 1,
+          "label": "Columns width",
+          "unit": "%",
+          "default": 30
+        },
+        {
+          "type": "text",
+          "id": "pttl",
+          "label": "Title",
+          "default": "BEST SELLER"
+        },
+        {
+          "type": "product_list",
+          "id": "products",
+          "label": "Products"
+        },
+        {
+          "type": "checkbox",
+          "id": "prslider",
+          "label": "Enable slider",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "grid",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Products per row",
+          "default": 2
+        },             
+        {
+          "type": "header",
+          "content": "Banner"
+        },
+        {
+          "type": "checkbox",
+          "id": "ftcl",
+          "label": "Show banner",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "colWd",
+          "min": 20,
+          "max": 80,
+          "step": 1,
+          "label": "Columns width",
+          "unit": "%",
+          "default": 30
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "color",
+          "id": "ft_bg",
+          "label": "Image overlay",
+          "default": "#00000061",
+          "alpha": true
+        },
+        {
+          "type": "range",
+          "id": "icnbr",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Image corner radius",
+          "default": 0
+        },
+        {
+          "type": "text",
+          "id": "ft_ttl",
+          "label": "Title"
+        },
+        {
+          "type": "range",
+          "id": "ft_ttls",
+          "min": 13,
+          "max": 100,
+          "step": 1,
+          "label": "Font size",
+          "default": 30
+        },
+        {
+          "type": "text",
+          "id": "ft_sttl",
+          "label": "Subtitle"
+        },
+        {
+          "type": "range",
+          "id": "ft_sttls",
+          "min": 10,
+          "max": 40,
+          "step": 1,
+          "label": "Font size",
+          "default": 15
+        },
+        {
+          "type": "text",
+          "id": "ft_btn",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "btn-style2",
+          "label": "Button design",
+          "default": "btn1",
+          "options": [
+            {
+              "label": "Button 1",
+              "value": "btn1"
+            },
+            {
+              "label": "Button 2",
+              "value": "btn2"
+            },
+            {
+              "label": "Button 3",
+              "value": "btn3"
+            },
+            {
+              "label": "Outline Button 1",
+              "value": "btn4"
+            },
+            {
+              "label": "Outline Button 2",
+              "value": "btn5"
+            },
+            {
+              "label": "Link",
+              "value": "btn-link"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "txtcl",
+          "label": "Text color",
+          "default": "#fff"
+        },
+        {
+          "type": "header",
+          "content": "Custom size & alignment"
+        },
+        {
+          "type": "checkbox",
+          "id": "cwd",
+          "label": "Enable custom width",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "bxwd",
+          "label": "Width",
+          "default": "600",
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "select",
+          "id": "mmal",
+          "label": "Megamenu align",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "bxsz",
+          "label": "Enable container width",
+          "default": true,
+          "info": "For fullwidth header: Wrap content to layout width",
+          "visible_if": "{{ block.settings.cwd == false  }}"
+        }
+      ]
+    },
+    {
+      "type": "m3",
+      "name": "Mega menu: Top image..",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Image columns"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Column 1"
+        },
+        {
+          "type": "text",
+          "id": "ttl1",
+          "label": "Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image1",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "url1",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu1",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Column 2"
+        },
+        {
+          "type": "text",
+          "id": "ttl2",
+          "label": "Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image2",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "url2",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu2",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Column 3"
+        },
+        {
+          "type": "text",
+          "id": "ttl3",
+          "label": "Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image3",
+          "label": "Image",
+          "info": "Image to show in menu"
+        },
+        {
+          "type": "url",
+          "id": "url3",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu3",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Column 4"
+        },
+        {
+          "type": "text",
+          "id": "ttl4",
+          "label": "Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image4",
+          "label": "Image",
+          "info": "Image to show in menu"
+        },
+        {
+          "type": "url",
+          "id": "url4",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu4",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Column 5"
+        },
+        {
+          "type": "text",
+          "id": "ttl5",
+          "label": "Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image5",
+          "label": "Image",
+          "info": "Image to show in menu"
+        },
+        {
+          "type": "url",
+          "id": "url5",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu5",
+          "label": "Menu"
+        },
+        {
+          "type": "range",
+          "id": "icnbr",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Image corner radius",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "Custom size & alignment"
+        },
+        {
+          "type": "checkbox",
+          "id": "cwd",
+          "label": "Enable custom width",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "bxwd",
+          "label": "Width",
+          "default": "600",
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "select",
+          "id": "mmal",
+          "label": "Megamenu align",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "bxsz",
+          "label": "Enable container width",
+          "default": true,
+          "info": "For fullwidth header: Wrap content to layout width",
+          "visible_if": "{{ block.settings.cwd == false  }}"
+        }
+      ]
+    },
+    {
+      "type": "m4",
+      "name": "Mega menu: Advanced",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Categories"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "main-menu",
+          "info": "Use collection links only to show link with image"
+        },
+        {
+          "type": "checkbox",
+          "id": "icn",
+          "label": "Show icon for main links",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "icn1",
+          "label": "Show icon for sub links",
+          "default": false
+        },
+        {
+          "type": "paragraph",
+          "content": "[How to add icon image by metafield?](https://www.adornthemes.com/knowledge-base/icon-image-for-collection/)"
+        },
+        {
+          "type": "header",
+          "content": "Main links"
+        },
+        {
+          "type": "range",
+          "id": "icnsz",
+          "min": 20,
+          "max": 100,
+          "step": 2,
+          "label": "Icon size",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "icnbr",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Corner radius",
+          "default": 15
+        },
+        {
+          "type": "range",
+          "id": "fs",
+          "min": 10,
+          "max": 30,
+          "step": 1,
+          "label": "Font size",
+          "default": 14
+        },
+        {
+          "type": "header",
+          "content": "Sub links"
+        },
+        {
+          "type": "range",
+          "id": "sicnsz",
+          "min": 20,
+          "max": 200,
+          "step": 2,
+          "label": "Icon size",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "sicnbr",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Corner radius",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "sfs",
+          "min": 10,
+          "max": 30,
+          "step": 1,
+          "label": "Font size",
+          "default": 16
+        },
+        {
+          "type": "radio",
+          "id": "tps",
+          "label": "Links position",
+          "default": "1",
+          "options": [
+            {
+              "value": "1",
+              "label": "Right of image"
+            },
+            {
+              "value": "2",
+              "label": "Below image"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "mcol",
+          "min": 1,
+          "max": 6,
+          "step": 1,
+          "label": "Select columns",
+          "default": 3
+        },
+        {
+          "type": "header",
+          "content": "Products"
+        },
+        {
+          "type": "checkbox",
+          "id": "showpr",
+          "label": "Show prducts",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "grid",
+          "label": "Products per row",
+          "default": 2,
+          "min": 1,
+          "max": 4,
+          "step": 1
+        },
+        {
+          "type": "range",
+          "id": "prlimit",
+          "min": 1,
+          "max": 20,
+          "step": 1,
+          "label": "Products limit",
+          "default": 6
+        },
+        {
+          "type": "range",
+          "id": "prColwd",
+          "min": 20,
+          "max": 70,
+          "step": 1,
+          "label": "Column width",
+          "default": 30,
+          "unit": "%"
+        },
+        {
+          "type": "header",
+          "content": "Custom size & alignment"
+        },
+        {
+          "type": "checkbox",
+          "id": "cwd",
+          "label": "Enable custom width",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "bxwd",
+          "label": "Width",
+          "default": "600",
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "select",
+          "id": "mmal",
+          "label": "Megamenu align",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "bxsz",
+          "label": "Enable container width",
+          "default": true,
+          "info": "For fullwidth header: Wrap content to layout width",
+          "visible_if": "{{ block.settings.cwd == false  }}"
+        }
+      ]
+    },
+    {
+      "type": "m5",
+      "name": "Mega menu: Collections",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Collections"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "main-menu",
+          "info": "Use collection links only for this menu"
+        },
+        {
+          "type": "checkbox",
+          "id": "icn",
+          "label": "Show Icon",
+          "default": true
+        },
+        {
+          "type": "paragraph",
+          "content": "[How to add icon image by metafield?](https://www.adornthemes.com/knowledge-base/icon-image-for-collection/)"
+        },
+        {
+          "type": "range",
+          "id": "icnsz",
+          "min": 20,
+          "max": 300,
+          "step": 5,
+          "label": "Image size",
+          "default": 200
+        },
+        {
+          "type": "range",
+          "id": "icnbr",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Corner radius",
+          "default": 0
+        },
+        {
+          "type": "radio",
+          "id": "tps",
+          "label": "Links position",
+          "default": "2",
+          "options": [
+            {
+              "value": "1",
+              "label": "Left of image"
+            },
+            {
+              "value": "2",
+              "label": "Below image"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "fs",
+          "min": 10,
+          "max": 30,
+          "step": 1,
+          "label": "Font size",
+          "default": 14
+        },
+        {
+          "type": "range",
+          "id": "mcol",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "Select columns",
+          "default": 4
+        },
+        {
+          "type": "header",
+          "content": "Custom size & alignment"
+        },
+        {
+          "type": "checkbox",
+          "id": "cwd",
+          "label": "Enable custom width",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "bxwd",
+          "label": "Width",
+          "default": "600",
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "select",
+          "id": "mmal",
+          "label": "Megamenu align",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "bxsz",
+          "label": "Enable container width",
+          "default": true,
+          "info": "For fullwidth header: Wrap content to layout width",
+          "visible_if": "{{ block.settings.cwd == false  }}"
+        }
+      ]
+    },
+    {
+      "type": "m6",
+      "name": "Mega menu: Links with..",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Collections"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "main-menu"
+        },
+        {
+            "type": "paragraph",
+            "content": "Images for each menu link. The image name must be the same as the link name, and no spaces should be used. Example: Women Clothing = women-clothing.jpg Images at 'Store admin > Content > Files."
+        },
+        {
+            "type": "select",
+            "id": "linkStyle",
+            "label": "Title position",
+            "default": "over",
+            "options": [
+                { "value": "above", "label": "Above Image" },
+                { "value": "over", "label": "Over Image" },
+                { "value": "below", "label": "Below Image" }
+            ]
+        },
+        {
+          "type": "range",
+          "id": "img_rad",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Corner radius",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "fs",
+          "min": 10,
+          "max": 30,
+          "step": 1,
+          "label": "Font size",
+          "default": 15
+        },
+        {
+          "type": "range",
+          "id": "mcol",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "Select columns",
+          "default": 4
+        },
+        {
+          "type": "header",
+          "content": "Custom size & alignment"
+        },
+        {
+          "type": "checkbox",
+          "id": "cwd",
+          "label": "Enable custom width",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "bxwd",
+          "label": "Width",
+          "default": "600",
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "select",
+          "id": "mmal",
+          "label": "Megamenu align",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "visible_if": "{{ block.settings.cwd }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "bxsz",
+          "label": "Enable container width",
+          "default": true,
+          "info": "For fullwidth header: Wrap content to layout width",
+          "visible_if": "{{ block.settings.cwd == false  }}"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header - big search",
+      "settings": {},
+      "blocks": [
+        {
+          "type": "home"
+        },
+        {
+          "type": "slink"
+        },
+        {
+          "type": "m1"
+        },
+        {
+          "type": "m2"
+        },
+        {
+          "type": "dd"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

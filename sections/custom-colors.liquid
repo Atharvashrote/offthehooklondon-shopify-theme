@@ -1,0 +1,325 @@
+<style type="text/css">
+    {%- for block in section.blocks -%}
+        {%- for i in (1..15) -%}
+            {%- assign color_key = "title" | append: i -%}
+            {%- assign color_code = "color" | append: i -%}
+            {%- assign color_img = "image" | append: i -%}
+            {%- assign color_name = block.settings[color_key] | handleize -%}
+            {%- if color_name != blank -%}
+                .swatch-{{ color_name }}{
+                    {%- if block.settings[color_img] == blank -%}
+                        background-color:{{ block.settings[color_code] }};
+                    {%- else -%}
+                        background:{{ block.settings[color_code] }} url({{ block.settings[color_img] | image_url: width:80 }}) no-repeat 50% 50%/cover;
+                    {%- endif -%}
+                }
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endfor -%}
+</style>
+{% schema %}
+{
+  "name": "Custom colors",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Variant swatch"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Active custom colors",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "Color",
+      "name": "Color",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title1",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color1",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image1",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title2",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color2",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image2",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title3",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color3",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image3",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title4",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color4",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image4",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+         "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title5",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color5",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image5",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+         "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title6",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color6",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image6",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title7",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color7",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image7",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title8",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color8",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image8",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title9",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color9",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image9",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+         "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title10",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color10",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image10",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title11",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color11",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image11",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title12",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color12",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image12",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title13",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color13",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image13",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title14",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color14",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image14",
+          "label": "Color image"
+        },
+        {
+          "type": "paragraph",
+          "content": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        },
+        {
+          "type": "text",
+          "id": "title15",
+          "label": "Color name"
+        },
+        {
+          "type": "color",
+          "id": "color15",
+          "label": "Color code"
+        },
+        {
+          "type": "image_picker",
+          "id": "image15",
+          "label": "Color image"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

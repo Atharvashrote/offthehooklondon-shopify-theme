@@ -1,0 +1,994 @@
+{%- liquid
+    assign form_class = 'search-form'
+    if search_type == 'inline'
+        assign form_class = 'search-form hide-lg'
+    endif
+
+    for collection in settings.srClList
+        assign collection_image = collection.metafields.custom.custom_image.value | default: collection.image | default: collection.products.first.featured_image
+        assign img_ratio = 1 | divided_by: collection_image.aspect_ratio | times: 100
+        break
+    endfor
+-%}
+
+{%- capture search_drawer -%}
+
+<div class="search-drawer custom-scroll anim">
+
+    <span class="close-search" style="--icns:16px">
+        <svg class="at-icon">
+            <use xlink:href="#icon-close"></use>
+        </svg>
+    </span>
+
+    <div class="{% if secSt.fullwidth %}fw-section{% else %}page-width{% endif %}"
+        style="--cl:{{settings.search_cl}};--fs:{{settings.search_fs}}px;--fsm:{{settings.search_fs}}px;--fw: {{settings.search_fw}};">
+
+        <!-- SEARCH TITLE -->
+
+        <p class="reg-text ft2 mb15{% if search_type == 'inline' %} hide-lg{% endif %}">
+            {{ settings.search_ttl }}
+        </p>
+
+
+        <!-- SEARCH FORM -->
+
+        {%- render 'search-form', formClass: form_class -%}
+
+
+        <!-- LIVE SEARCH RESULTS -->
+
+        <div id="serch-list" class="w-100 hide mb20"></div>
+
+
+        <!-- DEFAULT SEARCH CONTENT -->
+
+        {%- if settings.search_word != blank or settings.searchCl != blank -%}
+
+            <div id="search-suggest__Wrapper" class="mb20">
+
+
+                <!-- POPULAR SEARCH WORDS -->
+
+                {%- if settings.search_word != blank -%}
+
+                    {%- assign searchwords = settings.search_word
+                        | replace: ', ', ','
+                        | replace: ' , ', ','
+                        | replace: ' ,', ','
+                        | split: ','
+                    -%}
+
+                    <p class="reg-text ft2 mb15">
+                        {{ settings.search_lbl1 }}
+                    </p>
+
+                    <div class="search-suggest fl f-wrap f-aic gap mb30"
+                        style="--gap:14px;">
+
+                        {%- for searchvalue in searchwords -%}
+
+                            <a href="{{ routes.search_url }}?type=product&options%5Bprefix%5D=none&q={{ searchvalue }}&options%5Bprefix%5D=last">
+                                {{ searchvalue }}
+                            </a>
+
+                        {%- endfor -%}
+
+                    </div>
+
+                {%- endif -%}
+
+
+                <!-- POPULAR PRODUCTS TITLE -->
+
+                {%- if settings.search_lbl2 != blank -%}
+
+                    <p class="reg-text ft2 mb10">
+                        {{ settings.search_lbl2 }}
+                    </p>
+
+                    <hr class="mt0 mb25">
+
+                {%- endif -%}
+
+
+                <!-- POPULAR PRODUCTS -->
+
+                {%- if settings.search_recomand == 'prr' -%}
+
+                    {%- assign collection = collections[settings.searchCl] -%}
+
+                    {%- if collection.products.size > 0 -%}
+
+                        <ul id="predictive-search-results-list"
+                            class="grid gspace mb20 rwcols-2 rwcols-md-3 rwcols-lg-4"
+                            role="list"
+                            aria-label="{{ settings.search_lbl2 }}"
+                            style="--grsp:7.5px;--grspm:5px;">
+
+                            {%- for product in collection.products limit: settings.srclimit -%}
+
+                                {%- capture sizes -%}
+                                    (min-width:1024px) calc(({{ cntWd }} - 60px) / 5),
+                                    (min-width:768px) calc((100vw - 45px) / 3),
+                                    calc((100vw - 10px) / 2)
+                                {%- endcapture -%}
+
+                                <li class="gitem productCol {% render 'animate-data', css:true %}"
+                                    {% render 'animate-data' %}
+                                    role="option">
+
+                                    {%- render 'product-card-columns',
+                                        product: product,
+                                        secSt: secSt,
+                                        sizes: sizes
+                                    -%}
+
+                                </li>
+
+                            {%- endfor -%}
+
+                        </ul>
+
+
+                        {%- if settings.btntxt != blank -%}
+
+                            <p class="tc mt10">
+
+                                <a href="{{ settings.searchCl.url }}"
+                                    class="btn {{ settings.sbtn-size }} {{ settings.sbtn-style }} mt30">
+                                    {{ settings.btntxt }}
+                                </a>
+
+                            </p>
+
+                        {%- endif %}
+
+
+                    {%- endif -%}
+
+
+                {%- else -%}
+
+
+                    <!-- COLLECTION SUGGESTIONS -->
+
+                    <div class="collection-list collection-list1">
+
+                        <div class="grid collection-grid gspace rwcols-2 rwcols-3 rwcols-lg-{{ settings.srclimit }} search_col"
+                            style="--text_margin:20px;--bg:#fff;--grsp:10px;--grspm:5px;--ratio:{{ img_ratio | default:100 }}%">
+
+                            {%- for collection in settings.srClList -%}
+
+                                <div class="gitem">
+
+                                    {%- assign collection_image = collection.metafields.custom.custom_image.value
+                                        | default: collection.image
+                                        | default: collection.products.first.featured_image
+                                    -%}
+
+                                    {%- capture ttl -%}
+                                        --fs:16px;
+                                        --fsm:13px;
+                                        --ft:var(--ft2);
+                                        --fw:600;
+                                    {%- endcapture -%}
+
+                                    {%- capture sizes -%}
+                                        (min-width:1024px) calc(({{ cntWd }} - 60px) / 5),
+                                        (min-width:768px) calc((100vw - 45px) / 3),
+                                        calc((100vw - 10px) / 2)
+                                    {%- endcapture -%}
+
+
+                                    <a href="{{ collection.url }}"
+                                        class="db pr of-hidden none zoom-hov">
+
+                                        <div class="img pr of-hidden mb10 brad"
+                                            style="--rounded:{{ settings.srbrad }}px;">
+
+                                            {%- if collection_image != blank -%}
+
+                                                {{
+                                                    collection_image
+                                                    | image_url: width: collection_image.width
+                                                    | image_tag:
+                                                        loading: 'lazy',
+                                                        class: 'img-fit',
+                                                        sizes: sizes,
+                                                        widths: '180,320,400,560,740,900,1200'
+                                                }}
+
+                                            {%- else -%}
+
+                                                {% capture current %}
+                                                    {% cycle 1, 2, 3, 4, 5, 6 %}
+                                                {% endcapture %}
+
+                                                {{
+                                                    'collection-'
+                                                    | append: current
+                                                    | placeholder_svg_tag: 'placeholder-svg'
+                                                }}
+
+                                            {%- endif -%}
+
+                                        </div>
+
+
+                                        <div class="collection-details pa left-50 translate-x50 tc anim none"
+                                            style="padding:10px 25px;border-radius:{{settings.btn_rad}}px">
+
+                                            <div class="head h6" style="{{ ttl }}">
+                                                {{ collection.title }}
+                                            </div>
+
+                                        </div>
+
+                                    </a>
+
+                                </div>
+
+                            {%- endfor -%}
+
+                        </div>
+
+                    </div>
+
+
+                {%- endif -%}
+
+            </div>
+
+        {%- endif -%}
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     LIVE SEARCH STYLES
+     ========================================== -->
+
+<style>
+
+    /* Search results wrapper */
+
+    .search-drawer #serch-list {
+        margin-top: 20px;
+    }
+
+
+    .search-drawer #serch-list.search-results-active {
+        display: block !important;
+    }
+
+
+    /* Search result heading */
+
+    .search-drawer .live-search-title {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.4;
+        margin: 0 0 18px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+
+    /* Four compact columns */
+
+    .search-drawer .live-search-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        column-gap: 28px;
+        row-gap: 24px;
+        width: 100%;
+    }
+
+
+    /* Individual result */
+
+    .search-drawer .live-search-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+        text-decoration: none;
+        color: inherit;
+    }
+
+
+    /* Product image */
+
+    .search-drawer .live-search-image {
+        position: relative;
+        flex: 0 0 100px;
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        background: #f7f7f7;
+    }
+
+
+    .search-drawer .live-search-image img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        transition: transform .25s ease;
+    }
+
+
+    .search-drawer .live-search-item:hover .live-search-image img {
+        transform: scale(1.04);
+    }
+
+
+    /* Text area */
+
+    .search-drawer .live-search-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+
+    /* Product title */
+
+    .search-drawer .live-search-product-title {
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 500;
+        margin: 0 0 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    /* Product price */
+
+    .search-drawer .live-search-price {
+        font-size: 14px;
+        line-height: 1.3;
+        margin: 0;
+    }
+
+
+    /* No results */
+
+    .search-drawer .live-search-empty {
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 10px 0 20px;
+    }
+
+
+    /* View all */
+
+    .search-drawer .live-search-view-all {
+        margin-top: 25px;
+        text-align: center;
+    }
+
+
+    .search-drawer .live-search-view-all a {
+        display: inline-block;
+        padding: 12px 25px;
+        border: 1px solid currentColor;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        transition: all .2s ease;
+    }
+
+
+    .search-drawer .live-search-view-all a:hover {
+        opacity: .7;
+    }
+
+
+    /* ==========================================
+       TABLET
+       ========================================== */
+
+    @media screen and (max-width: 1023px) {
+
+        .search-drawer .live-search-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            column-gap: 20px;
+            row-gap: 20px;
+        }
+
+
+        .search-drawer .live-search-image {
+            flex: 0 0 80px;
+            width: 80px;
+            height: 80px;
+        }
+
+
+        .search-drawer .live-search-product-title {
+            font-size: 14px;
+        }
+
+
+        .search-drawer .live-search-price {
+            font-size: 13px;
+        }
+
+    }
+
+
+    /* ==========================================
+       MOBILE
+       ========================================== */
+
+    @media screen and (max-width: 575px) {
+
+        .search-drawer .live-search-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+
+        .search-drawer .live-search-image {
+            flex: 0 0 75px;
+            width: 75px;
+            height: 75px;
+        }
+
+
+        .search-drawer .live-search-product-title {
+            font-size: 13px;
+        }
+
+
+        .search-drawer .live-search-price {
+            font-size: 13px;
+        }
+
+    }
+
+</style>
+
+
+<!-- ==========================================
+     LIVE PREDICTIVE SEARCH
+     ========================================== -->
+
+<script>
+
+(function () {
+
+    /*
+     * Prevent Avone from initializing this
+     * script more than once.
+     */
+
+    if (window.__offTheHookPredictiveSearchInitialized) {
+        return;
+    }
+
+    window.__offTheHookPredictiveSearchInitialized = true;
+
+
+    let searchTimer = null;
+    let searchRequest = null;
+
+
+    /*
+     * Escape HTML so product names are safe.
+     */
+
+    function escapeHtml(value) {
+
+        const div = document.createElement('div');
+
+        div.textContent = value || '';
+
+        return div.innerHTML;
+
+    }
+
+
+    /*
+     * Find the current search drawer.
+     */
+
+    function getSearchDrawer(element) {
+
+        return element.closest('.search-drawer');
+
+    }
+
+
+    /*
+     * Find search input.
+     */
+
+    function getSearchInput(drawer) {
+
+        if (!drawer) {
+            return null;
+        }
+
+        return drawer.querySelector(
+            'input[type="search"], input[name="q"], input[type="text"]'
+        );
+
+    }
+
+
+    /*
+     * Hide live results and restore
+     * the default Popular Products content.
+     */
+
+    function hideLiveResults(drawer) {
+
+        if (!drawer) {
+            return;
+        }
+
+        const resultBox = drawer.querySelector('#serch-list');
+
+        const defaultContent = drawer.querySelector(
+            '#search-suggest__Wrapper'
+        );
+
+
+        if (resultBox) {
+
+            resultBox.innerHTML = '';
+
+            resultBox.classList.remove(
+                'search-results-active'
+            );
+
+            resultBox.classList.add('hide');
+
+        }
+
+
+        if (defaultContent) {
+
+            defaultContent.style.display = '';
+
+        }
+
+    }
+
+
+    /*
+     * Display predictive results.
+     */
+
+    function showLiveResults(
+        drawer,
+        products,
+        searchTerm
+    ) {
+
+        const resultBox = drawer.querySelector(
+            '#serch-list'
+        );
+
+        const defaultContent = drawer.querySelector(
+            '#search-suggest__Wrapper'
+        );
+
+
+        if (!resultBox) {
+            return;
+        }
+
+
+        /*
+         * Hide Popular Products while
+         * customer is searching.
+         */
+
+        if (defaultContent) {
+
+            defaultContent.style.display = 'none';
+
+        }
+
+
+        resultBox.classList.remove('hide');
+
+        resultBox.classList.add(
+            'search-results-active'
+        );
+
+
+        /*
+         * No results.
+         */
+
+        if (
+            !products ||
+            products.length === 0
+        ) {
+
+            resultBox.innerHTML = `
+
+                <div class="live-search-empty">
+
+                    No products found for
+                    "<strong>${escapeHtml(searchTerm)}</strong>"
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /*
+         * Start results HTML.
+         */
+
+        let html = `
+
+            <div class="live-search-title">
+                Search Results
+            </div>
+
+            <div class="live-search-grid">
+
+        `;
+
+
+        /*
+         * Create each product result.
+         */
+
+        products.forEach(function (product) {
+
+            const image =
+                product.featured_image?.url ||
+                product.image?.url ||
+                '';
+
+
+            const title =
+                product.title || '';
+
+
+            const url =
+                product.url || '#';
+
+
+            const price =
+                product.price || '';
+
+
+            html += `
+
+                <a
+                    href="${url}"
+                    class="live-search-item"
+                >
+
+                    <div class="live-search-image">
+
+                        ${
+                            image
+                            ? `
+                                <img
+                                    src="${image}"
+                                    alt="${escapeHtml(title)}"
+                                    loading="lazy"
+                                >
+                              `
+                            : ''
+                        }
+
+                    </div>
+
+
+                    <div class="live-search-info">
+
+                        <p class="live-search-product-title">
+                            ${escapeHtml(title)}
+                        </p>
+
+
+                        ${
+                            price
+                            ? `
+                                <div class="live-search-price">
+                                    ${price}
+                                </div>
+                              `
+                            : ''
+                        }
+
+                    </div>
+
+                </a>
+
+            `;
+
+        });
+
+
+        /*
+         * View all results.
+         */
+
+        html += `
+
+            </div>
+
+            <div class="live-search-view-all">
+
+                <a
+                    href="{{ routes.search_url }}?type=product&q=${encodeURIComponent(searchTerm)}"
+                >
+                    View All Results
+                </a>
+
+            </div>
+
+        `;
+
+
+        resultBox.innerHTML = html;
+
+    }
+
+
+    /*
+     * Shopify Predictive Search API.
+     */
+
+    function searchProducts(
+        drawer,
+        searchTerm
+    ) {
+
+        if (
+            !drawer ||
+            !searchTerm
+        ) {
+            return;
+        }
+
+
+        /*
+         * Cancel previous request.
+         */
+
+        if (searchRequest) {
+
+            searchRequest.abort();
+
+        }
+
+
+        const controller =
+            new AbortController();
+
+
+        searchRequest =
+            controller;
+
+
+        const url =
+            '{{ routes.predictive_search_url }}' +
+            '?q=' +
+            encodeURIComponent(searchTerm) +
+            '&resources[type]=product' +
+            '&resources[limit]=8' +
+            '&resources[limit_scope]=all' +
+            '&resources[options][unavailable_products]=hide';
+
+
+        fetch(
+            url,
+            {
+                signal:
+                    controller.signal,
+
+                headers: {
+                    'Accept':
+                        'application/json'
+                }
+            }
+        )
+
+        .then(function (response) {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Predictive search request failed'
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(function (data) {
+
+            const products =
+                data &&
+                data.resources &&
+                data.resources.results &&
+                data.resources.results.products
+                    ? data.resources.results.products
+                    : [];
+
+
+            showLiveResults(
+                drawer,
+                products,
+                searchTerm
+            );
+
+        })
+
+        .catch(function (error) {
+
+            /*
+             * Ignore cancelled requests.
+             */
+
+            if (
+                error.name ===
+                'AbortError'
+            ) {
+                return;
+            }
+
+
+            console.error(
+                'Predictive search error:',
+                error
+            );
+
+        });
+
+    }
+
+
+    /*
+     * Listen for typing.
+     */
+
+    document.addEventListener(
+        'input',
+        function (event) {
+
+            const input =
+                event.target;
+
+
+            if (
+                !input.matches(
+                    '.search-drawer input[type="search"], .search-drawer input[name="q"], .search-drawer input[type="text"]'
+                )
+            ) {
+                return;
+            }
+
+
+            const drawer =
+                getSearchDrawer(input);
+
+
+            if (!drawer) {
+                return;
+            }
+
+
+            const searchTerm =
+                input.value.trim();
+
+
+            clearTimeout(
+                searchTimer
+            );
+
+
+            /*
+             * Search box empty:
+             * restore Popular Products.
+             */
+
+            if (!searchTerm) {
+
+                hideLiveResults(
+                    drawer
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Wait 250ms before searching.
+             */
+
+            searchTimer =
+                setTimeout(
+                    function () {
+
+                        searchProducts(
+                            drawer,
+                            searchTerm
+                        );
+
+                    },
+                    250
+                );
+
+        }
+    );
+
+
+    /*
+     * Escape key.
+     */
+
+    document.addEventListener(
+        'keydown',
+        function (event) {
+
+            const input =
+                event.target;
+
+
+            if (
+                !input.matches(
+                    '.search-drawer input[type="search"], .search-drawer input[name="q"], .search-drawer input[type="text"]'
+                )
+            ) {
+                return;
+            }
+
+
+            if (
+                event.key ===
+                'Escape'
+            ) {
+
+                const drawer =
+                    getSearchDrawer(
+                        input
+                    );
+
+
+                hideLiveResults(
+                    drawer
+                );
+
+            }
+
+        }
+    );
+
+})();
+
+</script>
+
+{%- endcapture -%}
+
+{{-
+    search_drawer
+    | strip_newlines
+    | remove: '	'
+    | replace: "   "," "
+    | replace: "  "," "
+-}}

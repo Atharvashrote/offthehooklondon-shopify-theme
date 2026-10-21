@@ -1,0 +1,275 @@
+{%- liquid
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+
+    assign product_rec = product
+    if template == 'cart'
+        for item in cart.items
+            assign product_rec = item.product
+        endfor
+    endif
+-%}
+{%- capture product_recommendations -%}
+{%- capture sizes -%}(min-width:1024px) calc({{ page_width }} / {{ section_st.grid }}),(min-width:768px) calc(100vw / {{ section_st.gridtb }}), calc(100vw / {{ section_st.gridmb }}){%- endcapture -%}
+<div class="product-recommendations recommendad-wrapper section-cover{% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}">
+        {%- render 'sec-title' -%}
+    
+        {%- capture products_data -%}
+            {%- for recommendation in recommendations.products -%}
+                <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>
+                    {%- render 'product-card-grid', product:recommendation, section_st:section_st, sizes:sizes -%}
+                </div>
+            {%- endfor -%}
+        {%- endcapture -%}
+
+        {%- if section_st.carousel -%}
+            <product-recommendations data-id="recomSlider" class="complementary-products grid recomPr rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products swiper"
+                data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product_rec.id }}&limit={{ section_st.limit }}"
+                data-swiper='{ "slidesPerView":"auto", "loop":false, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":false }}'>
+                <div class="swiper-wrapper">{{ products_data }}</div>
+                {%- render 'swiper-navigation', id: section.id, section_st: section_st -%}
+            </product-recommendations>
+        {%- else -%}
+            <product-recommendations data-id="recomSlider" class="complementary-products grid recomPr rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products"
+            data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product_rec.id }}&limit={{ section_st.limit }}">
+                {{- products_data -}}
+            </product-recommendations>
+        {%- endif -%}
+    </div>
+</div>
+{%- endcapture -%}
+{{- product_recommendations | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Recommended products",
+  "limit": 1,
+  "enabled_on": {
+    "templates": ["product", "cart"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Dynamic recommendations products change and improve with time. [Learn more](https://help.shopify.com/en/themes/development/recommended-products)"
+    },
+     {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading"    
+    },
+     {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Recommended Products"
+    },
+     {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description"    
+    },         
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Columns (desktop)",
+      "default": 4,
+      "min": 2,
+      "max": 6,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "gridtb",
+      "label": "Columns (tablet)",
+      "default": 3,
+      "min": 1,
+      "max": 5,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "gridmb",
+      "label": "Columns (mobile)",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Products to show",
+      "default": 5,
+      "min": 2,
+      "max": 50,
+      "step": 1
+    },
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel",
+      "label": "Enable carousel",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate slide",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "Sec",
+      "visible_if": "{{ section.settings.carousel and section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrow",
+      "label": "Show arrows on desktop",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrowm",
+      "label": "Show arrows on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Show dots on desktop",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dotm",
+      "label": "Show dots on mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },    
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },    
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recommended products"
+    }
+  ]
+}
+{% endschema %}

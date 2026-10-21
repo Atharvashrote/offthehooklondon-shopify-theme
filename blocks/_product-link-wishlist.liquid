@@ -1,0 +1,29 @@
+{%- if settings.wishlist -%}
+    <product-card class="fl">
+        <button type="button" class="fl f-aic pr grid-button wishlist addwishlist border-0 [linkclass]" data-url="{{pages[settings.wishlist_page].url}}" data-id="{{ product.id }}" aria-label="{{ 'products.wishlist.add_to_wishlist' | t }}">
+            <div>
+                <span class="txt"><svg class="at-icon wishicon"><use class="add" xlink:href="#icon-wishlist"></use><use class="added" xlink:href="#icon-remove"></use></svg></span>
+                <svg class="at-icon at-spin"><use xlink:href="#icon-loading"></use></svg>
+            </div>
+            <span class="wish-txt">{{ 'products.wishlist.add_to_wishlist' | t}}</span>
+        </button>
+    </product-card>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Wishlist link",
+  "tag": null, 
+  "settings": [
+    {
+        "type": "paragraph",
+        "content": "Change link text from theme default content"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wishlist link",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

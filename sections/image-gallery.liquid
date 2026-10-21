@@ -1,0 +1,741 @@
+{%- capture gallery -%}
+{%- liquid 
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+-%}
+<svg style="position:absolute;width:0;height:0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        {% if section_st.icon == '1' %}
+		    <symbol id="icon-img-plus" viewBox="0 0 426.66667 426.66667" xmlns="http://www.w3.org/2000/svg"><path d="m405.332031 192h-170.664062v-170.667969c0-11.773437-9.558594-21.332031-21.335938-21.332031-11.773437 0-21.332031 9.558594-21.332031 21.332031v170.667969h-170.667969c-11.773437 0-21.332031 9.558594-21.332031 21.332031 0 11.777344 9.558594 21.335938 21.332031 21.335938h170.667969v170.664062c0 11.777344 9.558594 21.335938 21.332031 21.335938 11.777344 0 21.335938-9.558594 21.335938-21.335938v-170.664062h170.664062c11.777344 0 21.335938-9.558594 21.335938-21.335938 0-11.773437-9.558594-21.332031-21.335938-21.332031zm0 0"/></symbol>
+		{% elsif section_st.icon == '2' %}
+    		<symbol id="icon-img-zoom" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="m181.2 32a32 32 0 0 1 -32 32h-85.2v85.2a32 32 0 0 1 -64 0v-117.2a32 32 0 0 1 32-32h117.2a32 32 0 0 1 32 32zm-32 416h-85.2v-85.2a32 32 0 0 0 -64 0v117.2a32 32 0 0 0 32 32h117.2a32 32 0 1 0 0-64zm330.8-117.2a32 32 0 0 0 -32 32v85.2h-85.2a32 32 0 1 0 0 64h117.2a32 32 0 0 0 32-32v-117.2a32 32 0 0 0 -32-32zm0-330.8h-117.2a32 32 0 0 0 0 64h85.2v85.2a32 32 0 1 0 64 0v-117.2a32 32 0 0 0 -32-32z"/></symbol>
+		{% else %}
+    		<symbol id="icon-img-search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><path d="M252.9,234.1l-53.4-53.4c-3.1-3.1-7.5-4.3-11.5-3.4c16.3-18.7,26.2-43.2,26.2-69.9c0-58.9-47.9-106.8-106.8-106.8 S0.6,48.5,0.6,107.3s47.9,106.8,106.8,106.8c27.1,0,51.9-10.2,70.8-26.9c-0.8,4,0.4,8.3,3.5,11.4L235,252c2.5,2.5,5.7,3.7,8.9,3.7 c3.2,0,6.5-1.2,8.9-3.7C257.8,247.1,257.8,239.1,252.9,234.1z M107.3,193.9c-47.7,0-86.6-38.8-86.6-86.6s38.8-86.6,86.6-86.6 s86.6,38.8,86.6,86.6S155.1,193.9,107.3,193.9z"/></symbol>
+		{% endif %}
+    </defs>
+</svg>
+{%- capture icon -%}
+    {%- if section_st.icony -%}
+        <svg class="at-icon anim gicon{{ section_st.icon }} m-auto mb20">
+            {%- if section_st.icon == '1' -%}
+                <use xlink:href="#icon-img-plus"></use>
+            {%- elsif section_st.icon == '2' -%}
+                <use xlink:href="#icon-img-zoom"></use>
+            {%- else -%}
+                <use xlink:href="#icon-img-search"></use>
+            {%- endif -%}
+        </svg>
+    {%- endif -%}
+{%- endcapture -%}
+{%- if section_st.preset == 'custom-hd' -%}
+<style>#{{ section.id }} .head { --fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;--ff:var(--{{ section_st.ff }});--fw:{{ section_st.fw }};--lh:{{ section_st.lh }}; }</style>
+{%- endif -%}
+{%- capture styles -%}
+  --grsp:{{ section_st.gspace | divided_by: 2.0 }}px;--grspm:{{ section_st.gspacem | divided_by: 2.0 }}px;
+  --cl:{{ section_st.cl }};--imgbg:{{ section_st.imgbg }};--txtbg:{{ section_st.txtbg }};--bbdr:{{ section_st.txtbg | color_darken:5 }};--icns:20px;--icns_cl:{{ section_st.iconcl }};--mob_col:{{ section_st.col-m }};
+  {%- if section_st.tpreset == 'custom' -%}--fs:{{ section_st.tfs }}px;--fsm:{{ section_st.tfsm }}px;--ff:var(--{{ section_st.tff }});--fw:{{ section_st.tfw }};--lh:{{ section_st.tlh }};{%- endif -%}
+{%- endcapture -%}
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+    <div class="sn{{ section.id }}{% if section_st.fullwidth %} fw-section{% if section_st.npd %} npd{% endif %}{% else %} page-width{% endif %}">
+        {% render 'sec-title' %}
+        <grid-masonary class="grid-masonary fl f-wrap gspace atgallery{{ section_st.style }}" style="{{ styles | strip_newlines }}">
+          <div class="grid-sizer {{ section_st.col-m }} col-md-{{ section_st.col }} pa"></div>
+            {%- for block in section.blocks limit: section.blocks.size -%}
+                {%- assign block_st = block.settings -%}
+                {%- capture sizes -%}
+                     {%- if block_st.width == 'wd20' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:4 }}px) / 5),(min-width:768px) calc((100vw - {{ section_st.gspace | times:4 }}px) / 5), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd25' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:3 }}px) / 4),(min-width:768px) calc((100vw - {{ section_st.gspace | times:3 }}px) / 4), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd33' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:2 }}px) / 3),(min-width:768px) calc((100vw - {{ section_st.gspace | times:2 }}px) / 3), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd50' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 2),(min-width:768px) calc((100vw - {{ section_st.gspace }}px) / 2), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd66' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd75' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'w-100' -%}
+                          (min-width:1024px) {{ page_width }}, 100vw
+                        {%- endif -%}
+                {%- endcapture -%}
+
+                {%- capture text -%}
+                        <div class="head {{ section_st.preset }} anim">{{ block_st.title }}</div>
+                        <div class="anim reg-text mt5">{{ block_st.txt }}</div>
+                {%- endcapture -%}
+
+                <div class="msitem gitem {{ section_st.col-m }} {{ block_st.width }}-md {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+                    <div class="gallery-item of-hidden">
+                        <a class="{% if section_st.imgclick == '1' %}zoom pr db ltbx{% endif %} of-hidden {{ section_st.rounded }}" href="{% if section_st.imgclick == '1' %}{{ block_st.image | image_url: width: block_st.image.width }}{% else %}{{ block_st.imgurl }}{% endif %}" data-pswp-width="{{ block_st.image.width }}" data-pswp-height="{{ block_st.image.height }}">
+                            {%- if block_st.image!= blank -%}
+                                {{ block_st.image | image_url: width: block_st.image.width | image_tag: loading:'lazy', width:block_st.image.width, height:block_st.image.height, class:'img-auto m-auto', sizes:sizes, widths:"180,320,460,600,800,1000,1200,1400,1600,2000" }}
+                            {%- else -%}
+                                {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'collection-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}    
+                            {%- endif -%}
+
+                            {%- if section_st.style == '3' -%}<div class="gallery-text fl f-jcc f-col all0 pa anim">{{ icon }}</div>{%- endif -%}
+                            
+                            {%- if section_st.style == '1' or section_st.style == '2' -%}
+                                <div class="gallery-text fl f-col all0 pa anim{% if section_st.style == '1' %} f-jcc tc{% else %} f-jce tl pd30{% endif %}">
+                                    {{- icon -}}
+                                    {%- if block_st.title != blank or block_st.txt != blank %}<div class="fl f-col">{{ text }}</div>{%- endif -%}
+                                </div>
+                            {%- endif -%}
+                        </a>
+                        {%- if section_st.style == '3' -%}
+                            {% if block_st.title != blank or block_st.txt != blank %}<div class="gallery-text tc pr pd20">{{ text }}</div>{% endif %}
+                        {%- endif -%}
+                    </div>
+                </div>
+            {%- endfor -%}
+        </grid-masonary>
+    </div>
+</div>
+<link href="{{ 'photoswipe.css' | asset_url }}" rel="stylesheet" media="print" onload="this.media='all'">
+<script type="module">
+    import PhotoSwipeLightbox from '{{ 'photoswipe-lightbox.min.js' | asset_url }}';
+    const lightbox = new PhotoSwipeLightbox({
+        gallery: '.atgallery{{ section_st.style }}',
+        children: 'a.ltbx',
+        pswpModule: () => import('{{ 'photoswipe.min.js' | asset_url }}')
+    });
+    lightbox.init();
+</script>
+{%- endcapture -%}
+{{- gallery | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Image gallery",
+  "class": "index-section",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "max_blocks": 50,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Image Gallery"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Showcase your product pictures</p>"
+    },         
+    {
+      "type": "header",
+      "content": "Grid appearance"
+    },
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Grid gap",
+      "default": 30,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Grid gap (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "col",
+      "label": "Grid columns",
+      "default": 4,
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "info": "[Column selection guide](https://www.adornthemes.com/masonry-column-selection/)"
+    },
+    {
+      "type": "select",
+      "id": "col-m",
+      "label": "Grid columns (mobile)",
+      "default": "wd50",
+      "options": [
+        {
+          "value": "wd100",
+          "label": "1"
+        },
+        {
+          "value": "wd50",
+          "label": "2"
+        },
+        {
+          "value": "wd33",
+          "label": "3"
+        },
+        {
+          "value": "wd25",
+          "label": "4"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Gallery design"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Gallery style",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Style 1"
+        },
+        {
+          "value": "2",
+          "label": "Style 2"
+        },
+        {
+          "value": "3",
+          "label": "Style 3"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "imgclick",
+      "label": "On click",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Open lightbox popup"
+        },
+        {
+          "value": "2",
+          "label": "Redirect to Url"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "icony",
+      "label": "Show image hover icon",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Icon 1"
+        },
+        {
+          "value": "2",
+          "label": "Icon 2"
+        },
+        {
+          "value": "3",
+          "label": "Icon 3"
+        }
+      ],
+      "visible_if": "{{ section.settings.icony }}"
+    },
+    {
+      "type": "color",
+      "id": "iconcl",
+      "label": "Icon color",
+      "default": "#111",
+      "visible_if": "{{ section.settings.icony }}"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text color",
+      "default": "#111"
+    },
+    {
+      "type": "color",
+      "id": "txtbg",
+      "label": "Text background",
+      "default": "#fff",
+      "visible_if": "{{ section.settings.style == '3' }}"
+    },
+    {
+      "type": "color",
+      "id": "imgbg",
+      "label": "Overlay",
+      "info": "image hover",
+      "default": "#ffffff50",
+      "alpha": true
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Image corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Title preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h6",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },        
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 14,
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 14,
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },    
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "600",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,     
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "select",
+      "id": "tpreset",
+      "label": "Text preset",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "tff",
+      "label": "Font",
+      "default": "ft1",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },    
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "400",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tlh",
+      "label": "Line height",
+      "default": 1.5,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,      
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+    "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"            
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },      
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Image",
+      "type": "lookbook1",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "A LARGE ROOM FOR THE EXHIBITION OF PICTURES"
+        },
+        {
+          "type": "textarea",
+          "id": "txt",
+          "label": "Text"          
+        },
+        {
+          "type": "url",
+          "id": "imgurl",
+          "label": "Url",
+          "visible_if": "{{ section.settings.imgclick == '2' }}"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Column width",
+          "default": "wd25",
+          "info": "Total width of all block should be 100%",
+          "options": [
+            { "value": "wd20", "label": "20%" },
+            { "value": "wd25", "label": "25%" },
+            { "value": "wd33", "label": "33%" },
+            { "value": "wd40", "label": "40%" },
+            { "value": "wd50", "label": "50%" },
+            { "value": "wd60", "label": "60%" },
+            { "value": "wd66", "label": "66%" },
+            { "value": "wd75", "label": "75%" },
+            { "value": "wd80", "label": "80%" },
+            { "value": "w-100", "label": "100%" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image gallery: Masonry",
+      "category": "Image",
+      "blocks": [
+        {
+          "type": "lookbook1"
+        },
+        {
+          "type": "lookbook1"
+        },
+         {
+          "type": "lookbook1"
+        },
+        {
+          "type": "lookbook1"
+        },
+         {
+          "type": "lookbook1"
+        },
+        {
+          "type": "lookbook1"
+        },
+         {
+          "type": "lookbook1"
+        },
+        {
+          "type": "lookbook1"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

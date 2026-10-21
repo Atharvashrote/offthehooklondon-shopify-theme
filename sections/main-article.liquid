@@ -1,0 +1,933 @@
+{%- liquid 
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+-%}
+{%- capture sizes -%}
+    {%- if section_st.sbposi == 'nosidebar' -%}
+        (min-width:1024px) calc({{ page_width }} - 30px), calc(100vw - 30px)
+    {%- else -%}
+        (min-width:1024px) calc({{ page_width }} - 330px), calc(100vw - 30px)
+    {%- endif -%}
+{%- endcapture -%} 
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+    <article class="{% if section_st.fullwidth %} fw-section{% else %} page-width{% endif %}" style="--comment_bg:{{ section_st.cbg }};--comment_cl:{{ section_st.ccl }};">
+        <div class="fl f-col f-row-lg">
+            <div class="fl1 w-100{% if section_st.sbposi == 'left' %} order2{% endif %}">   
+                <div class="blog-listview">
+                    {%- if section_st.post_ttl -%}
+                        {%- capture title_styles -%}
+                            {%- if section_st.preset == 'custom-hd' -%}
+                                --fs:{{ section_st.tfs }}px;--fsm:{{ section_st.tfsm }}px;--ff:var(--{{ section_st.tff }});--fw:{{ section_st.tfw }};--lh:{{section_st.lh }};
+                            {%- endif -%}
+                        {%- endcapture -%}
+                        <{{ section_st.htag }} class="mb10{% if section_st.tcase %} text-upper{% endif %} {{ section_st.preset }}" style="--hdcl:{{ section_st.hdcl }};{{ title_styles }}">{{ article.title }}</{{ section_st.htag }}>
+                    {%- endif -%}
+                    {%- if section_st.date or section_st.author or blog.comments_enabled? -%}
+                        <ul class="fl mb20 blog-meta{% if section_st.post_case %} text-upper{% endif %}" style="--icns:14px;">
+                            {%- if section_st.date -%}
+                                <li>
+                                    <span class="sep-{{ section_st.post_sep }}">{% if section_st.post_sep == '1' %}{% render 'icon-date' %} {% elsif section_st.post_sep == '2'%} 〡 {% elsif section_st.post_sep == '3' %} ● {% elsif section_st.post_sep == '4' %} ━ {% endif %}</span>
+                                    <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time></li>
+                            {%- endif -%}
+                            {%- if section_st.author -%}
+                                <li class="fl">
+                                    <span class="sep-{{section_st.post_sep }}">{% if section_st.post_sep == '1' %}{% render 'icon-user' %} {% elsif section_st.post_sep == '2'%} 〡 {% elsif section_st.post_sep == '3' %} ● {% elsif section_st.post_sep == '4' %} ━ {% endif %}</span>
+                                    {{ 'blogs.article.by_author' | t }} <span class="ml5">{{ article.author }}</span></li>
+                            {%- endif -%}
+                            {%- if blog.comments_enabled? and article.comments_count > 0 -%}
+                                <li class="cmnt">
+                                    <span class="sep-{{ section_st.post_sep }}">{% if section_st.post_sep == '1' %}{% render 'icon-comment' %} {% elsif section_st.post_sep == '2'%} 〡 {% elsif section_st.post_sep == '3' %} ● {% elsif section_st.post_sep == '4' %} ━ {% endif %}</span>           
+                                    <a href="{{ article.url }}#comments">{{ 'blogs.comments.comments_with_count' | t: count: article.comments_count }}</a>
+                                </li>
+                            {%- endif -%}
+                        </ul>
+                    {%- endif -%}
+                    {%- if article.image and section_st.ftimg -%}
+                        <div class="mb20">
+                            {%- assign img_class = "img-auto " | append: section_st.irounded -%}
+                            {{ article.image | image_url: width: article.image.width | image_tag: loading:'lazy', width:article.image.width, height:article.image.height, class:img_class, sizes:sizes, widths:"400,560,740,980,1280,1600,2000" }}
+                        </div>
+                    {%- endif -%}
+                    <div class="rte mb20">{{ article.content }}</div>
+
+                    {%- if section_st.tags and article.tags.size > 0 -%}
+                        <ul class="blog-tags fl f-aic f-wrap mb15">
+                            <li>{{ 'blogs.article.posted_in' | t }}: &nbsp;</li>
+                            {%- for tag in article.tags -%}
+                                <li><a class="ml5" href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a></li>
+                            {%- endfor -%}
+                        </ul>
+                    {%- endif -%}
+
+                    {%- if section_st.show_share_buttons or blog.next_article or blog.previous_article -%}
+                        <hr>
+                        <div class="fl f-wrap f-jcsb">              	                
+                            {% if section_st.show_share_buttons %}
+                                <div class="mb20">{% render 'social-sharing', share_title: article.title, share_link: article.url, share_image: article.image, clname:'' %}</div>
+                            {% endif %}
+                            {% if blog.next_article or blog.previous_article %}
+                                <div class="blog-nav mb20 fl f-jcc {% unless section_st.show_share_buttons %} fl1{% endunless %}">
+                                    {% if blog.previous_article %}<a href="{{ blog.previous_article }}">{% render 'icon-arrowl', class: 'arwl left mr5' %}{{ 'blogs.article.previous' | t }}</a>{% endif %}
+                                    <span class="m-auto"> &nbsp; &nbsp; </span>
+                                    {% if blog.next_article %}<a href="{{ blog.next_article }}">{{ 'blogs.article.next' | t }}{% render 'icon-arrowl', class: 'arwl right ml5' %}</a>{% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    {%- if section_st.show_rlpr and section_st.products != blank -%}
+                        <div class="related-product" id="artcileProducts" data-section-id="artcileProducts" data-section-type="carousel">
+                        {%- unless section_st.related_title == blank -%}
+                            <div class="sec-ttl {{ settings.title_align}}">
+                                <h3 class="h3">{{ section_st.related_title | escape }}</h3>
+                                {%- if section_st.related_sub_title != blank -%}<span>{{section_st.related_sub_title}}</span>{%- endif -%}        
+                            </div> 
+                        {%- endunless -%}
+                        <slide-section id="productSlider-artcileProducts" class="grid swiper rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }}" style="{{ styles }}"
+              data-swiper='{ "slidesPerView":"auto", "loop":true, {% if section_st.rpauto %}"autoplay":{ "delay":"{{ section_st.auto_speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" }}'>
+                            <div class="swiper-wrapper">
+                                {%- for product in section_st.products -%}
+                                    <div class="gitem swiper-slide">{% render 'product-card-grid', product: product, secSt: secSt, sizes: image_size %}</div>
+                                {%- endfor -%}
+                            </div>
+                            <div class="swiper-arrows swiper-button-next swn{{ section.id }}"></div>
+                            <div class="swiper-arrows swiper-button-prev swp{{ section.id }}"></div>
+                        </slide-section><br><br>
+                        </div>
+                    {%- endif -%}
+
+                <!-- Article comments --> 
+                {%- assign number_of_comments = article.comments_count -%}
+                {%- if comment and comment.created_at -%}
+                    {%- assign number_of_comments = article.comments_count | plus: 1 -%}
+                {%- endif -%}
+                {%- if blog.comments_enabled? -%}
+                    {%- if number_of_comments > 0 -%}<br>
+                        <h2 class="sub-title mb0">{{ 'blogs.comments.comments_with_count' | t: count: number_of_comments }}</h2>
+                        <hr />
+                        {%- paginate article.comments by 10 -%}
+                        {% comment %}#comments is required, it is used as an anchor link by Shopify.{% endcomment %}
+                            <div id="comments">
+                                <ul class="comments mb30">
+                                    {% comment %}If a comment was just submitted with no blank field, show it.{% endcomment %}
+                                    {%- if comment and comment.created_at -%}
+                                        <li id="{{ comment.id }}" class="comment"> {% render 'comment' %}</li>
+                                        <li><hr /></li>
+                                    {%- endif -%}
+                                    {%- for comment in article.comments -%}
+                                        <li id="{{ comment.id }}" class="comment"> {% render 'comment', comment:comment %} </li>
+                                        {%- unless forloop.last -%}<li><hr /></li>{%- endunless -%}
+                                    {%- endfor -%}
+                                </ul>
+                                {%- if paginate.pages > 1 -%}{% render 'pagination' %}{%- endif -%}
+                            </div>
+                        {%- endpaginate -%}
+                    {%- endif -%}
+                    {%- form 'new_comment', article -%}
+                        <h4 class="h3">{{ 'blogs.comments.title' | t }}</h4>
+                        {% if comment and comment.created_at %}
+                            <p class="border form-success">{% if blog.moderated? %}{{ 'blogs.comments.success_moderated' | t }}{% else %}{{ 'blogs.comments.success' | t }}{% endif %}</p>
+                        {% endif %}
+                        {{ form.errors | default_errors }}
+                        <div class="grid">
+                            <div class="gitem wd50-md">
+                                <label for="CommentAuthor">{{ 'blogs.comments.name' | t }}</label>
+                                <input type="text" name="comment[author]" id="CommentAuthor" class="input-full w-100{% if form.errors contains 'author' %} input--error{% endif %}" value="{{ form.author }}">
+                            </div>
+                            <div class="gitem wd50-md">
+                                <label for="CommentEmail">{{ 'blogs.comments.email' | t }}</label>
+                                <input type="email" name="comment[email]" id="CommentEmail" class="input-full w-100{% if form.errors contains 'email' %} input--error{% endif %}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+                            </div>
+                            <div class="gitem">
+                                <label for="CommentBody">{{ 'blogs.comments.message' | t }}</label>
+                                <textarea name="comment[body]" id="CommentBody" class="input-full w-100{% if form.errors contains 'body' %} input--error{% endif %}">{{ form.body }}</textarea>
+                            </div>
+                        </div>
+                        {% if blog.moderated? %}
+                            <p class="fine-print mt0">{{ 'blogs.comments.moderated' | t }}</p>
+                        {% endif %}
+                        <input type="submit" class="btn" value="{{ 'blogs.comments.post' | t }}">
+                    {% endform %}
+                {%- endif -%}
+            </div>
+            <div class="tc mt30"><a href="{{ blog.url }}" class="btn">{% render 'icon-arrowl', class: 'arwl left' %} {{ 'blogs.article.back_to_blog' | t: title: blog.title }}</a></div>
+        </div>
+
+            <!-- sidebar --> 	  
+            {%- if section_st.sidebar -%}
+                {%- capture styles -%}
+                    --gap:{{ section_st.sdgap }}px;--gapm:{{ section_st.sdgapm }}px;
+                    --hdcl:{{ section_st.wdTtlcl }};--cl:{{ section_st.dtcl }};--clh:{{ section_st.dtclh }};--links_fs:{{ section_st.dtfs }}px;
+                    {%- if section_st.bottom_border -%}--border:{{ section_st.ttlbdr }};{%- endif -%}
+                {%- endcapture -%}
+                {%- if section_st.ttlpreset == 'custom-hd' -%}<style>.widget-title{--fs:{{ section_st.wdTtl }}px;--fsm:{{ section_st.wdTtl }}px;--ff:var(--{{ section_st.wdTtlft }});--fw:{{ section_st.wdTtlwt }};--lh:1.2;}</style>{%- endif -%}
+                <div class="sidebar fl f-col gap{% if section_st.sbposi == 'left' %} mr30{% else %} ml30{% endif %}{% if section_st.sidem %} hide-sm hide-md{% endif %}" style="{{ styles }}">
+                    {%- content_for 'blocks' -%}
+                </div>
+            {%- endif -%}
+        </div>
+    </article>
+</div>
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "articleBody": "{{ article.content | strip_html | escape }}",
+    "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ shop.url }}{{ page.url }}"
+  },
+    "headline": "{{ article.title }}",
+    {%- if article.excerpt != blank -%}
+        "description": "{{ article.excerpt | strip_html }}",
+    {%- endif -%}
+    {%- if article.image -%}
+        {% assign image_size = article.image.width | append: 'x' %}
+        "image": [
+            "https:{{ article | image_url: image_size }}"
+        ],
+    {%- endif -%}
+  "datePublished": "{{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+  "dateCreated": "{{ article.created_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ article.author }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    {%- if settings.share_image -%}
+        {%- assign image_size = article | image_url: 'master' | append: 'x' -%}
+        "logo": {
+            "@type": "ImageObject",
+            "height": "{{ settings.share_image.height }}",
+            "url": "https:{{ settings.share_image | image_url: image_size }}",
+            "width": "{{ settings.share_image.width }}"
+        },
+    {%- endif -%}
+    "name": "{{ shop.name }}"
+    }
+  }
+</script>
+{% schema %}
+{
+  "name": "Article page",
+  "class": "main-article",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "ftimg",
+      "label": "Show featured image",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "irounded",
+      "label": "Image corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ section.settings.ftimg }}"
+    },
+    {
+      "type": "header",
+      "content": "Post title"
+    },
+    {
+      "type": "checkbox",
+      "id": "post_ttl",
+      "label": "Show post title",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "hdcl",
+      "label": "Title color",
+      "default": "#000",
+      "visible_if": "{{ section.settings.post_ttl }}"
+    },
+    {
+      "type": "select",
+      "id": "htag",
+      "label": "Title tag",
+      "info": "Specify heading type to improve SEO and accessibility.",
+      "default": "h1",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "p",
+          "label": "P"
+        }
+      ],
+      "visible_if": "{{ section.settings.post_ttl }}"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h3",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+       {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ],
+      "visible_if": "{{ section.settings.post_ttl }}"
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 22,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 17,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "select",
+      "id": "tff",
+      "label": "Font",
+      "default": "ft1",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ],
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "700",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.5,
+      "min": 1.0,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "tcase",
+      "label": "Use uppercase text",
+      "visible_if": "{{ section.settings.post_ttl }}"
+    },
+    {
+      "type": "header",
+      "content": "Post meta"
+    },
+    {
+      "type": "checkbox",
+      "id": "author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "comment",
+      "label": "Show comment",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "post_sep",
+      "label": "Separator",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Icons"
+        },
+        {
+          "value": "2",
+          "label": "Pipe"
+        },
+        {
+          "value": "3",
+          "label": "Bullets"
+        },
+        {
+          "value": "4",
+          "label": "Dash"
+        },
+        {
+          "value": "5",
+          "label": "none"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "post_case",
+      "label": "Use uppercase text"
+    },
+    {
+      "type": "checkbox",
+      "id": "tags",
+      "label": "Show post tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share_buttons",
+      "label": "Show social sharing buttons",
+      "default": true
+    }, 	 
+      {
+        "type": "header",
+        "content": "Related products by metafield"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_rlpr",
+        "label": "Show",
+        "default": true,
+		    "info": "[How to set metafield for this?](https://www.adornthemes.com/knowledge-base/show-specific-products-in-article-page/)"
+      },
+ 	  {
+        "id": "related_title",
+        "type": "text",
+        "label": "Title",
+        "default": "Related Products"
+      },
+ 	  {
+        "id": "related_sub_title",
+        "type": "text",
+        "label": "Subtitle"
+      },
+ 	    {
+        "type": "product_list",
+        "id": "products",
+        "label": "Products"
+      },     
+      {
+        "type": "range",
+        "id": "grid",
+        "label": "Desktop (columns)",
+        "default": 4,
+        "min": 2,
+        "max": 7,
+        "step": 1
+      },
+      {
+        "type": "range",
+        "id": "gridtb",
+        "label": "Tablet (columns)",
+        "default": 3,
+        "min": 2,
+        "max": 5,
+        "step": 1
+      },
+      {
+        "type": "range",
+        "id": "gridmb",
+        "label": "Mobile (columns)",
+        "default": 2,
+        "min": 1,
+        "max": 3,
+        "step": 1
+      },
+	  {
+        "type": "checkbox",
+        "id": "rpauto",
+        "label": "Carousel autoplay",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "auto_speed",
+        "label": "Autoplay speed",
+        "default": 5,
+        "min": 1,
+        "max": 30,
+        "step": 1
+      },
+    {
+      "type": "header",
+      "content": "Comment form"
+    },
+    {
+      "type": "color",
+      "id": "ccl",
+      "label": "Text",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "cbg",
+      "label": "Background",
+      "default": "#f6f6f6"
+    },
+    {
+      "type": "header",
+      "content": "Sidebar"
+    },
+    {
+      "type": "checkbox",
+      "id": "sidebar",
+      "label": "Enable sidebar",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "sbposi",
+      "label": "Position",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "visible_if": "{{ section.settings.sidebar }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sidem",
+      "label": "Hide on mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.sidebar }}"
+    },
+    {
+      "type": "range",
+      "id": "sdgap",
+      "label": "Block gap",
+      "default": 30,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.sidebar }}"
+    },
+    {
+      "type": "range",
+      "id": "sdgapm",
+      "label": "Block gap (mobile)",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.sidebar }}"
+    },   
+    {
+      "type": "color",
+      "id": "wdTtlcl",
+      "label": "Block title",
+      "default": "#000",
+      "visible_if": "{{ section.settings.sidebar }}"
+    },
+    {
+      "type": "select",
+      "id": "ttlpreset",
+      "label": "Title preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+       {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ],
+      "visible_if": "{{ section.settings.sidebar }}"
+    },    
+    {
+      "type": "select",
+      "id": "wdTtlft",
+      "label": "Font",
+      "default": "ft1",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ],
+      "visible_if": "{{ section.settings.sidebar and section.settings.ttlpreset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "wdTtl",
+      "label": "Font size",
+      "default": 15,
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.sidebar and section.settings.ttlpreset == 'custom-hd' }}"
+    },
+    {
+      "type": "select",
+      "id": "wdTtlwt",
+      "label": "Font weight",
+      "default": "700",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "visible_if": "{{ section.settings.sidebar and section.settings.ttlpreset == 'custom-hd' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "text-upper",
+      "label": "Use uppercase text",
+      "default": false      
+    },
+    {
+      "type": "checkbox",
+      "id": "bottom_border",
+      "label": "Show border below title",
+      "default": false,
+      "visible_if": "{{ section.settings.sidebar }}"
+    },
+    {
+      "type": "color",
+      "id": "ttlbdr",
+      "label": "Border color",
+      "default": "#f5f5f5",
+      "visible_if": "{{ section.settings.sidebar and section.settings.bottom_border }}"
+    },   
+    {
+      "type": "range",
+      "id": "dtfs",
+      "label": "Block details font",
+      "default": 12,
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.sidebar }}"
+    },
+    {
+      "type": "color",
+      "id": "dtcl",
+      "label": "Text/links color",
+      "default": "#000",
+      "visible_if": "{{ section.settings.sidebar }}"
+    },
+    {
+      "type": "color",
+      "id": "dtclh",
+      "label": "Links hover",
+      "default": "#EC9090",
+      "visible_if": "{{ section.settings.sidebar }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },   
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_menu-sidebar"
+    },
+    {
+      "type": "_search-sidebar"
+    },
+    {
+      "type": "_recent-posts-sidebar"
+    },
+    {
+      "type": "_blog-tags-sidebar"
+    },
+    {
+      "type": "_products-sidebar"
+    },
+    {
+      "type": "_newsletter-sidebar"
+    },
+    {
+      "type": "_social-media-sidebar"
+    },
+    {
+      "type": "_custom-block-sidebar"
+    },
+    {
+      "type": "image-banner"
+    },
+    {
+      "type": "group"
+    }
+  ]
+}
+{% endschema %}

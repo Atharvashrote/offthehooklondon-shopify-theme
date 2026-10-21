@@ -1,0 +1,21 @@
+{% assign shot_description = product.metafields.custom.shotdiscripstions.value %}
+
+{% if shot_description != blank %}
+  <div class="shot-description">
+    {{ shot_description | newline_to_br }}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Shot Description",
+  "tag": null,
+  "settings": [],
+  "presets": [
+    {
+      "name": "Shot Description",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

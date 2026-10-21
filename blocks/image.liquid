@@ -1,0 +1,280 @@
+{%- liquid
+  assign block_st = block.settings
+
+  capture classes
+    if block_st.direction == 'f-row-md' and block_st.wrap
+      echo 'f-wrap '
+    endif
+    echo 'wd-' | append: block_st.width | append: '-md '
+    echo 'wd-' | append: block_st.width | append: ' '
+    if block_st.isbg
+      echo 'bg-custom '
+    endif
+    if block_st.ispd
+      echo 'pd-custom '
+    endif
+  endcapture
+
+  assign mobile_img = block_st.imagem
+  assign banner_img_src = mobile_img | image_url: width: mobile_img.width | image_tag: widths: '400,560,780,1000' | split: 'srcset="' | last | split: '"' | first
+-%}
+{%- capture styles -%}
+    {%- if block_st.width == 'custom' -%}
+        --wd:{{ block_st.ct_width | default: '100%' }};
+    {%- endif -%}
+    {%- if block_st.widthm == 'custom' -%}
+        --wdm:{{ block_st.ct_widthm | default: '100%' }};
+    {%- endif -%}
+
+    {%- if block_st.isbg -%}
+      --gr_bg:transparent;
+      --gr_bd:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+    {% endif %}
+    {%- if block_st.ispd -%}
+      --gr_pd:{{ block_st.pd }}px;--gr_pdm:{{ block_st.pdm }}px;
+    {% endif %}
+{%- endcapture -%}
+{%- if block_st.url != blank -%}<a href="{{ block_st.url }}"{% if block_st.newtab %} target="_blank"{% endif %}>{%- endif -%}
+<div id="blk-{{ block.id }}" class="pr of-hidden {{ classes }}{{ block_st.rounded }} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}" style="{{ styles }}" {{ block.shopify_attributes }}>
+  {%- if block_st.image != blank -%}
+    {% 
+       assign imgclass = 'img-auto ' | append: block_st.rounded 
+     %}
+    <picture class="">
+      {%- if mobile_img != blank -%}
+        <source media="(max-width: 767px)" srcset="{{ banner_img_src }}" width="{{ mobile_img.width }}" height="{{ mobile_img.height }}">
+      {%- endif -%}
+      {{- block_st.image | image_url: width: block_st.image.width | image_tag: class:imgclass, loading:'lazy', siezs:'(min-width:1024px) auto, 100vw', widths:'300,500,700,900,1200,1400,1700,2000' -}}
+    </picture>
+  {%- else -%}
+    <div class="db">{% capture current %}{% cycle 1, 2 %}{% endcapture -%}{{- 'hero-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg w-100' }}</div>
+  {% endif %}
+</div>
+{%- if block_st.url != blank -%}</a>{%- endif -%}
+{% schema %}
+{
+  "name": "Image",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "imagem",
+      "label": "Image (mobile)"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "newtab",
+      "label": "Open in new tab",
+      "default": false,
+      "visible_if": "{{ section.settings.url != blank }}"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "fill",
+      "options": [
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "ct_width",
+      "label": "Custom width",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "widthm",
+      "label": "Width (mobile)",
+      "default": "fill",
+      "options": [
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "ct_widthm",
+      "label": "Custom width (mobile)",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.widthm == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add border",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "bdr",
+      "label": "Borders",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "brd_sz",
+      "label": "Border thickness",
+      "default": 1,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "alpha": true,
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "checkbox",
+      "id": "ispd",
+      "label": "Add padding",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "pd",
+      "label": "Padding",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pdm",
+      "label": "Padding (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+      {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,105 @@
+{% liquid
+    assign block_st = block.settings
+
+    capture classes
+        if block_st.direction == 'f-row-md' and block_st.wrap
+            echo "f-wrap "
+        endif       
+        if block_st.direction_mobile == 'f-row'
+            echo block_st.horizontal_align_mobile | append: " " | append: block_st.horizontal_position_mobile | append: " "
+        endif
+        if block_st.direction_mobile == 'f-col'
+            echo block_st.vertical_align_mobile | append: " " | append: block_st.vertical_position_mobile | append: " "
+        endif
+        if block_st.direction == 'f-row-md'
+            echo block_st.horizontal_align | append: " " | append: block_st.horizontal_position | append: " "
+        endif
+        if block_st.direction == 'f-col-md'
+            echo block_st.vertical_align | append: " " | append: block_st.vertical_position | append: " "
+        endif
+    endcapture
+-%}
+<div id="{{ block.id }}" class="group-bk fl gap {{ block_st.direction_mobile }} {{ block_st.direction }} {{ block_st.rounded }} wd-fit-md wd-fit {{ classes }}" style="--gap:{{ block_st.gap }}px;--gapm:{{ block_st.gapm }}px;" {{ block.shopify_attributes }}>
+    {%- content_for 'blocks' -%}
+</div>
+{% schema %}
+  {
+    "name": "Button group",
+    "tag": null,
+    "blocks": [
+        {
+          "type": "button"
+        }        
+    ],
+    "settings": [     
+       {
+        "type": "range",
+        "id": "gap",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Gap",
+        "default": 15
+      },
+       {
+        "type": "range",
+        "id": "gapm",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Gap (mobile)",
+        "default": 10
+      },      
+      {
+          "type": "select",
+          "id": "direction",
+          "label": "Direction",
+          "default": "f-row-md",
+          "options": [                        
+              { "label": "Horizontal", "value": "f-row-md" },
+              { "label": "Vertical", "value": "f-col-md" }
+          ]
+      },                                                
+      {
+          "type": "select",
+          "id": "direction_mobile",
+          "label": "Direction (mobile)",
+          "default": "f-row",
+          "options": [
+              { "label": "Horizontal", "value": "f-row" },
+              { "label": "Vertical", "value": "f-col" },
+          ]
+      },
+       {
+          "type": "checkbox",
+          "id": "wrap",
+          "label": "Wrap items",
+          "default": false,
+          "visible_if": "{{ block.settings.direction == 'f-row-md' }}"
+      },  
+      {
+          "type": "checkbox",
+          "id": "wrapm",
+          "label": "Wrap Items (mobile)",
+          "default": false,
+          "visible_if": "{{ block.settings.direction_mobile == 'f-row' }}"
+      }                 
+    ],
+    "presets": [
+      {
+        "name": "Button group",
+        "category": "Basic",
+        "blocks": [
+            {
+                "type": "button",
+            }, 
+            {
+                "type": "button",
+            },         
+        ]
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,192 @@
+{%- liquid
+    assign block_st = block.settings
+    assign img_class = 'img-auto'
+    assign widths = '100,250,450,600,800,1000,1300,1600,2000,2400,' | append: block_st.image.width
+    capture classes
+        echo 'wd-' | append: block_st.width | append: '-md '
+        echo 'wd-' | append: block_st.widthm | append: ' '
+        if block_st.width == 'custom' or block_st.width == 'fill'
+            assign img_class = 'img-auto w-100'
+        endif
+    endcapture
+    capture styles
+        if block_st.width == 'custom'
+            echo '--wd:' | append: block_st.ct_width | default: '100%' | append: ';'
+        endif
+        if block_st.widthm == 'custom'
+            echo '--wdm:' | append: block_st.ct_widthm | default: '100%' | append: ';'
+        endif
+    endcapture
+-%}
+<div id="blk-{{ block.id }}" class="mb{{ block_st.mbm }} mb{{ block_st.mb }}-md {{ classes }}{% if block_st.hide_mb %} hide-sm{% endif %}" style="{{ styles }}" {{ block.shopify_attributes }}>
+    {%- if block_st.type == 'line' -%}
+        <hr class="m0" style="border-bottom:{{ block_st.lht }}px {{ block_st.lns }} {{ block_st.bdr }};min-width:10px;">
+    {%- elsif block_st.type == 'img' and block_st.image != blank -%}
+        {{ block_st.image | image_url: width: block_st.image.width | image_tag: class: img_class, loading: 'lazy', widths:widths -}}
+    {%- endif -%}
+</div>
+{% schema %}
+{
+  "name": "Divider",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "type",
+      "label": "Type",
+      "default": "line",
+      "options": [
+        {
+          "label": "Line",
+          "value": "line"
+        },
+        {
+          "label": "Image",
+          "value": "img"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "lns",
+      "label": "Line style",
+      "default": "solid",
+      "options": [
+        {
+          "label": "Solid",
+          "value": "solid"
+        },
+        {
+          "label": "Dashed",
+          "value": "dashed"
+        },
+        {
+          "label": "Dotted",
+          "value": "dotted"
+        },
+        {
+          "label": "Double",
+          "value": "double"
+        }
+      ],
+      "visible_if": "{{ block.settings.type == 'line' }}"
+    },
+    {
+      "type": "range",
+      "id": "lht",
+      "label": "Line height",
+      "default": 1,
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.type == 'line' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr",
+      "label": "Line color",
+      "default": "#f5f5f5",
+      "visible_if": "{{ block.settings.type == 'line' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Divider image",
+      "visible_if": "{{ block.settings.type == 'img' }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "text",
+      "id": "ct_width",
+      "label": "Custom width",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "widthm",
+      "label": "Width (mobile)",
+      "options": [
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "text",
+      "id": "ct_widthm",
+      "label": "Custom width",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.widthm == 'custom' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Divider",
+      "category": "Layout"
+    }
+  ]
+}
+{%- endschema -%}

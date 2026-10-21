@@ -1,0 +1,262 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product_form_id = 'product-form-' | append: section.id
+    assign ctopt = block_st.options | replace: ', ', ',' | replace: ' ,', ',' | split: ','
+    assign type_tags = block_st.based | replace: ', ', ',' | replace: ' ,', ',' | split: ','
+    assign visible = false
+    if block_st.visible == 'all'
+        assign visible = true
+    elsif block_st.visible == 'type'
+        if type_tags contains product.type
+          assign visible = true
+        endif
+    elsif block_st.visible == 'tag'
+        for tag in product.tags
+          if type_tags contains tag
+            assign visible = true
+          endif
+        endfor
+    elsif block_st.visible == 'product'
+        for prlist in block_st.products
+            if prlist == product
+                assign visible = true
+             endif
+        endfor
+    elsif block_st.visible == 'metafield'
+        if block_st.meta == 'true'
+            assign visible = true
+        endif
+    endif
+-%}
+{% if visible %}
+    <div class="w-100 product-options mb{{ block_st.mbm }} mb{{ block_st.mb }}-md">
+          {%- unless block_st.type == 'checkbox' -%}<label class="header" for="ctfield{{ block.id }}">{{ block_st.title }}: </label>{%- endunless -%}
+          {%- if block_st.type == 'short' -%}
+              <input class="w-100 mb0" id="ctfield{{ block.id }}" type="text" name="properties[{% unless block_st.show-check %}_{% endunless %}{{ block_st.title }}]" form="{{ product_form_id }}" {% if block_st.required %}required{% endif %} />
+          {%- elsif block_st.type == 'long' -%}
+              <textarea class="w-100 mb0" id="ctfield{{ block.id }}" name="properties[{% unless block_st.show-check %}_{% endunless %}{{ block_st.title }}]" form="{{ product_form_id }}" {% if block_st.required %}required{% endif %}></textarea>
+          {%- elsif block_st.type == 'checkbox' -%}
+              <input type="hidden" name="properties[{% unless block_st.show-check %}_{% endunless %}{{ block_st.title }}]" value="No" form="{{ product_form_id }}">
+              <label class="mb15 lblin" for="ctfield{{ block.id }}">
+               <input type="checkbox" id="ctfield{{ block.id }}" name="properties[{% unless block_st.show-check %}_{% endunless %}{{ block_st.title }}]" value="Yes" class="hidden_txt" {% if block_st.required %}required{% endif %}> 
+                <span class="checkbox"></span> {{ block_st.title }}
+              </label>
+          {%- elsif block_st.type == 'radio' -%}
+              <div class="fl f-wrap gap" style="--gap:20px">
+              {% for radio in ctopt %}
+                <label class="fl lblin f-aic m0"><input type="radio" name="properties[{% unless block_st.show-check %}_{% endunless %}{{ block_st.title }}]" value="{{ radio }}" form="{{ product_form_id }}" {% if block_st.required %}required{% endif %}> {{ radio }}</label>
+              {% endfor %}
+              </div>
+          {%- elsif block_st.type == 'select' -%}
+              <select class="w-100 mb0" id="ctfield{{ block.id }}" name="properties[{% unless block_st.show-check %}_{% endunless %}{{ block_st.title }}]" form="{{ product_form_id }}" {% if block_st.required %}required{% endif %}>
+              <option value="">---</option>
+              {% for radio in ctopt %}
+                <option value="{{ radio }}">{{ radio }}</option>
+              {% endfor %}
+              </select>
+          {%- elsif block_st.type == 'checkbox_group' -%}
+              <div class="fl f-wrap gap" style="--gap:20px">
+              {% for radio in ctopt %}
+                <label class="fl lblin f-aic m0">
+                  <input type="checkbox" id="ct{{ radio | handleize }}{{ forloop.index }}" name="{{ block_st.title | handleize }}[]" hidden-data="{{ block_st.title | handleize }}" onchange="fillHidden('{{ block_st.title | handleize }}')" class="hidden_txt" value="{{ radio }}">
+                  <span class="checkbox"></span>{{ radio }}
+                </label>
+              {% endfor %}
+              <input type="text" class="hidden_txt" id="{{ block_st.title | handleize }}" name="properties[{% unless block_st.show-check %}_{% endunless %}{{ block_st.title }}]" form="{{ product_form_id }}" {% if block_st.required %}required{% endif %}>
+              <script>
+                function fillHidden(hiddenname) {
+                var allcheck = document.getElementsByClassName('ck{{ block_st.title | handleize }}');
+                var checkboxes = document.querySelectorAll('[hidden-data="'+hiddenname+'"]');
+                var hiddenfield = document.getElementById(hiddenname);
+                hiddenfield.value = ""
+                var i;
+                for (i = 0; i < checkboxes.length; i++) {
+                  var x = checkboxes[i];
+                  if(x.checked){
+                    if(hiddenfield.value==""){
+                      hiddenfield.value = x.value;
+                    }else{
+                      hiddenfield.value = hiddenfield.value + ", " + x.value;
+                      }
+                      allcheck.removeAttribute("required");
+                    }
+                    
+                  }
+                }
+              </script>
+              </div>
+          {%- elsif block_st.type == 'file' -%}
+              <input class="mb0 w-100" id="ctfield{{ block.id }}" type="file" onchange="updateFilenameT4s(this.value,'label_{{ block.id }}')" data-accept="image/jpg,image/jpeg,image/gif,image/png" autocorrect="off" autocapitalize="off" name="properties[{% unless block_st.show-check %}_{% endunless %}{{ block_st.title }}]" form="{{ product_form_id }}" {% if block_st.required %}required{% endif %}>
+          {%- endif -%}
+    </div>
+{% endif %}
+{% schema %}
+{
+  "name": "Custom option",
+  "tag": null,
+  "settings": [
+    {
+        "type":"paragraph",
+        "content":"Custom Options are used to collect customization information for an item added to the cart. [Guidelines](https://www.adornthemes.com/knowledge-base/vogal-how-to-add-product-custom-option)"
+    },
+    {
+        "type": "select",
+        "id": "type",
+        "label": "Field type",
+        "default": "short",
+        "options": [
+            {
+                "value": "short",
+                "label": "Text - short"
+            },
+            {
+                "value": "long",
+                "label": "Text - long"
+            },
+            {
+                "value": "checkbox",
+                "label": "Checkbox"
+            },
+            {
+                "value": "radio",
+                "label": "Radio buttons"
+            },
+            {
+                "value": "select",
+                "label": "Dropdown select"
+            },
+            {
+                "value": "checkbox_group",
+                "label": "Checkbox group"
+            },
+            {
+                "value": "file",
+                "label": "File upload (beta)"
+            }
+        ]
+    },
+    {
+        "type": "paragraph",
+        "content": "IMPORTANT: Upload file do not support dynamic checkout button. This extra field will not show up in the quick shop and quick view popup."
+    },
+    {
+        "type": "text",
+        "id": "title",
+        "label": "Field label",
+        "default": "Your name"
+    },
+    {
+        "type": "checkbox",
+        "id": "required",
+        "default": false,
+        "label": "Required",
+        "info": "If you select this, the checkbox need to be checked or text should be add in text field to add the item to the cart."
+    },
+    {
+        "type": "checkbox",
+        "id": "show-check",
+        "default": true,
+        "label": "Show at checkout, cart",
+        "info": "Uncheck this if you don't want the information to be shown in the cart or checkout page with order details."
+    },
+    {
+        "type": "header",
+        "content": "Options",
+        "info": "Only applicable for line item property of type options.",
+        "visible_if": "{{ block.settings.type == 'radio' or block.settings.type == 'select' or block.settings.type == 'checkbox_group' }}"
+    },
+    {
+        "type": "textarea",
+        "id": "options",
+        "label": "Options",
+        "default": "option1, option2, option3",
+        "info": "Add option names with a (,) seprator",
+        "visible_if": "{{ block.settings.type == 'radio' or block.settings.type == 'select' or block.settings.type == 'checkbox_group' }}"
+    },
+    {
+        "type": "header",
+        "content": "Set visibility"
+    },
+    {
+        "type": "select",
+        "id": "visible",
+        "default": "all",
+        "info":"How you want to display custom option for products",
+        "options": [
+        {
+            "value": "all",
+            "label": "All"
+        },
+        {
+            "value": "type",
+            "label": "By Type"
+        },
+        {
+            "value": "tag",
+            "label": "By Tag"
+        },
+        {
+            "value": "product",
+            "label": "By Product"
+        },
+        {
+            "value": "metafield",
+            "label": "By Metafield"
+        }
+        ],
+        "label": "Visibility"
+    },
+    {
+        "type": "textarea",
+        "id": "based",
+        "label": "Add Type/Tag names",
+        "placeholder": "type1, type2, type3",
+        "info": "Add name with a (,) seprator",
+        "visible_if": "{{ block.settings.visible == 'type' or block.settings.visible == 'tag' }}"
+    },
+    {
+        "type": "liquid",
+        "id": "meta",
+        "label": "By metafield",
+        "info": "Create true or false metafield and copy full key name and add here. Key name should look like this {{ product.metafields.custom.your_name }}",
+        "visible_if": "{{ block.settings.visible == 'metafield' }}"
+    },
+    {
+        "type": "product_list",
+        "id": "products",
+        "label": "Products",
+        "info": "If Visibility is set by product. Select up to 50 products."
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom option",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

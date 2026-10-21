@@ -1,0 +1,210 @@
+{%- capture page_banner -%}
+{% assign section_st = section.settings %}
+<div class="section-cover npd"  style="--page-width:{{ section_st.contwd }}px;--mht:{{ section_st.height_desk }}px;--mhtt:{{ section_st.height_tab }}px;--mhtm:{{ section_st.height_mob }}px;--sbg:{% if section_st.bgg != blank %}{{ section_st.bgg }}{% else %}{{ section_st.bg }}{% endif %};">  
+    {%- liquid
+        assign banner_img = section_st.image
+        assign banner_imgm = section_st.mb_image
+        assign banner_imgm_srcset = banner_imgm | image_url: width: banner_imgm.width | image_tag: widths: '360,480,760' | split: 'srcset="' | last | split: '"' | first
+    -%}
+    {% if section_st.image != blank %}
+        <picture class="overlay" style="--overlay:{{ section_st.ovr }};">
+            {% if section_st.mb_image != blank %}
+                <source media="(max-width: 767px)" srcset="{{ banner_imgm_srcset }}" width="{{ banner_imgm.width }}" height="{{ banner_imgm.height }}">
+            {% endif %}
+            {{ banner_img | image_url: width: banner_img.width | image_tag: class:'img-fit heroImg', width:banner_img.width, height:banner_img.height, widths:"400,600,800,1000,1200,1400,1600,2000,2400,3000" }}
+        </picture>
+    {% endif %}
+    <div class="hero-wrapper wd100 fl m-auto pr zi2 {{ section_st.txtpos }} {{ section_st.txtposm }}">
+        <div class="fl f-col gap t-{{ section_st.alignm }} t-{{ section_st.align }}-md {% render 'group-settings', section_st:section_st, class: true %}" style="{% render 'group-settings', section_st:section_st, styles:true %}">
+                {%- content_for 'blocks' -%}
+        </div>
+    </div>
+</div>
+{%- endcapture -%}
+{{ page_banner | strip_newlines | remove: '  ' | remove: '	' }}
+{% schema %}
+{
+  "name": "Blog banner",
+  "enabled_on": {
+    "templates": ["blog"]
+  },
+  "blocks": [
+     { "type": "heading" },
+    { "type": "text" },
+    { "type": "countdown" },
+    { "type": "_breadcrumb" }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "[How do I set blog banners?](https://www.adornthemes.com/knowledge-base/blog-banner/)"
+    },
+     {
+      "type": "header",
+      "content": "Banner height"
+    },
+    {
+      "type": "range",
+      "id": "height_desk",
+      "label": "Desktop",
+      "default": 200,
+      "min": 80,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "type": "range",
+      "id": "height_tab",
+      "label": "Tablet",
+      "default": 150,
+      "min": 80,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "type": "range",
+      "id": "height_mob",
+      "label": "Mobile",
+      "default": 80,
+      "min": 30,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "type": "paragraph",
+      "content": "---------------------------------------------"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image",
+      "info": "Recommended width 2000px and height as per above desktop height"
+    },
+    {
+      "type": "image_picker",
+      "id": "mb_image",
+      "label": "Mobile image",
+      "info": "Recommended width 750 and height as per above mobile height. If mobile image is blank, dekstop image will be used.",
+      "visible_if": "{{ section.settings.image != blank }}"
+    },   
+     {
+      "type": "color",
+      "id": "ovr",
+      "label": "Overlay color",
+      "alpha": true,
+      "default": "#00000060",
+      "visible_if": "{{ section.settings.image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient"
+    },   
+    {
+      "type": "header",
+      "content": "Banner caption"
+    },
+    {
+      "type": "range",
+      "id": "contwd",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "label": "Container width",
+      "unit": "px",
+      "default": 1400,
+      "info": "Apply for desktop only"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "gapm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap (mobile)",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "txtpos",
+      "label": "Position",
+      "default": "f-aic-md f-jcc-md",
+      "options": [
+        { "label": "Top left", "value": "f-ais-md f-jcs-md" },
+        { "label": "Top center", "value": "f-ais-md f-jcc-md" },
+        { "label": "Top right", "value": "f-ais-md f-jce-md" },
+        { "label": "Left", "value": "f-aic-md f-jcs-md" },
+        { "label": "Center", "value": "f-aic-md f-jcc-md" },
+        { "label": "Right", "value": "f-aic-md f-jce-md" },
+        { "label": "Bottom left", "value": "f-aie-md f-jcs-md" },
+        { "label": "Bottom center", "value": "f-aie-md f-jcc-md" },
+        { "label": "Bottom right", "value": "f-aie-md f-jce-md" }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "txtposm",
+      "label": "Position (mobile)",
+      "default": "f-aic f-jcc",      
+      "options": [
+        { "label": "Top left", "value": "f-ais f-jcs" },
+        { "label": "Top center", "value": "f-ais f-jcc" },
+        { "label": "Top right", "value": "f-ais f-jce" },
+        { "label": "Left", "value": "f-aic f-jcs" },
+        { "label": "Center", "value": "f-aic f-jcc" },
+        { "label": "Right", "value": "f-aic f-jce" },
+        { "label": "Bottom left", "value": "f-aie f-jcs" },
+        { "label": "Bottom center", "value": "f-aie f-jcc" },
+        { "label": "Bottom right", "value": "f-aie f-jce" }
+      ]
+    },    
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Alignment",
+      "default": "center"
+    },   
+    {
+      "type": "text_alignment",
+      "id": "alignm",
+      "label": "Alignment (mobile)",
+      "default": "center"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog banner",
+      "category": "Banner",
+      "blocks": {
+        "breadcrumb": {
+          "type": "_breadcrumb"
+        },
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "{{ blog.title }}"
+          }
+        }
+      },
+      "block_order": ["breadcrumb", "heading"]
+    }
+  ]
+}
+{% endschema %}

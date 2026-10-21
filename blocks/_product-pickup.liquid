@@ -1,0 +1,84 @@
+{%- liquid
+    assign block_st = block.settings
+    assign current_variant = product.selected_or_first_available_variant
+    assign pick_up_availabilities = current_variant.store_availabilities | where: 'pick_up_enabled', true
+-%}
+<pickup-availability class="product__pickup-availabilities quick-add-hidden db mb{{ block_st.mbm }} mb{{ block_st.mb }}-mb brad of-hidden" style="--rounded:{{ block_st.brad }}px;--bg:{{ block_st.bg }};;--icon:{{ block_st.icon }};--cl:{{ block_st.text }}" {% if current_variant.available and pick_up_availabilities.size > 0 %}available{% endif %}
+    data-root-url="{{ routes.root_url }}" data-variant-id="{{ product.selected_or_first_available_variant.id }}" data-has-only-default-variant="{{ product.has_only_default_variant }}" data-product-page-color-scheme="gradient" {{ block.shopify_attributes }}>
+    <template>
+        <pickup-availability-preview class="pickup-availability-preview">
+            <span class="svg-wrapper">{{- 'icon-unavailable.svg' | inline_asset_content -}}</span>
+            <div class="pickup-availability-info">
+                <p class="caption-large">{{ 'products.pickup_availability.unavailable' | t }}</p>
+                <button class="pickup-availability-button link link--text underlined-link">{{ 'products.pickup_availability.refresh' | t }}</button>
+            </div>
+        </pickup-availability-preview>
+    </template>
+</pickup-availability>
+<script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
+{% schema %}
+{
+  "name": "Pickup availability",
+  "tag": null,
+  "settings": [
+    {
+        "type": "color",
+        "id": "bg",
+        "label": "Background",
+        "default": "#f5f5f5"
+    },
+    {
+        "type": "color",
+        "id": "icon",
+        "label": "Icon",
+        "default": "#333"
+    },
+    {
+        "type": "color",
+        "id": "text",
+        "label": "Text",
+        "default": "#333"
+    },  
+    {
+        "type": "range",
+        "id": "brad",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "label": "Corner radius",
+        "unit": "px",
+        "default": 1
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pickup availability",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

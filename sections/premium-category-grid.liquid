@@ -1,0 +1,136 @@
+{{ 'premium-category-grid.css' | asset_url | stylesheet_tag }}
+
+<div class="premium-category-section">
+
+  <div class="premium-category-header">
+
+    {% if section.settings.heading != blank %}
+      <h2>{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    {% if section.settings.subheading != blank %}
+      <p>{{ section.settings.subheading }}</p>
+    {% endif %}
+
+    <span class="heading-line"></span>
+
+  </div>
+
+  <div class="premium-category-grid">
+
+    {% for block in section.blocks %}
+
+      <a
+        href="{{ block.settings.link }}"
+        class="premium-category-card"
+        {{ block.shopify_attributes }}
+      >
+
+        {% if block.settings.image != blank %}
+
+          <img
+            src="{{ block.settings.image | image_url: width:1200 }}"
+            alt="{{ block.settings.title }}"
+          >
+
+        {% else %}
+
+          {{ 'image' | placeholder_svg_tag }}
+
+        {% endif %}
+
+        <div class="premium-overlay"></div>
+
+        <div class="premium-content">
+
+          <h3>{{ block.settings.title }}</h3>
+
+          <span class="shop-now">
+            {{ block.settings.button_text }}
+          </span>
+
+        </div>
+
+      </a>
+
+    {% endfor %}
+
+  </div>
+
+</div>
+
+{% schema %}
+{
+  "name": "Premium Category Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop Categories"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Sub Heading",
+      "default": "Discover our premium footwear collection."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "BOOTS"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "SHOP NOW"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Premium Category Grid",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

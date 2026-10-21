@@ -1,0 +1,467 @@
+{%- assign section_st = section.settings -%}
+{%- assign top_pattern_width = 120 -%}
+{%- assign bottom_pattern_width = 120 -%}
+{%- case section_st.top_svg_style -%}
+  {%- when 'diamond-trim' -%}{%- assign top_pattern_width = 30 -%}
+  {%- when 'diagonal-cut', 'arch' -%}{%- assign top_pattern_width = 1200 -%}
+  {%- when 'flow-wave' -%}{%- assign top_pattern_width = 200 -%}
+{%- endcase -%}
+{%- case section_st.bottom_svg_style -%}
+  {%- when 'diamond-trim' -%}{%- assign bottom_pattern_width = 30 -%}
+  {%- when 'diagonal-cut', 'arch' -%}{%- assign bottom_pattern_width = 1200 -%}
+  {%- when 'flow-wave' -%}{%- assign bottom_pattern_width = 200 -%}
+{%- endcase -%}
+<style>
+  #shopify-section-{{ section.id }} .kids-divider { line-height: 0; overflow: hidden; }
+
+  #shopify-section-{{ section.id }} .kids-divider--top.kids-divider--svg {  color: {{ section_st.top_divider_color }}; }
+
+  #shopify-section-{{ section.id }} .kids-divider--bottom.kids-divider--svg { color: {{ section_st.bottom_divider_color }}; }
+
+  #shopify-section-{{ section.id }} .kids-divider svg { display: block;width: 100%; }
+
+  #shopify-section-{{ section.id }} .kids-divider--top.kids-divider--svg svg { height: {{ section_st.top_svg_height }}px;  }
+
+  #shopify-section-{{ section.id }} .kids-divider--bottom.kids-divider--svg svg { height: {{ section_st.bottom_svg_height }}px; transform: rotate(180deg); transform-origin: center; }
+
+  #shopify-section-{{ section.id }} .kids-divider--line { padding: 0; }
+
+  #shopify-section-{{ section.id }} .kids-divider__line { display: block; width: 100%; margin: 0; border: 0;  }
+
+  @media screen and (max-width: 749px) {
+     #shopify-section-{{ section.id }} .kids-divider--top.kids-divider--svg svg { height: {{ section_st.top_svg_height_mobile }}px;  }
+     #shopify-section-{{ section.id }} .kids-divider--bottom.kids-divider--svg svg { height: {{ section_st.bottom_svg_height_mobile }}px; }
+  }
+</style>
+
+{%- capture top_shape -%}
+  {%- case section_st.top_svg_style -%}
+    {%- when 'curved-wave' -%}
+      <path d="M0 10 Q30 0 60 10 T120 10 V20 H0 Z" fill="currentColor" />
+    {%- when 'gentle-wave' -%}
+      <path d="M0 14 C20 10 40 10 60 14 C80 18 100 18 120 14 V20 H0 Z" fill="currentColor" />
+    {%- when 'flow-wave' -%}
+      <path d="M0 10 Q25 0 50 10 T100 10 T150 10 T200 10 V20 H0 Z" fill="currentColor" />
+    {%- when 'scallop' -%}
+      <path d="M0 10 C10 0 20 0 30 10 C40 0 50 0 60 10 C70 0 80 0 90 10 C100 0 110 0 120 10 V20 H0 Z" fill="currentColor" />
+    {%- when 'bubble' -%}
+      <path d="M0 15 C8 8 18 8 24 15 C30 6 42 5 50 11 C58 2 72 2 80 11 C88 5 100 6 106 15 C111 12 116 12 120 15 V20 H0 Z" fill="currentColor" />
+    {%- when 'ticket' -%}
+      <path d="M0 14 C6 9 14 9 20 14 C26 19 34 19 40 14 C46 9 54 9 60 14 C66 19 74 19 80 14 C86 9 94 9 100 14 C106 19 114 19 120 14 V20 H0 Z" fill="currentColor" />
+    {%- when 'castle-edge' -%}
+      <path d="M0 20 V6 H10 V0 H20 V6 H30 V0 H40 V6 H50 V0 H60 V6 H70 V0 H80 V6 H90 V0 H100 V6 H110 V0 H120 V20 Z" fill="currentColor" />
+    {%- when 'rolling-hills' -%}
+      <path d="M0 14 C10 10 18 10 28 14 C38 18 46 18 56 14 C66 10 74 10 84 14 C94 18 102 18 112 14 C116 12 118 12 120 13 V20 H0 Z" fill="currentColor" />
+    {%- when 'notched-ribbon' -%}
+      <path d="M0 14 L10 10 L20 14 L30 10 L40 14 L50 10 L60 14 L70 10 L80 14 L90 10 L100 14 L110 10 L120 14 V20 H0 Z" fill="currentColor" />
+    {%- when 'diagonal-cut' -%}
+      <path d="M0 20 L1200 0 V20 Z" fill="currentColor" />
+    {%- when 'arch' -%}
+      <path d="M0 20 C300 2 900 2 1200 20 V20 Z" fill="currentColor" />
+    {%- when 'diamond-trim' -%}
+      <path d="M0 20 V18 H30 V20 Z" fill="currentColor" />
+      <path d="M15 3 L21 9 L15 15 L9 9 Z" fill="currentColor" />
+  {%- endcase -%}
+{%- endcapture -%}
+
+{%- capture bottom_shape -%}
+  {%- case section_st.bottom_svg_style -%}
+    {%- when 'scallop' -%}
+      <path d="M0 10 C10 0 20 0 30 10 C40 0 50 0 60 10 C70 0 80 0 90 10 C100 0 110 0 120 10 V20 H0 Z" fill="currentColor" />
+    {%- when 'curved-wave' -%}
+       <path d="M0 10 Q30 0 60 10 T120 10 V20 H0 Z" fill="currentColor" />
+    {%- when 'gentle-wave' -%}
+      <path d="M0 14 C20 10 40 10 60 14 C80 18 100 18 120 14 V20 H0 Z" fill="currentColor" />
+    {%- when 'flow-wave' -%}
+      <path d="M0 10 Q25 0 50 10 T100 10 T150 10 T200 10 V20 H0 Z" fill="currentColor" />
+    {%- when 'bubble' -%}
+      <path d="M0 15 C8 8 18 8 24 15 C30 6 42 5 50 11 C58 2 72 2 80 11 C88 5 100 6 106 15 C111 12 116 12 120 15 V20 H0 Z" fill="currentColor" />
+    {%- when 'ticket' -%}
+      <path d="M0 14 C6 9 14 9 20 14 C26 19 34 19 40 14 C46 9 54 9 60 14 C66 19 74 19 80 14 C86 9 94 9 100 14 C106 19 114 19 120 14 V20 H0 Z" fill="currentColor" />
+    {%- when 'castle-edge' -%}
+      <path d="M0 20 V6 H10 V0 H20 V6 H30 V0 H40 V6 H50 V0 H60 V6 H70 V0 H80 V6 H90 V0 H100 V6 H110 V0 H120 V20 Z" fill="currentColor" />
+    {%- when 'rolling-hills' -%}
+      <path d="M0 14 C10 10 18 10 28 14 C38 18 46 18 56 14 C66 10 74 10 84 14 C94 18 102 18 112 14 C116 12 118 12 120 13 V20 H0 Z" fill="currentColor" />
+    {%- when 'notched-ribbon' -%}
+      <path d="M0 14 L10 10 L20 14 L30 10 L40 14 L50 10 L60 14 L70 10 L80 14 L90 10 L100 14 L110 10 L120 14 V20 H0 Z" fill="currentColor" />
+    {%- when 'diagonal-cut' -%}
+      <path d="M0 20 L1200 0 V20 Z" fill="currentColor" />
+    {%- when 'arch' -%}
+      <path d="M0 20 C300 2 900 2 1200 20 V20 Z" fill="currentColor" />
+    {%- when 'diamond-trim' -%}
+      <path d="M0 20 V18 H30 V20 Z" fill="currentColor" />
+      <path d="M15 3 L21 9 L15 15 L9 9 Z" fill="currentColor" />
+  {%- endcase -%}
+{%- endcapture -%}
+
+{%- capture devider_sec -%}
+<div class="section-cover {% render 'sec-settings', section_st: section_st, class: true %}" style="{% render 'sec-settings', section_st: section_st, styles: true %}">
+  {%- if section_st.divider_position != 'bottom' and section_st.top_divider_mode == 'svg' and section_st.top_svg_style != 'none' -%}
+    <div class="kids-divider kids-divider--top kids-divider--svg" aria-hidden="true">
+      <svg viewBox="0 0 1200 20" preserveAspectRatio="none" focusable="false">
+        <defs>
+          <pattern id="divider-top-{{ section.id }}" width="{{ top_pattern_width }}" height="20" patternUnits="userSpaceOnUse">
+            {{ top_shape }}
+          </pattern>
+        </defs>
+        <rect width="100%" height="20" fill="url(#divider-top-{{ section.id }})"></rect>
+      </svg>
+    </div>
+  {%- elsif section_st.divider_position != 'bottom' and section_st.top_divider_mode == 'line' -%}
+    <div class="kids-divider kids-divider--top kids-divider--line" aria-hidden="true">
+      <hr class="kids-divider__line" style="border-top: {{ section_st.top_line_width }}px {{ section_st.top_line_style }} {{ section_st.top_line_color }};">
+    </div>
+  {%- endif -%}
+
+  {%- if section_st.divider_position != 'top' and section_st.bottom_divider_mode == 'svg' and section_st.bottom_svg_style != 'none' -%}
+    <div class="kids-divider kids-divider--bottom kids-divider--svg" aria-hidden="true">
+      <svg viewBox="0 0 1200 20" preserveAspectRatio="none" focusable="false">
+        <defs>
+          <pattern id="divider-bottom-{{ section.id }}" width="{{ bottom_pattern_width }}" height="20" patternUnits="userSpaceOnUse">
+            {{ bottom_shape }}
+          </pattern>
+        </defs>
+        <rect width="100%" height="20" fill="url(#divider-bottom-{{ section.id }})"></rect>
+      </svg>
+    </div>
+  {%- elsif section_st.divider_position != 'top' and section_st.bottom_divider_mode == 'line' -%}
+    <div class="kids-divider kids-divider--bottom kids-divider--line" aria-hidden="true">
+      <hr class="kids-divider__line" style="border-top: {{ section_st.bottom_line_width }}px {{ section_st.bottom_line_style }} {{ section_st.bottom_line_color }};">
+    </div>
+  {%- endif -%}
+</div>
+{%- endcapture -%}
+ <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %} tc">
+    {%- if section_st.image != blank -%}
+      {{- section_st.image | image_url: width: section_st.image.width | image_tag: class: 'h-auto w-100', width: section_st.image.width, height: section_st.image.height, widths: '600,800,1000,1200,1400,1600,2000,2400' -}}
+    {%- endif -%}
+    {{- devider_sec | strip_newlines | remove: '  ' | remove: '	' -}}
+  </div>
+
+{% schema %}
+{
+  "name": "Section Divider",
+  "disabled_on": {
+    "groups": ["custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "divider_position",
+      "label": "Show divider on",
+      "default": "bottom",
+      "options": [
+        { "value": "top", "label": "Top only" },
+        { "value": "bottom", "label": "Bottom only" },
+        { "value": "both", "label": "Top and bottom" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Top divider",
+      "visible_if": "{{ section.settings.divider_position != 'bottom' }}"
+    },
+    {
+      "type": "select",
+      "id": "top_divider_mode",
+      "label": "Divider type",
+      "default": "line",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "svg", "label": "SVG shape" },
+        { "value": "line", "label": "Line" }
+      ],
+      "visible_if": "{{ section.settings.divider_position != 'bottom' }}"
+    },
+    {
+      "type": "select",
+      "id": "top_svg_style",
+      "label": "Style",
+      "default": "curved-wave",
+      "options": [
+        { "value": "curved-wave", "label": "Curved wave" },
+        { "value": "gentle-wave", "label": "Gentle wave" },
+        { "value": "flow-wave", "label": "Flowing wave" },
+        { "value": "scallop", "label": "Scallops" },
+        { "value": "bubble", "label": "Bubble bounce" },
+        { "value": "ticket", "label": "Playful ribbon" },
+        { "value": "castle-edge", "label": "Castle edge" },
+        { "value": "rolling-hills", "label": "Rolling hills" },
+        { "value": "notched-ribbon", "label": "Notched ribbon" },
+        { "value": "diagonal-cut", "label": "Diagonal cut" },
+        { "value": "arch", "label": "Arch" },
+        { "value": "diamond-trim", "label": "Diamond trim" }
+      ],
+      "visible_if": "{{ section.settings.divider_position != 'bottom' and section.settings.top_divider_mode == 'svg' }}"
+    },
+    {
+      "type": "color",
+      "id": "top_divider_color",
+      "label": "Color",
+      "default": "#eee",
+      "visible_if": "{{ section.settings.divider_position != 'bottom' and section.settings.top_divider_mode == 'svg' }}"
+    },
+
+    {
+      "type": "range",
+      "id": "top_svg_height",
+      "label": "Height",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ section.settings.divider_position != 'bottom' and section.settings.top_divider_mode == 'svg' }}"
+    },
+    {
+      "type": "range",
+      "id": "top_svg_height_mobile",
+      "label": "Height (mobile)",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 15,
+      "visible_if": "{{ section.settings.divider_position != 'bottom' and section.settings.top_divider_mode == 'svg' }}"
+    },
+    {
+      "type": "select",
+      "id": "top_line_style",
+      "label": "Style",
+      "default": "solid",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" },
+        { "value": "double", "label": "Double" }
+      ],
+      "visible_if": "{{ section.settings.divider_position != 'bottom' and section.settings.top_divider_mode == 'line' }}"
+    },
+    {
+      "type": "range",
+      "id": "top_line_width",
+      "label": "Width",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ section.settings.divider_position != 'bottom' and section.settings.top_divider_mode == 'line' }}"
+    },
+    {
+      "type": "color",
+      "id": "top_line_color",
+      "label": "Color",
+      "default": "#eee",
+      "visible_if": "{{ section.settings.divider_position != 'bottom' and section.settings.top_divider_mode == 'line' }}"
+    },
+    {
+      "type": "header",
+      "content": "Bottom divider",
+      "visible_if": "{{ section.settings.divider_position != 'top' }}"
+    },
+    {
+      "type": "select",
+      "id": "bottom_divider_mode",
+      "label": "Divider type",
+      "default": "line",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "svg", "label": "SVG shape" },
+        { "value": "line", "label": "Line" }
+      ],
+      "visible_if": "{{ section.settings.divider_position != 'top' }}"
+    },
+    {
+      "type": "select",
+      "id": "bottom_svg_style",
+      "label": "Style",
+      "default": "scallop",
+      "options": [
+        { "value": "curved-wave", "label": "Curved wave" },
+        { "value": "gentle-wave", "label": "Gentle wave" },
+        { "value": "flow-wave", "label": "Flowing wave" },
+        { "value": "scallop", "label": "Scallops" },
+        { "value": "bubble", "label": "Bubble bounce" },
+        { "value": "ticket", "label": "Playful ribbon" },
+        { "value": "castle-edge", "label": "Castle edge" },
+        { "value": "rolling-hills", "label": "Rolling hills" },
+        { "value": "notched-ribbon", "label": "Notched ribbon" },
+        { "value": "diagonal-cut", "label": "Diagonal cut" },
+        { "value": "arch", "label": "Arch" },
+        { "value": "diamond-trim", "label": "Diamond trim" }
+      ],
+      "visible_if": "{{ section.settings.divider_position != 'top' and section.settings.bottom_divider_mode == 'svg' }}"
+    },
+    {
+      "type": "color",
+      "id": "bottom_divider_color",
+      "label": "Color",
+      "default": "#eee",
+      "visible_if": "{{ section.settings.divider_position != 'top' and section.settings.bottom_divider_mode == 'svg' }}"
+    },
+
+    {
+      "type": "range",
+      "id": "bottom_svg_height",
+      "label": "Height",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ section.settings.divider_position != 'top' and section.settings.bottom_divider_mode == 'svg' }}"
+    },
+    {
+      "type": "range",
+      "id": "bottom_svg_height_mobile",
+      "label": "Height (mobile)",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 15,
+      "visible_if": "{{ section.settings.divider_position != 'top' and section.settings.bottom_divider_mode == 'svg' }}"
+    },
+    {
+      "type": "select",
+      "id": "bottom_line_style",
+      "label": "Style",
+      "default": "solid",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" },
+        { "value": "double", "label": "Double" }
+      ],
+      "visible_if": "{{ section.settings.divider_position != 'top' and section.settings.bottom_divider_mode == 'line' }}"
+    },
+    {
+      "type": "range",
+      "id": "bottom_line_width",
+      "label": "Width",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ section.settings.divider_position != 'top' and section.settings.bottom_divider_mode == 'line' }}"
+    },
+    {
+      "type": "color",
+      "id": "bottom_line_color",
+      "label": "Color",
+      "default": "#eee",
+      "visible_if": "{{ section.settings.divider_position != 'top' and section.settings.bottom_divider_mode == 'line' }}"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Divider image"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 25
+    }
+  ],
+  "presets": [
+    {
+      "name": "Divider",
+      "category": "Layout"
+    }
+  ]
+}
+{% endschema %}

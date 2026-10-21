@@ -1,0 +1,90 @@
+{%- liquid
+    assign block_st = block.settings
+    assign visitormsg = block_st.visitors_msg | replace: '[visitors]','<span id="fake-visitor" class="mr5"></span>'
+-%}
+<div class="site-visitor fl f-aic mb{{ block_st.mbm }} mb{{ block_st.mb }}-md fw-500" style="color:{{ block_st.cl }};--icon:{{ block_st.ccl }};" data-user="{{ settings.visitors }}" data-time="{{ block_st.visitors_time | times:1000 }}" {{ block.shopify_attributes }}>
+ <div class="{% if block_st.icon_anim %}icon-anim {% endif %}mr10"> <svg class="at-icon" style="--icns:18px"><use xlink:href="#icon-eye"></use></svg></div>{{ visitormsg }}
+</div>
+<script>document.getElementById("fake-visitor").innerHTML = Math.floor(Math.random() * {{ block_st.visitors }}) + 1;setInterval(function(){ document.getElementById("fake-visitor").innerHTML = Math.floor(Math.random() * {{ block_st.visitors }}) + 1 }, {{ block_st.visitors_time | times:1000 }});</script>
+{% schema %}
+{
+  "name": "Fake visitor",
+  "tag": null,
+  "settings": [
+    {
+        "type": "range",
+        "id": "visitors",
+        "label": "Max visitors",
+        "min": 10,
+        "max": 500,
+        "step": 10,
+        "default": 50
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_anim",
+      "label": "Icon animation",
+      "default":true
+    },
+    {
+        "type": "range",
+        "id": "visitors_time",
+        "label": "Interval time",
+        "min": 1,
+        "max": 20,
+        "step": 1,
+        "unit": "sec",
+        "default": 5
+    },
+    {
+        "type": "textarea",
+        "id": "visitors_msg",
+        "label": "Visitors message",
+        "default": "[visitors] People looking for this product right now",
+        "info": "Use '[visitors]' to show user counts"
+    },
+    {
+        "type": "color",
+        "id": "cl",
+        "label": "Text",
+        "default": "#111"
+    },    
+    {
+        "type": "color",
+        "id": "ccl",
+        "label": "Icon",
+        "default": "#000"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Fake visitor",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

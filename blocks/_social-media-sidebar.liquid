@@ -1,0 +1,38 @@
+{%- liquid
+  assign section_st = section.settings
+  assign block_st = block.settings
+%}
+<div class="sidebar-widget sdSocial" {{ block.shopify_attributes }}>
+  {%- if block_st.title != blank -%}
+    <div class="widget-title head {{ section_st.ttlpreset }}{% if section_st.bottom_border %} border-bottom mb15{% endif %}{% if section_st.text-upper %} text-upper{% endif %}">{{ block_st.title }}</div>
+  {%- endif -%}
+  <div class="widget-content">
+    {%- if block_st.text != blank -%}<div class="mb10">{{ block_st.text }}</div>{%- endif -%}
+    {% content_for 'block', type: 'social-media', id: 'social-media' %}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Social media",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Follow us on"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social media",
+      "category": "Sidebar"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,320 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }} 
+<script src="{{ 'customer.js' | asset_url }}" defer></script> 
+{% assign section_st = section.settings %}
+{%- capture styles -%}
+    {%- if section_st.preset == 'custom-hd' -%}
+      --fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;--ff:var(--{{ section_st.ff }});--fw:{{ section_st.fw }};--lh:{{ section_st.lh }};--ls:{{ section_st.ls }};
+    {%- endif -%}
+{%- endcapture -%}
+<div  class="section-cover" {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+  <div class="page-width">
+      <h1 class="page-title mb25 mb40-md tc{% if settings.ttl_c %} text-upper{% endif %}">{{ 'customer.account.title' | t }}</h1> 
+      <p class="hide-lg mb25"> {{ 'customer.account.welcome_text' | t }} <b class="dbi">{{ customer.name }}</b></p>
+      <div class="grid fl f-col f-row-md">
+      <div class="gitem wd33-md">
+        <div class="account-links fl f-row f-col-md round-xs of-hidden">           
+            <a href="{{ routes.account_url }}" class="active"> {{ 'customer.orders.link_name' | t }} </a> 
+            <a href="{{ routes.account_addresses_url }}"> {{ 'customer.addresses.link_name' | t }}</a>
+            <a href="{{ routes.account_logout_url }}"><b>{{ 'customer.account.logout' | t }}</b></a> 
+        </div>
+      </div>     
+      <div class="gitem wd66-md " style="{{ styles }}">
+        <div class="fl f-aic gap hide-sm" style="--gap:10px;"> <span> {{ 'customer.account.welcome_text' | t }} <b class="dbi">{{ customer.name }}</b></span> | <a href="{{ routes.account_logout_url }}"><b>{{ 'customer.account.logout' | t }}</b></a> </div>
+        <br class="hide-sm">
+        <h2 class="head {{ section_st.preset }}">{{ 'customer.orders.title' | t }}</h2>
+        <hr>
+        {% paginate customer.orders by 20 %}
+        {% if customer.orders.size != 0 %}
+        <table class="responsive_tbl mb30">
+          <thead>
+            <tr>
+              <th>{{ 'customer.orders.order_number' | t }}</th>
+              <th>{{ 'customer.orders.date' | t }}</th>
+              <th>{{ 'customer.orders.payment_status' | t }}</th>
+              <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+              <th>{{ 'customer.orders.total' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>          
+          {% for order in customer.orders %}
+          <tr>
+            <td data-label="{{ 'customer.orders.order_number' | t }}"><a href="{{ order.customer_url }}" class="btn-link">{{ order.name }}</a></td>
+            <td data-label="{{ 'customer.orders.date' | t }}"> {{ order.created_at | date: format: 'month_day_year' }} </td>
+            <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
+            <td data-label="{{ 'customer.orders.fulfillment_status' | t }}"> {{ order.fulfillment_status_label }} </td>
+            <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money }}</td>
+          </tr>
+          {% endfor %}
+            </tbody>
+          
+        </table>
+        {% else %}
+        <p>{{ 'customer.orders.none' | t }}</p>
+        <p> <a
+                href="{{ routes.all_products_collection_url }}"
+                class="btn {{ section_st.btn }} {{ section_st.btnsz }}"
+              > {{- 'customer.account.no_order_button' | t -}} </a> </p>
+        {% endif %}
+        {% if paginate.pages > 1 %}
+        {% render 'pagination' %}
+        {% endif %}
+        {% endpaginate %} 
+        <div class="fl f-jcsb">
+          <h2 class="head {{ section_st.preset }} mb0">{{ 'customer.account.details' | t }}</h2>
+        </div>
+        <hr>
+        {{ customer.default_address | format_address }} <a href="{{ routes.account_addresses_url }}" class="btn {{ section_st.btn }} {{ section_st.btnsz }}"> {{- 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a
+        > </div>
+           </div>
+    
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Account page",
+  "settings": [    
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h5",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 18,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "700",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default": 0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "select",
+      "id": "btn",
+      "label": "Buttons design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "btnsz",
+      "label": "Buttons size",
+      "default": "btn-sm",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ]
+}
+{% endschema %} 

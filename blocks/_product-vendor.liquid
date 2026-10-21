@@ -1,0 +1,102 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign vname = product.vendor | url_param_escape
+    assign vlink = routes.collections_url | append: '/vendors?q=' | append: vname
+    for coll in product.collections
+        if coll.title == product.vendor
+            assign vlink = coll.url
+            break
+        endif
+    endfor
+    assign img_name = product.vendor | handleize | append:'.png'
+    assign img_src = img_name | file_img_url: '200x'
+-%}
+<div id="blk-{{ block.id }}" class="fl f-aic mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" style="--btn_link:{{ block_st.cl }};--btn_fs:{{ block_st.fs }}px;" {{ block.shopify_attributes }}>
+    {% if block_st.islabel %}<span class="lbl mr5">{{ 'products.product.vendor' | t }}</span> {% endif %}
+    <a class="product-vendor" href="{{ vlink }}">
+        {%- if img_src contains '?v=' and block_st.img -%}
+            {% # theme-check-disable RemoteAsset %}
+            <img class="h-auto" loading="lazy" src="{{ img_src }}" width="{{ block_st.lwd }}" height="100" alt="{{ product.vendor }}">
+            {% # theme-check-enable RemoteAsset %}
+        {%- else -%}
+           {{ product.vendor }}
+        {%- endif -%}
+    </a>
+</div>
+{% schema %}
+{
+  "name": "Vendor",
+  "tag": null,
+  "settings": [
+    {
+        "type": "checkbox",
+        "id": "islabel",
+        "label": "Show label",
+        "default": false
+    },
+    {
+        "type": "checkbox",
+        "id": "img",
+        "label": "Show vendor logo",
+        "info": "Create png logo image with same name as vendor name and upload at settings > files. Example: Coca Cola = coca-cola.png, Nike = nike.png"
+    },
+    {
+        "type": "range",
+        "id": "lwd",
+        "min": 50,
+        "max": 500,
+        "step": 5,
+        "label": "Logo width",
+        "unit": "px",
+        "default": 150
+    },
+    {
+        "type": "color",
+        "id": "cl",
+        "label": "Color",
+        "default": "#000"
+    },
+    {
+        "type": "range",
+        "id": "fs",
+        "min": 10,
+        "max": 60,
+        "step": 1,
+        "label": "Font size",
+        "unit": "px",
+        "default": 13
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vendor",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

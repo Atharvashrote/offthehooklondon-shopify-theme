@@ -1,0 +1,77 @@
+{% capture site_bottom %}
+<link rel="stylesheet" href="{{ 'default.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- if is_rtl -%}
+    {{- 'themeRtl.css' | asset_url | stylesheet_tag: preload: true -}}
+{%- endif -%}
+<style>
+    {% if settings.arr_show == 'hover' %}
+      @media only screen and (min-width:1024px){
+        .swiper-arrows { opacity:0 }
+        .swiper-horizontal:hover .swiper-arrows { opacity:0.6 }
+        .swiper-arrows:hover { opacity:1 !important }
+      }
+    {% endif %}
+    {%- if settings.show_scroll -%}
+        back-to-top { color:{{settings.stt_btntxt}}; position:fixed; right:10px; bottom:50px; right:30px; z-index:55; visibility:hidden; opacity:0; transform: translateY(50px);
+            width:55px; height:55px; border-radius:{{settings.stt_btnbdr}}px; background-color:{{settings.stt_btnbg}}; {% if settings.box_shadow %} box-shadow:0 0 5px {{settings.stt_btntxt | color_modify:'alpha', 0.2}}; {% endif %} }
+        back-to-top.active { visibility:visible; opacity:1; transform: translateY(0); }
+        back-to-top .ht-scroll { bottom:0; left:0; height:var(--ht); background-color:{{ settings.stt_htbg }}; }
+        back-to-top .at-icon { color:{{settings.stt_btntxt}};  }
+    {%- endif -%}
+
+    .quickview .shopify-payment-button__button { margin-bottom:15px !important; color:{{settings.btntext}} !important; background-color:{{settings.btnbg}} !important; border:1px solid {{settings.btnbdr}} !important; }
+
+    {%- if settings.snow_effect -%}
+      .falling-snow { position:relative; }
+      @keyframes falling-down-snow { 0% { background-position:0 0, 0 0, 0 0; }  100% { background-position:0 700px, 0 500px, 0 300px; } }
+      @keyframes snow { 0% { background-position:0 0, 0 0, 0 0; } 100% { background-position:500px 1000px, 400px 400px, 300px 300px; } }
+      
+      .falling-snow.style1:before, .falling-snow.style2:before { content:''; background-color: transparent; position: absolute;width:100%; height:100%;top:0;left:0;z-index:2; pointer-events:none; }
+      .falling-snow.style1:before { background-image: url({{ 'snowballs-sm.png' | asset_url }}), url({{ 'snowballs-lg.png' | asset_url }}), url({{ 'snowballs-md.png' | asset_url }});-ms-animation:falling-down-snow 10s linear infinite; animation: falling-down-snow 10s linear infinite; }   
+      .falling-snow.style2:before { background-image: url({{ 'snow-1.png' | asset_url }}), url({{ 'snow-2.png' | asset_url }}), url({{ 'snow-2.png' | asset_url }}); -ms-animation:snow 10s linear infinite; animation:snow 10s linear infinite; }
+      .snow-wrap.falling-snow.style2::before { z-index:111; }
+    {%- endif -%}
+</style>
+
+<div class="loading-box" style="--icns:35px;"><svg class="at-icon at-spin"><use xlink:href="#icon-loading"></use></svg></div>
+<div class="modal-overly"></div>
+
+{%- if settings.show_scroll -%}
+  <back-to-top class="back-to-top fl f-aic f-jcc cpointer of-hidden{% if settings.show_stt_mb %} hide-sm{% endif %} anim" style="--height: 39.06%;" title="{{ 'accessibility.scroll_to_top_button' | t }}">
+      <span class="pa w-100 ht-scroll zi1"></span>      
+      <svg class="at-icon pr zi3" style="--icns:18px" height="512" viewBox="0 0 6.3499999 6.3500002" width="512" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><g id="layer1" transform="translate(0 -290.65)"><path id="path9421" d="m3.1734477 290.91611a.26460982.26460982 0 0 0 -.1834515.078l-1.3224009 1.32241a.26460982.26460982 0 1 0 .3731049.37465l.8691986-.8692.00212 4.64675a.2646485.2646485 0 0 0 .5291667 0l-.00212-4.65192.8728155.87437a.26516505.26516505 0 0 0 .3751685-.37465l-1.322398-1.32241a.26460982.26460982 0 0 0 -.1912038-.078z" font-variant-ligatures="normal" font-variant-position="normal" font-variant-caps="normal" font-variant-numeric="normal" font-variant-alternates="normal" font-feature-settings="normal" text-indent="0" text-align="start" text-decoration-line="none" text-decoration-style="solid" text-decoration-color="rgb(0,0,0)" text-transform="none" text-orientation="mixed" white-space="normal" shape-padding="0" isolation="auto" mix-blend-mode="normal" solid-color="rgb(0,0,0)" solid-opacity="1" vector-effect="none"/></g></svg>
+      </back-to-top>
+{%- endif -%}
+
+<ul hidden>
+  <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
+  <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
+</ul>
+<script>
+
+    
+  {% if settings.prevent_copy %}
+    document.addEventListener("contextmenu", function(event) {var notInput = (event.target || event.srcElement).tagName.toLowerCase() !== "input" && (event.target || event.srcElement).tagName.toLowerCase() !== "textarea";if (notInput && (event.target || event.srcElement).innerText) {event.preventDefault();} });
+    document.addEventListener("mousedown", function(event) { if ((event.target || event.srcElement).tagName.toLowerCase() === "img"){ if (event.which == 2) { event.preventDefault(); }}});
+    document.addEventListener("contextmenu", function(event) { if ((event.target || event.srcElement).tagName.toLowerCase() === "img") { event.preventDefault(); } });
+    const disableDragAndDrop = function(){document.body.setAttribute("ondragstart", "return false;");document.body.setAttribute("ondrop", "return false;");};
+    if (document.readyState === "complete") {disableDragAndDrop();} else {document.addEventListener("DOMContentLoaded", disableDragAndDrop);}
+    document.addEventListener("contextmenu", function(event) { if ((event.target || event.srcElement).style.backgroundImage) { event.preventDefault(); } });
+  {% endif %}
+</script>
+{%- if settings.animef -%}<script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>{%- endif -%}
+<script src="{{ 'tingle.min.js' | asset_url }}" defer></script>
+{%- if content_for_layout contains 'parallax-img' -%}<script src="{{ 'ukiyo.min.js' | asset_url }}" defer></script>{% endif %}
+{%- if content_for_layout contains 'grid-masonary' or request.design_mode -%}<script src="{{ 'masonry.js' | asset_url }}" defer></script>{%- endif -%}
+{%- if settings.mlcurrency and settings.curOpt == 'script' -%}
+  <script src="//cdn.shopify.com/s/javascripts/currencies.js" defer></script>
+  <script src="{{ "currencies.min.js" | asset_url }}" defer></script>
+{%- endif -%}
+<script src="{{ 'theme.js' | asset_url }}" defer></script>
+<script src="{{ 'cart.js' | asset_url }}" defer></script>
+{%- if request.design_mode -%}
+    <script src="{{ 'admin.js' | asset_url }}" defer></script>
+    {{ 'admin.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+{% endcapture %}
+{{- site_bottom | strip_newlines | remove: "  " | remove: "	" -}}

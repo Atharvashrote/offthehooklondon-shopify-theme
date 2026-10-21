@@ -1,0 +1,81 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign found_a_collection = false
+    assign exclusions = 'frontpage,all' | split: ','
+    if collection and collection.all_products_count > 1
+        unless exclusions contains collection.handle
+            assign found_a_collection = true
+        endunless
+    endif
+
+    unless found_a_collection
+        for c in product.collections
+            unless exclusions contains c.handle or c.all_products_count < 2
+                assign found_a_collection = true
+                assign collection = c
+                break
+            endunless
+        endfor
+    endunless
+-%}
+{%- if found_a_collection -%}
+    <div class="product-meta meta{{ block_st.stl }} fl" style="--gap:8px;--cl:{{block_st.cl}};--bg:{{block_st.bg}};" {{ block.shopify_attributes }}>
+        {% if block_st.islabel %}<span class="lbl mr5">{{ 'products.product.collection' | t }}</span> {% endif %}
+        <div class="fl f-wrap gap">
+        {%- for c in product.collections limit:10 -%}
+            {%- unless exclusions contains c.handle or c.all_products_count < 2 -%}
+                <a class="fl" href="{{ c.url }}">{{ c.title }}{% if block_st.stl == "1" %}{% unless forloop.last %}, {% endunless %}{%- endif -%}</a>
+            {%- endunless -%}
+        {%- endfor -%}
+        </div>
+    </div>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Collections",
+  "tag": null,
+  "settings": [
+    {
+        "type": "checkbox",
+        "id": "islabel",
+        "label": "Show label",
+        "default": true
+    },
+    {
+        "type": "select",
+        "id": "stl",
+        "label": "Style",
+        "default": "2",
+        "options": [
+            {
+                "value": "1",
+                "label": "Style 1 - text"
+            },
+            {
+                "value": "2",
+                "label": "Style 2 - button"
+            }
+        ]
+    },
+    {
+        "type": "color",
+        "id": "cl",
+        "label": "Text",
+        "default": "#333"
+    },
+    {
+        "type": "color",
+        "id": "bg",
+        "label": "Background",
+        "default": "#eee"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collections",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

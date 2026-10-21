@@ -1,0 +1,1 @@
+{"sections":{"breadcrumb":{"type":"breadcrumb","settings":{"cl":"#111111","bg":"#f9f9f9","fsz":13,"case":false,"fullwidth":false,"tc":false,"hidemb":false}},"main":{"type":"register","settings":{"cl":"#000000","bd":"#eeeeee","fbg":"#fafafa","btn-submit":"btn1","btn-size":"btn-md","sst":80,"ssb":100,"sstm":25,"ssbm":25}}},"order":["breadcrumb","main"]}

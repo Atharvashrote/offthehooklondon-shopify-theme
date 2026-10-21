@@ -1,0 +1,485 @@
+{%- capture lookbook -%}
+{%- liquid 
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+-%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}--icns:14px;" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}">
+        {%- render 'sec-title' -%}
+        <grid-masonary class="grid grid-masonary gspace shop pr"  style="--grsp:{{ section_st.gspace | divided_by: 2.0 }}px;--grspm:{{ section_st.gspacem | divided_by: 2.0 }}px;--cl:{{section_st.hotspot}};--cl_down:{{section_st.hotspot | color_modify: 'alpha', 0.2 }};--mob_col:{{ section_st.col-m }};">
+            <div class="grid-sizer col-{{ section_st.col }} pa"></div>
+            {% for block in section.blocks limit: section.blocks.size %}
+                {% assign block_st = block.settings %}
+                {% if block_st.image!= blank %}
+                    <div class="msitem gitem {{ section_st.col-m }} {{ block_st.width }}-md {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+                        <div class="pr w-100 of-hidden {{ section_st.irounded }}">
+                            {%- capture sizes -%}
+                                  {%- if block_st.width == 'wd20' -%}
+                                  (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:4 }}px) / 5),(min-width:768px) calc((100vw - {{ section_st.gspace | times:4 }}px) / 5), calc((100vw - 15px) / {{ section_st.col-m }})
+                              {%- elsif block_st.width == 'wd25' -%}
+                                  (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:3 }}px) / 4),(min-width:768px) calc((100vw - {{ section_st.gspace | times:3 }}px) / 4), calc((100vw - 15px) / {{ section_st.col-m }})
+                              {%- elsif block_st.width == 'wd33' -%}
+                                  (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:2 }}px) / 3),(min-width:768px) calc((100vw - {{ section_st.gspace | times:2 }}px) / 3), calc((100vw - 15px) / {{ section_st.col-m }})
+                              {%- elsif block_st.width == 'wd50' -%}
+                                (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 2),(min-width:768px) calc((100vw - {{ section_st.gspace }}px) / 2), calc((100vw - 15px) / {{ section_st.col-m }})
+                              {%- elsif block_st.width == 'wd66' -%}
+                                (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2), calc((100vw - 15px) / {{ section_st.col-m }})
+                              {%- elsif block_st.width == 'wd75' -%}
+                                (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3), calc((100vw - 15px) / {{ section_st.col-m }})
+                              {%- elsif block_st.width == 'w-100' -%}
+                                (min-width:1024px) {{ page_width }}, 100vw
+                              {%- endif -%}
+                            {%- endcapture -%}
+                            {{ block_st.image | image_url: width: block_st.image.width | image_tag: loading:'lazy', width:block_st.image.width, height:block_st.image.height, class:'img-fill', sizes:sizes, widths:"180,380,580,780,980,1200,1400,2000" }}
+                        </div>
+                        {% comment %} *** Lookbook Shop *** {% endcomment %}
+                        {% assign quick_url = all_products[block_st.pr1].url | split: "?" | first  %}
+                        {% if block_st.pr1 != blank %}
+                          <product-card>
+                            <button type="button" data-url="{{ quick_url }}?section_id=quick-view" class="btn-shop pa quick-view" style="top:{{ block_st.p1_top }}%;left:{{ block_st.p1_left }}%;">                              
+                            </button>
+                          </product-card>
+                        {% endif %}                            
+                        {% assign quick_url_2 = all_products[block_st.pr2].url | split: "?" | first  %}
+                        {% if block_st.pr2 != blank %}
+                            <product-card>
+                            <button type="button" data-url="{{ quick_url_2 }}?section_id=quick-view" class="btn-shop pa quick-view" style="top:{{ block_st.p2_top }}%;left:{{ block_st.p2_left }}%;">                             
+                            </button>
+                          </product-card>
+                        {% endif %}
+                        {% assign quick_url_3 = all_products[block_st.pr3].url | split: "?" | first  %}
+                        {% if block_st.pr3 != blank %}
+                            <product-card>
+                            <button type="button" data-url="{{ quick_url_3 }}?section_id=quick-view" class="btn-shop pa quick-view" style="top:{{ block_st.p3_top }}%;left:{{ block_st.p3_left }}%;">                        
+                            </button>
+                          </product-card>
+                        {% endif %}
+                        {% assign quick_url_4 = all_products[block_st.pr4].url | split: "?" | first  %}
+                        {% if block_st.pr4 != blank %}
+                            <product-card>
+                            <button type="button" data-url="{{ quick_url_4 }}?section_id=quick-view" class="btn-shop pa quick-view" style="top:{{ block_st.p4_top }}%;left:{{ block_st.p4_left }}%;">                           
+                            </button>
+                          </product-card>
+                        {% endif %}                          
+                    </div>
+                {% else %}
+                    <div class="gitem msitem {{ section_st.col-m }} {{ block_st.width }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+                        <div class="pr w-100 of-hidden {{ section_st.irounded }}">
+                          {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'hero-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </grid-masonary>
+    </div>
+</div>
+{%- endcapture -%}
+{{- lookbook | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Lookbook shop",
+  "class": "index-section",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "max_blocks": 50,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+     {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Lookbook shop"
+    },
+     {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Add several product tags to the picture gallery and direct viewers to the product</p>"
+    },        
+    {
+      "type": "header",
+      "content": "Grid appearance"
+    },
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Grid gap",
+      "default": 30,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Grid gap (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "col",
+      "label": "Grid columns",
+      "default": 4,
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "info": "[Column selection guide](https://www.adornthemes.com/masonry-column-selection/)"
+    },
+     {
+      "type": "select",
+      "id": "col-m",
+      "label": "Grid columns (mobile)",
+      "default": "wd50",
+      "options": [
+        {
+          "value": "wd100",
+          "label": "1"
+        },
+        {
+          "value": "wd50",
+          "label": "2"
+        },
+        {
+          "value": "wd33",
+          "label": "3"
+        },
+        {
+          "value": "wd25",
+          "label": "4"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "irounded",
+      "label": "Image corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "hotspot",
+      "label": "Hotspot color",
+      "info": "(product pin on image)",
+      "default": "#111"
+    },     
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+     "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"            
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Lookbook",
+      "type": "lookbook",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Column width",
+          "default": "wd50",
+          "info": "Total width of all block should be 100%",
+          "options": [
+            { "value": "wd20", "label": "20%" },
+            { "value": "wd25", "label": "25%" },
+            { "value": "wd33", "label": "33%" },
+            { "value": "wd40", "label": "40%" },
+            { "value": "wd50", "label": "50%" },
+            { "value": "wd60", "label": "60%" },
+            { "value": "wd66", "label": "66%" },
+            { "value": "wd75", "label": "75%" },
+            { "value": "wd80", "label": "80%" },
+            { "value": "w-100", "label": "100%" }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Products"
+        },
+        {
+          "type": "product",
+          "id": "pr1",
+          "label": "Product 1"
+        },        
+        {
+          "type": "range",
+          "id": "p1_left",
+          "label": "Position X",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "p1_top",
+          "label": "Position Y",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+        "type": "paragraph",
+        "content": "-----------------------------------------------"
+        },
+        {
+          "type": "product",
+          "id": "pr2",
+          "label": "Product 2"
+        },        
+        {
+          "type": "range",
+          "id": "p2_left",
+          "label": "Position X",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "p2_top",
+          "label": "Position Y",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "paragraph",
+          "content": "-----------------------------------------------"
+        },
+        {
+          "type": "product",
+          "id": "pr3",
+          "label": "Product 3"
+        },        
+        {
+          "type": "range",
+          "id": "p3_left",
+          "label": "Position X",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "p3_top",
+          "label": "Position Y",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "paragraph",
+          "content": "-----------------------------------------------"
+        },
+        {
+          "type": "product",
+          "id": "pr4",
+          "label": "Product 4"
+        },       
+        {
+          "type": "range",
+          "id": "p4_left",
+          "label": "Position X",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+         {
+          "type": "range",
+          "id": "p4_top",
+          "label": "Position Y",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook shop",
+      "category": "Products",
+      "blocks": [
+        {
+          "type": "lookbook"
+        },
+        {
+          "type": "lookbook"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

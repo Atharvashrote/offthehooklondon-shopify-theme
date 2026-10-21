@@ -1,0 +1,456 @@
+{%- liquid
+    assign block_st = block.settings
+    assign block_index = section.blocks | find_index: 'id', block.id
+
+    assign lazy_img = 'lazy'
+    assign banner_img = block_st.image
+    assign banner_imgm = block_st.imagem
+    assign banner_img_src = banner_imgm | image_url: width: banner_imgm.width | image_tag: widths: '400,560,780,1000' | split: 'srcset="' | last | split: '"' | first
+
+    if section.index < 2 and block_index == 0
+    assign lazy_img = 'eager'
+    endif
+
+    assign block_link = false
+    if block_st.ol_link and block_st.image_link != blank
+        assign block_link = true
+    endif
+%}
+<div class="image-banner pr of-hidden {{ block_st.irounded }} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+    {%- if banner_img != blank -%}
+        <picture>
+            {%- if banner_imgm != blank -%}
+                <source media="(max-width: 767px)" srcset="{{ banner_img_src }}" width="{{ banner_imgm.width }}" height="{{ banner_imgm.height }}">
+            {%- endif -%}
+            {{- banner_img | image_url: width: banner_img.width | image_tag: class: 'img-auto', loading: lazy_img, siezs: '100vw', widths: '400,600,800,1000,1200,1400,1600,2000,2400,3000' -}}
+        </picture>
+    {%- else -%}
+        {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture -%}{{- 'collection-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg img-auto' }}
+    {%- endif -%}
+
+    {%- if block_link -%}
+        <a href="{{ block_st.image_link }}" class="pa all0 zi0"></a>
+    {%- endif -%}
+
+    <div class="content-wraper fl {{block_st.ovr-direction}} {{ block_st.txtpos }} {{ block_st.txtposm }}{% if block_link %} link-over{% endif %}" style="--cwpd:20px;--overlay:{{ block_st.ovr }};--overlay-down:{{ block_st.ovr | color_to_hex }}00;">
+        <div class="group-bk fl f-col gap {{ block_st.rounded }} t-{{ block_st.alignm }} t-{{ block_st.align }}-md {% render 'group-settings', section_st:block_st, class: true %}" style="{% render 'group-settings', section_st:block_st, styles:true %}">
+            {%- content_for 'blocks' -%}
+        </div>
+    </div>
+</div>
+{% schema %}
+{
+  "name": "Image banner",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Recommended size 2000 x 900 px or higher"
+    },
+    {
+      "type": "image_picker",
+      "id": "imagem",
+      "label": "Image (mobile)"
+    }, 
+    {
+      "type": "color",
+      "id": "ovr",
+      "label": "Overlay color",
+      "alpha": true,
+      "default": "#00000060"    
+    },
+    {
+          "type": "select",
+          "id": "ovr-direction",
+          "label": "Overlay direction",
+          "default": "full",
+          "options": [
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" },
+            { "value": "full", "label": "Full" }
+          ]
+        },
+    {
+      "type": "select",
+      "id": "irounded",
+      "label": "Corner radius",
+      "default": "round-sm",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    }, 
+    {
+        "type": "checkbox",
+        "id": "ol_link",
+        "label": "Enable click on image",
+        "default": false
+    },  
+    {
+        "type": "url",
+        "id": "image_link",
+        "label": "Add url",
+        "visible_if": "{{ block.settings.ol_link }}"
+    },
+    {
+      "type": "header",
+      "content": "Content box"
+    },    
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "fit",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ct_width",
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "label": "Custom width",
+      "unit": "px",
+      "default": 300,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "widthm",
+      "label": "Width (mobile)",
+      "default": "fit",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ct_widthm",
+      "min": 100,
+      "max": 600,
+      "step": 5,
+      "label": "Custom width",
+      "unit": "px",
+      "default": 300,
+      "visible_if": "{{ block.settings.widthm == 'custom' }}"
+    }, 
+    {
+      "type": "select",
+      "id": "txtpos",
+      "label": "Position",
+      "default": "f-aic-md f-jcc-md",
+      "options": [
+        { "label": "Top left", "value": "f-ais-md f-jcs-md" },
+        { "label": "Top center", "value": "f-ais-md f-jcc-md" },
+        { "label": "Top right", "value": "f-ais-md f-jce-md" },
+        { "label": "Left", "value": "f-aic-md f-jcs-md" },
+        { "label": "Center", "value": "f-aic-md f-jcc-md" },
+        { "label": "Right", "value": "f-aic-md f-jce-md" },
+        { "label": "Bottom left", "value": "f-aie-md f-jcs-md" },
+        { "label": "Bottom center", "value": "f-aie-md f-jcc-md" },
+        { "label": "Bottom right", "value": "f-aie-md f-jce-md" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "txtposm",
+      "label": "Position (mobile)",
+      "default": "f-aic f-jcc",     
+      "options": [
+        { "label": "Top left", "value": "f-ais f-jcs" },
+        { "label": "Top center", "value": "f-ais f-jcc" },
+        { "label": "Top right", "value": "f-ais f-jce" },
+        { "label": "Left", "value": "f-aic f-jcs" },
+        { "label": "Center", "value": "f-aic f-jcc" },
+        { "label": "Right", "value": "f-aic f-jce" },
+        { "label": "Bottom left", "value": "f-aie f-jcs" },
+        { "label": "Bottom center", "value": "f-aie f-jcc" },
+        { "label": "Bottom right", "value": "f-aie f-jce" }
+      ]
+    },
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Alignment",
+      "default": "center"
+    },  
+     {
+      "type": "text_alignment",
+      "id": "alignm",
+      "label": "Alignment (mobile)",
+      "default": "center"
+    },     
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "box_bg",
+      "label": "Background",
+      "alpha": true,
+      "default":"#111",
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "box_bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "select",
+      "id": "bdr",
+      "label": "Borders",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "brd_sz",
+      "label": "Border thickness",
+      "default": 1,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "alpha": true,
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "round-sm",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+     {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap",
+      "default": 5
+    },
+      {
+      "type": "range",
+      "id": "gapm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap (mobile)",
+      "default": 5
+    },        
+    {
+      "type": "header",
+      "content": "Text padding"
+    },
+    {
+          "type": "checkbox",
+          "id": "ispd",
+          "label": "Add padding",
+          "default": false
+      },
+      {
+            "type": "range",
+            "id": "pd-lr",
+            "label": "Horizontal",
+            "default":30,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },     
+      {
+            "type": "range",
+            "id": "pd-tb",
+            "label": "Vertical",
+            "default":25,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+     },     
+      {
+            "type": "range",
+            "id": "pd-lrm",
+            "label": "Horizontal (mobile)",
+            "default":25,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },
+       {
+            "type": "range",
+            "id": "pd-tbm",
+            "label": "Vertical (mobile)",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },
+    {
+      "type": "paragraph",
+      "content": "-------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image banner",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "WOMEN",
+            "cl":"#fff"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Get up to 70% OFF</p>",
+            "cl":"#fff",
+            "mb":15,
+            "mbm":15
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "text": "Shop now",
+            "url": "shopify://collections/all",
+            "btn-style":"btn5"
+          }
+        }
+      },
+      "block_order": ["heading","text", "button"]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,48 @@
+{%- liquid
+  assign block_st = block.settings
+-%}
+<div class="mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" {{ block.shopify_attributes }}>
+    <div class="cpointer ratting-stars" data-id="ptabReview">{% render 'ratings', product: product %}</div>
+</div>
+{% schema %}
+{
+  "name": "Product rating",
+  "tag": null,
+  "settings": [
+    { 
+        "type":"paragraph",				
+        "content":"Choose product review app from Theme Settings -> Recommended Apps"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product rating",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

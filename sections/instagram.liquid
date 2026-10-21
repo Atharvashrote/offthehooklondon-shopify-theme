@@ -1,0 +1,570 @@
+{%- capture gallery -%}
+{%- liquid
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+    assign grid_width = 'wd25'
+    case section_st.col
+        when 2
+            assign grid_width = 'wd50'
+        when 3
+            assign grid_width = 'wd33'
+        when 4
+            assign grid_width = 'wd25'
+        when 5
+            assign grid_width = 'wd20'
+    endcase
+-%}
+{%- capture icon -%}
+    {% if section_st.icony %}
+		{% if section_st.icon == '1' %}
+    		<svg class="at-icon anim gicon{{ section_st.icon }} m-auto" style="--icns:18px;--icns_cl:{{ section_st.cl }}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 409.61 409.61" style="enable-background:new 0 0 409.61 409.61;" xml:space="preserve"> <path d="M307.205,0h-204.8C46.09,0,0.005,46.085,0.005,102.4v204.81c0,56.3,46.085,102.4,102.4,102.4h204.8 c56.315,0,102.4-46.1,102.4-102.4V102.4C409.605,46.085,363.52,0,307.205,0z M375.47,307.21c0,37.632-30.612,68.265-68.265,68.265 h-204.8c-37.637,0-68.265-30.633-68.265-68.265V102.4c0-37.642,30.628-68.265,68.265-68.265h204.8 c37.653,0,68.265,30.623,68.265,68.265V307.21z"/> <path d="M204.805,102.4c-56.566,0-102.4,45.839-102.4,102.4c0,56.54,45.834,102.41,102.4,102.41c56.55,0,102.4-45.87,102.4-102.41 C307.205,148.239,261.355,102.4,204.805,102.4z M204.805,273.075c-37.699,0-68.265-30.566-68.265-68.275 s30.566-68.265,68.265-68.265s68.265,30.556,68.265,68.265S242.504,273.075,204.805,273.075z"/> </svg>
+          {% elsif section_st.icon == '2' %}
+    		<svg class="at-icon anim gicon{{ section_st.icon }} m-auto" style="--icns:18px;--icns_cl:{{ section_st.cl }}" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" ><path d="m181.2 32a32 32 0 0 1 -32 32h-85.2v85.2a32 32 0 0 1 -64 0v-117.2a32 32 0 0 1 32-32h117.2a32 32 0 0 1 32 32zm-32 416h-85.2v-85.2a32 32 0 0 0 -64 0v117.2a32 32 0 0 0 32 32h117.2a32 32 0 1 0 0-64zm330.8-117.2a32 32 0 0 0 -32 32v85.2h-85.2a32 32 0 1 0 0 64h117.2a32 32 0 0 0 32-32v-117.2a32 32 0 0 0 -32-32zm0-330.8h-117.2a32 32 0 0 0 0 64h85.2v85.2a32 32 0 1 0 64 0v-117.2a32 32 0 0 0 -32-32z"/></svg>
+		{% else %}
+            <svg class="at-icon anim gicon{{ section_st.icon }} m-auto" style="--icns:18px;--icns_cl:{{ section_st.cl }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><path d="M252.9,234.1l-53.4-53.4c-3.1-3.1-7.5-4.3-11.5-3.4c16.3-18.7,26.2-43.2,26.2-69.9c0-58.9-47.9-106.8-106.8-106.8 S0.6,48.5,0.6,107.3s47.9,106.8,106.8,106.8c27.1,0,51.9-10.2,70.8-26.9c-0.8,4,0.4,8.3,3.5,11.4L235,252c2.5,2.5,5.7,3.7,8.9,3.7 c3.2,0,6.5-1.2,8.9-3.7C257.8,247.1,257.8,239.1,252.9,234.1z M107.3,193.9c-47.7,0-86.6-38.8-86.6-86.6s38.8-86.6,86.6-86.6 s86.6,38.8,86.6,86.6S155.1,193.9,107.3,193.9z"/></svg>
+    	{% endif %}
+    {% endif %}
+{%- endcapture -%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+        <div class="insta-{{ section.id }}{% if section_st.fullwidth %} fw-section{% if section_st.npd %} npd{% endif %}{% else %} page-width{% endif %}">
+            {% render 'sec-title' %}
+            {%- capture wrapper_style -%}
+                --grsp:{{ section_st.gspace | divided_by: 2.0 }}px;--grspm:{{ section_st.gspacem | divided_by: 2.0 }}px;--cl:{{ section_st.cl }};--imgbg:{{ section_st.imgbg }};--bbdr:{{ section_st.txtbg | color_darken:5 }};--mob_col:{{ section_st.col-m }};
+            {%- endcapture -%}
+            {%- capture gallery_items -%}
+                {%- for block in section.blocks limit: section.blocks.size -%}
+				        {%- liquid
+                            assign block_st = block.settings
+                            assign item_width = block_st.width
+                            unless section_st.layout == 'masonry'
+                                assign item_width = grid_width
+                            endunless
+                        -%}
+                    {%- capture sizes -%}
+                        {%- if item_width == 'wd20' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:4 }}px) / 5),(min-width:768px) calc((100vw - {{ section_st.gspace | times:4 }}px) / 5), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif item_width == 'wd25' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:3 }}px) / 4),(min-width:768px) calc((100vw - {{ section_st.gspace | times:3 }}px) / 4), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif item_width == 'wd33' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:2 }}px) / 3),(min-width:768px) calc((100vw - {{ section_st.gspace | times:2 }}px) / 3), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif item_width == 'wd50' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 2),(min-width:768px) calc((100vw - {{ section_st.gspace }}px) / 2), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif item_width == 'wd66' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif item_width == 'wd75' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif item_width == 'w-100' -%}
+                          (min-width:1024px) {{ page_width }}, 100vw
+                        {%- endif -%}
+                    {%- endcapture -%}
+
+                    <div class="{% if section_st.layout == 'masonry' %}msitem {% endif %}gitem {{ section_st.col-m }} {{ item_width }}-md{% if section_st.layout == 'carousel' %} swiper-slide{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+                        <div class="gallery-item of-hidden pr {{ section_st.rounded }}">
+                            {%- if block_st.video != blank -%}
+                                {%- capture video_tag -%}{{ block_st.video | video_tag: loop:true, autoplay:true, muted:'muted', width:'100%', class:'img-fill m-auto db lazy' }}{%- endcapture -%}
+                                {%- if section_st.imgclick == '2' and block_st.imgurl != blank -%}
+                                <a class="db pr" {% if block_st.newtab %}target="_blank"{% endif %} href="{{ block_st.imgurl }}">
+                                {%- else -%}
+                                <div class="db pr">
+                                {%- endif -%}
+                                    {{ video_tag | replace: 'src=', 'data-src=' }}
+                                    <div class="gallery-text fl f-jcc f-col all0 pa anim pd25 tc">
+                                        {{ icon }}
+                                        {% if block_st.title != blank %}<div class="fl f-col mt10"><span class="db anim">{{ block_st.title }}</span></div>{% endif %}
+                                    </div>
+                                {%- if section_st.imgclick == '2' and block_st.imgurl != blank -%}
+                                </a>
+                                {%- else -%}
+                                </div>
+                                {%- endif -%}
+                            {%- else -%}
+                                <a {% if section_st.imgclick == '1' %}class="zoom pr db ltbx"{% endif %} {% if block_st.newtab and section_st.imgclick == '2' %} target="_blank" {% endif %} href="{% if section_st.imgclick == '1' %}{{ block_st.image | image_url: width: block_st.image.width }}{% else %}{{ block_st.imgurl }}{% endif %}" data-pswp-width="{{ block_st.image.width }}" data-pswp-height="{{ block_st.image.height }}">
+                                    {% if block_st.image!= blank %}
+                                        {{ block_st.image | image_url: width: block_st.image.width | image_tag: loading:'lazy', class:'img-fill m-auto', sizes:sizes, widths:"180,320,460,600,800,1000,1200,1400,1600,2000" }}
+                                    {% else %}
+                                        {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'collection-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                                    {% endif %}
+                                    <div class="gallery-text fl f-jcc f-col all0 pa anim pd25 tc">
+                                        {{ icon }}
+                                        {% if block_st.title != blank %}<div class="fl f-col mt10"><span class="db anim">{{ block_st.title }}</span></div>{% endif %}
+                                    </div>
+                                </a>
+                            {%- endif -%}
+                        </div>
+                    </div>
+                {% endfor %}
+            {%- endcapture -%}
+
+            {%- if section_st.layout == 'carousel' -%}
+                <slide-section class="grid gspace atgallery swiper" style="{{ wrapper_style }}"
+                  data-swiper='{ "slidesPerView":"auto", "loop":{{ section_st.loop }}, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}","pauseOnMouseEnter":{{ section_st.pausehover }} },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+                    <div class="swiper-wrapper">{{ gallery_items }}</div>
+                    {% render 'swiper-navigation', id:section.id, section_st:section_st %}
+                </slide-section>
+            {%- elsif section_st.layout == 'grid' -%}
+                <div class="grid gspace atgallery" style="{{ wrapper_style }}">{{ gallery_items }}</div>
+            {%- else -%}
+                <grid-masonary class="grid grid-masonary gspace atgallery" style="{{ wrapper_style }}">
+                    <div class="grid-sizer col-{{ section_st.col }} pa"></div>
+                    {{ gallery_items }}
+                </grid-masonary>
+            {%- endif -%}
+        </div>
+</div>
+<link href="{{ 'photoswipe.css' | asset_url }}" rel="stylesheet" media="print" onload="this.media='all'">
+<script type="module">
+    import PhotoSwipeLightbox from '{{ 'photoswipe-lightbox.min.js' | asset_url }}';
+    const lightbox = new PhotoSwipeLightbox({
+        gallery: '.atgallery',
+        children: 'a.ltbx',
+        pswpModule: () => import('{{ 'photoswipe.min.js' | asset_url }}')
+    });
+    lightbox.init();
+</script>
+{%- endcapture -%}
+{{- gallery | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Instagram",
+  "class": "insta-sec",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "max_blocks": 50,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Instagram Gallery"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Showcase your product pictures from instagram</p>"
+    },
+    {
+      "type": "header",
+      "content": "Display style"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Show as",
+      "default": "masonry",
+      "options": [
+        { "value": "masonry", "label": "Masonry" },
+        { "value": "grid", "label": "List (grid)" },
+        { "value": "carousel", "label": "Carousel" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "default": true,
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate slide",
+      "default": false,
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "Sec",
+      "visible_if": "{{ section.settings.layout == 'carousel' and section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "pausehover",
+      "label": "Pause autoplay on hover",
+      "default": true,
+      "visible_if": "{{ section.settings.layout == 'carousel' and section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrow",
+      "label": "Show arrows on desktop",
+      "default": true,
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrowm",
+      "label": "Show arrows on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Show dots on desktop",
+      "default": false,
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dotm",
+      "label": "Show dots on mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "header",
+      "content": "Grid appearance"
+    },
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Grid gap",
+      "default": 30,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Grid gap (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "col",
+      "label": "Grid columns",
+      "default": 4,
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "info": "[Column selection guide](https://www.adornthemes.com/masonry-column-selection/). Also sets the column/slide count for the List and Carousel styles."
+    },
+    {
+      "type": "select",
+      "id": "col-m",
+      "label": "Grid columns (mobile)",
+      "default": "wd50",
+      "options": [
+        {
+          "value": "wd100",
+          "label": "1"
+        },
+        {
+          "value": "wd50",
+          "label": "2"
+        },
+        {
+          "value": "wd33",
+          "label": "3"
+        },
+        {
+          "value": "wd25",
+          "label": "4"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Gallery design"
+    },
+    {
+      "type": "select",
+      "id": "imgclick",
+      "label": "On click",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Lightbox popup"
+        },
+        {
+          "value": "2",
+          "label": "Redirect to Url"
+        }
+      ],
+      "info": "Lightbox popup only applies to image blocks. Video blocks always play inline."
+    },
+    {
+      "type": "checkbox",
+      "id": "icony",
+      "label": "Show image hover icon",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Icon 1"
+        },
+        {
+          "value": "2",
+          "label": "Icon 2"
+        },
+        {
+          "value": "3",
+          "label": "Icon 3"
+        }
+      ],
+      "visible_if": "{{ section.settings.icony }}"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Icon and text",
+      "default": "#111"
+    },
+    {
+      "type": "color",
+      "id": "imgbg",
+      "label": "Overlay",
+      "default": "#ffffff50",
+      "info": "image hover",
+      "alpha": true
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Image corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+   "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Image / Video",
+      "type": "image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "info": "Optional. If added, the video replaces the image above and autoplays muted on loop."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Text",
+          "default": "<b>Insta Style</b>"
+        },
+        {
+          "type": "url",
+          "id": "imgurl",
+          "label": "URL"
+        },
+        {
+          "type": "checkbox",
+          "id": "newtab",
+          "label": "Open in new tab",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Column width",
+          "default": "wd25",
+          "info": "Only applies to the Masonry style",
+          "visible_if": "{{ section.settings.layout == 'masonry' }}",
+          "options": [
+            { "value": "wd20", "label": "20%" },
+            { "value": "wd25", "label": "25%" },
+            { "value": "wd33", "label": "33%" },
+            { "value": "wd40", "label": "40%" },
+            { "value": "wd50", "label": "50%" },
+            { "value": "wd60", "label": "60%" },
+            { "value": "wd66", "label": "66%" },
+            { "value": "wd75", "label": "75%" },
+            { "value": "wd80", "label": "80%" },
+            { "value": "w-100", "label": "100%" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram",
+      "category": "Image",
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image",
+          "settings": {
+            "width": "wd50"
+          }
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

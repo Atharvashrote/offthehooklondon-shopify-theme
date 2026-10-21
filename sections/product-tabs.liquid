@@ -1,0 +1,944 @@
+{%- liquid
+    assign section_st = section.settings
+    assign is_rtl = false
+    assign list_rtl = 'ar,dv,ha,he,ku,fa,ur,ug' | split: ','
+    if list_rtl contains request.locale.iso_code or settings.rtl
+        assign is_rtl = true
+    endif
+
+    assign tab_container = 'db '
+    assign tabs_class = 'tabs '
+    if section_st.addbox
+        assign tab_container = tab_container | append: 'box of-hidden ' | append: section_st.box_rounded
+    endif
+    if section_st.tab_align == 'center' and section_st.tab_style == '1' or section_st.tab_style == '2' or section_st.tab_style == '5'
+        assign tabs_class = tabs_class | append: ' f-jcc'
+    endif
+    if section_st.acc
+        assign tabs_class = tabs_class | append: ' hide-sm'
+    endif
+    if section_st.tab_style == '1' or section_st.tab_style == '2' or section_st.tab_style == '5'
+        assign tabs_class = tabs_class | append: ' fl f-wrap gap'
+    elsif section_st.tab_style == '3'
+        assign tab_container = tab_container | append: ' fl'
+        assign tabs_class = tabs_class | append: ' fl f-col f-jcs'
+    endif
+-%}
+<style>
+/* PRODUCT DETAILS ACCORDIONS */
+
+.product-info-accordion {
+    border-top: 1px solid var(--tab-border);
+    margin-top: 25px;
+}
+
+.product-info-accordion details {
+    border-bottom: 1px solid var(--tab-border);
+}
+
+.product-info-accordion summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.product-info-accordion summary::-webkit-details-marker {
+    display: none;
+}
+
+.product-info-accordion .accordion-plus {
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 0.25s ease;
+}
+
+.product-info-accordion details[open] .accordion-plus {
+    transform: rotate(45deg);
+}
+
+.product-info-accordion .accordion-content {
+    padding: 0 40px 20px 0;
+}
+
+.product-info-accordion .accordion-content p {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 767px) {
+
+    .product-info-accordion summary {
+        padding: 17px 0;
+        font-size: 14px;
+    }
+
+    .product-info-accordion .accordion-content {
+        padding: 0 20px 18px 0;
+    }
+
+}
+  /* FAQ ACCORDION */
+
+.faq-accordion {
+    width: 100%;
+    border-top: 1px solid var(--tab-border);
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--tab-border);
+}
+
+.faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-icon {
+    flex: 0 0 auto;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 0.25s ease;
+}
+
+.faq-item[open] .faq-icon {
+    transform: rotate(45deg);
+}
+
+.faq-answer {
+    padding: 0 40px 20px 0;
+}
+
+.faq-answer p {
+    margin: 0;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+@media (max-width: 767px) {
+    .faq-item summary {
+        padding: 17px 0;
+        font-size: 14px;
+    }
+
+    .faq-answer {
+        padding: 0 25px 18px 0;
+    }
+
+    .faq-answer p {
+        font-size: 14px;
+    }
+}
+    @media (min-width:767px){
+        .tab-section.box { border: 1px solid var(--tab-border); }
+        .tab-section.box .tab-content { padding:25px 30px; }
+        {%- if section_st.tab_style == '1' -%}
+            .tab-section.box .tabs { padding:25px 25px 0; }
+        {%- elsif section_st.tab_style == '2' or section_st.tab_style == '5' -%}
+            .tbstl2 .tabs { padding:0; border-bottom:1px solid var(--tab-border); }
+            .tbstl2 .tab-button { padding:15px 0; }
+        {%- elsif section_st.tab_style == '3' -%}
+            .tbstl3 .tabs { width:300px; border-{% if is_rtl %}left{% else %}right{% endif %}:1px solid var(--tab-border); {% unless section_st.addbox %} margin-right:40px;{% endunless %} }
+            .tbstl3 .tab-button { padding:15px 20px; text-align:start; width:100%; border:0; border-bottom:1px solid var(--tab-border); background-color:transparent; }
+            .tbstl3 .tab-button.active { border-{% if is_rtl %}left{% else %}right{% endif %}:3px solid var(--tab-border-active); }
+            .tbstl3 .tab-content { padding:0; }
+        {%- elsif section_st.tab_style == '4' -%}
+            .tbstl4 .tab-accordion { padding:15px 20px; text-align:left; width:100%; border:1px solid var(--tab-border); cursor:pointer; margin-bottom:10px; }
+            .tab-panel { padding:20px 10px 50px; }
+        {%- endif -%}
+    }
+    @media (max-width:767px){
+        .tab-section { border-radius:0 !important; }
+    }
+
+
+    /* Justify Product Details text */
+#tab-desc .rte,
+#tab-desc .rte p,
+#tab-desc .rte li {
+    text-align: justify;
+}
+
+
+.faq-delivery-image {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.faq-delivery-image img {
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    border-radius: 4px;
+}
+
+@media (max-width: 767px) {
+    .faq-delivery-image {
+        margin-top: 5px;
+    }
+
+    .faq-delivery-image img {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+</style>
+
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}" id="PrSecTabs" data-section-id="{{ section.id }}" data-section-type="productTabs">
+        {%- capture tabs_style -%}
+            --tab-fs:{{ section_st.tfs }}px;--tab-fsm:{{ section_st.tfsm }}px;--tab-fw:{{ section_st.tfw }};--tab-color:{{ section_st.cl }};--tab-color-active:{{ section_st.cla }};--tab-border:{{ section_st.bdr }};--tab-border-active:{{ section_st.bdra }};
+            {% if section_st.tab_style == '1' or section_st.tab_style == '4'%}--tab-bg:{{ section_st.tbg }};--tab-bg-active:{{ section_st.tbga }};{% endif %} {% if section_st.tab_style == '5' %}--tab-bg:{{ section_st.tbg }}; {% endif %}
+        {%- endcapture -%}
+
+        <tabs-section class="tab-section tbstl{{ section_st.tab_style }} {{ tab_container }}" style="{{ tabs_style }}">
+            {% unless section_st.tab_style == '4' %}
+                <div class="{{ section_st.tff }} {{ tabs_class }} {% render 'animate-data', css:true %}" style="{% if section_st.tab_style == '1' or section_st.tab_style == '5' %}--gap:10px;{% else %}--gap:40px;--gapm:20px{% endif %}">
+                    {%- for block in section.blocks -%}
+                        {%- assign block_st = block.settings -%}
+                        {% capture tab_class %}tab-button anim{% if forloop.first %} active{% endif %}{% if section_st.tab_style == '1' %} {{ section_st.rounded }}{% endif %}{% if section_st.text-upper %} text-upper{% endif %}{% endcapture %}
+
+                        {%- case block.type -%}
+                            {%- when 'desc' -%}
+                                <button type="button" class="{{ tab_class }}" data-id="tab-desc" {{ block.shopify_attributes }}>{{ block_st.title }}</button>
+                            {%- when 'shipping' -%}
+                                <button type="button" class="{{ tab_class }}" data-id="tab-shipping" {{ block.shopify_attributes }}>{{ block_st.title }}</button>
+                            {%- when 'care' -%}
+                                <button type="button" class="{{ tab_class }}" data-id="tab-care" {{ block.shopify_attributes }}>{{ block_st.title }}</button>
+                            {%- when 'custom' -%}
+                                <button type="button" class="{{ tab_class }}" data-id="tab-custom" {{ block.shopify_attributes }}>{{ block_st.title }}</button>
+                            {%- when '@app' -%}
+                                <button type="button" class="{{ tab_class }}" data-id="tab-reviews" {{ block.shopify_attributes }}>Reviews</button>
+                        {%- endcase -%}
+                    {%- endfor -%}
+                </div>
+            {% endunless %}
+
+            <div class="tab-content{% if section_st.tab_style == '3' %} fl1{% endif %}{% if settings.animef %} scroll-trigger scroll-offscreen faceIn{% endif %}">
+                {%- for block in section.blocks -%}
+                    {%- assign block_st = block.settings -%}
+                    {%- capture tab_panel -%}tab-panel of-hidden{% if forloop.first %} active{% endif %}{%- endcapture -%}
+
+                    {%- capture accordion_title -%}
+                        {%- if section_st.acc -%}
+                            <div class="tab-accordion js-toggle fl f-aic mb5 {{ section_st.rounded }}{% unless section_st.tab_style == '4' %} hide-md hide-lg{% endunless %}{% if forloop.first %} active{% endif %}{% if section_st.text-upper %} text-upper{% endif %}">
+                                {{ block_st.title }}
+                                <svg class="at-icon ml-auto updown"><use xlink:href="#icon-arrow"></use></svg>
+                            </div>
+                        {%- endif -%}
+                    {%- endcapture -%}
+
+                    {%- case block.type -%}
+                        {%- when 'desc' -%}
+                           {{- accordion_title -}}
+
+    <div id="tab-desc" class="{{ tab_panel }}">
+
+        <!-- Product Description -->
+        <div class="rte">
+            {{ product.description }}
+        </div>
+
+        <!-- Key Features Accordion -->
+        {% comment %} {% if product.metafields.custom.key_features != blank %}
+            <div class="product-info-accordion">
+
+                <details>
+                    <summary>
+                        <span>KEY FEATURES</span>
+                        <span class="accordion-plus">+</span>
+                    </summary>
+
+                    <div class="accordion-content rte">
+                        {{ product.metafields.custom.key_features | metafield_tag }}
+                    </div>
+                </details>
+
+            </div>
+        {% endif %} {% endcomment %}
+
+
+        <!-- Care Instructions Accordion -->
+        {% comment %} {% if product.metafields.custom.care_instructions != blank %}
+            <div class="product-info-accordion">
+
+                <details>
+                    <summary>
+                        <span>CARE INSTRUCTIONS</span>
+                        <span class="accordion-plus">+</span>
+                    </summary>
+
+                    <div class="accordion-content rte">
+                        {{ product.metafields.custom.care_instructions | metafield_tag }}
+                    </div>
+
+                </details>
+
+            </div>
+        {% endif %} {% endcomment %}
+
+    </div>
+
+                        {%- when 'shipping' -%}
+                            {{- accordion_title -}}
+                            <div id="tab-shipping" class="{{ tab_panel }}">
+                                <div class="rte">{{ settings.product_shipping_returns }}</div>
+                            </div>
+{%- when 'care' -%}
+    {{- accordion_title -}}
+    <div id="tab-care" class="{{ tab_panel }}">
+        <div class="rte">
+            {{ product.metafields.custom.care_instructions | metafield_tag }}
+        </div>
+    </div>
+{%- when 'custom' -%}
+    {{- accordion_title -}}
+
+    <div id="tab-custom" class="{{ tab_panel }}">
+        <div class="faq-accordion">
+
+          <!-- 1. Delivery Time -->
+<details class="faq-item">
+    <summary>
+        <span>How long will delivery take?</span>
+        <span class="faq-icon">+</span>
+    </summary>
+
+    <div class="faq-answer">
+        <p>
+            We offer next-day delivery on most orders. Delivery times may vary depending on your postcode and location.
+            <a
+                href="https://cdn.shopify.com/s/files/1/0900/7415/3328/files/image_4.jpg?v=1789471497"
+                class="faq-link"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Click here
+            </a>
+            to view the estimated delivery timeline for your area.
+        </p>
+    </div>
+</details>
+
+
+            <!-- 2. Order Tracking -->
+            <details class="faq-item">
+                <summary>
+                    <span>How can I track my order?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        Once your order has been dispatched, you’ll receive an Evri tracking ID, which you can use to track your delivery.
+                    </p>
+
+                    <p>
+                        <a href="#" class="faq-link">Click here</a> to track your order via Evri.
+                    </p>
+                </div>
+            </details>
+
+
+            <!-- 3. Free Delivery -->
+            <details class="faq-item">
+                <summary>
+                    <span>Do you offer free delivery?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        Yes, we offer free delivery on all orders.
+                    </p>
+                </div>
+            </details>
+
+
+            <!-- 4. Size Guide -->
+            <details class="faq-item">
+                <summary>
+                    <span>How do I find the right size?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        You’ll find a size guide on each product page to help you choose the right size and fit.
+                    </p>
+                </div>
+            </details>
+
+
+            <!-- 5. Returns Policy -->
+            <details class="faq-item">
+                <summary>
+                    <span>What is your returns policy?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        We offer a 28-day returns policy, subject to the conditions outlined in our Returns Policy.
+                        Please visit our
+                        <a href="https://www.offthehooklondon.com/pages/returns" class="faq-link">Returns Policy</a>
+                        page for full details.
+                    </p>
+                </div>
+            </details>
+
+
+            <!-- 6. Return an Item -->
+            <details class="faq-item">
+                <summary>
+                    <span>How do I return an item?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        Visit our
+                        <a href="https://our-returns.dpd.co.uk/MIRZA" class="faq-link">Returns Portal</a>,
+                        select your reason for return and follow the instructions to generate your free returns label.
+                    </p>
+
+                    <p>
+                        <a href="https://our-returns.dpd.co.uk/MIRZA" class="faq-link">Click here</a> to start your return.
+                    </p>
+                </div>
+            </details>
+
+
+            <!-- 7. Free Returns -->
+            <details class="faq-item">
+                <summary>
+                    <span>Do you offer free returns?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        Yes, we offer free returns on all eligible orders.
+                        Please see our
+                        <a href="#" class="faq-link">Returns Policy and Terms &amp; Conditions</a>
+                        for full details.
+                    </p>
+                </div>
+            </details>
+
+
+            <!-- 8. Refund -->
+            <details class="faq-item">
+                <summary>
+                    <span>How long does a refund take?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        Refunds are issued to your original payment method within 14 days of receiving and processing your returned item.
+                        Please note it is 14 days AFTER we have received and accepted your return, assuming it is in the right condition.
+                    </p>
+                </div>
+            </details>
+
+
+            <!-- 9. Exchange -->
+            <details class="faq-item">
+                <summary>
+                    <span>Can I exchange my item for another size?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        Exchanges are subject to the condition of the returned item and stock availability.
+                        Please contact our Customer Service team at
+                        <strong> info@offthehooklondon.com / 01908-921398</strong>,
+                        and we’ll be happy to assist you.
+                    </p>
+                </div>
+            </details>
+
+
+            <!-- 10. Faulty or Incorrect Item -->
+            <details class="faq-item">
+                <summary>
+                    <span>What should I do if my item is faulty or incorrect?</span>
+                    <span class="faq-icon">+</span>
+                </summary>
+
+                <div class="faq-answer">
+                    <p>
+                        If you’ve received a faulty or incorrect item, please contact our Customer Service team as soon as possible at
+                        <strong>info@offthehooklondon.com / 01908-921398</strong>.
+                        We’ll review the issue and help resolve it for you.
+                    </p>
+                </div>
+            </details>
+
+        </div>
+    </div>
+
+                            {%- when '@app' -%}
+    {%- if section_st.acc -%}
+        <div class="tab-accordion js-toggle fl f-aic mb5 {{ section_st.rounded }}{% unless section_st.tab_style == '4' %} hide-md hide-lg{% endunless %}">
+            PRODUCT REVIEWS
+            <svg class="at-icon ml-auto updown">
+                <use xlink:href="#icon-arrow"></use>
+            </svg>
+        </div>
+    {%- endif -%}
+
+    <div id="tab-reviews" class="{{ tab_panel }}">
+        {% render block %}
+    </div>
+                    {%- endcase -%}
+                {%- endfor -%}
+            </div>
+        </tabs-section>
+    </div>
+</div>
+
+{% schema %}
+{
+  "name": "Description tabs",
+  "enabled_on": {
+    "templates": [
+      "product"
+    ]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "tab_style",
+      "label": "Tab design",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Button tabs"
+        },
+        {
+          "value": "5",
+          "label": "Default tabs"
+        },
+        {
+          "value": "2",
+          "label": "Bottom border"
+        },
+        {
+          "value": "3",
+          "label": "vertical tabs"
+        },
+        {
+          "value": "4",
+          "label": "Accordion style"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "acc",
+      "label": "Enable accordion for mobile",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "tab_align",
+      "label": "Tab alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "tff",
+      "label": "Font",
+      "default": "ft1",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 16,
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "text-upper",
+      "label": "Use uppercase text",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "cla",
+      "label": "Text (active tab)",
+      "default": "#eee"
+    },
+    {
+      "type": "color",
+      "id": "tbg",
+      "label": "Tab background",
+      "default": "#eee",
+      "visible_if": "{{ section.settings.tab_style == '1' or section.settings.tab_style == '4' or  section.settings.tab_style == '5'}}"
+    },
+    {
+      "type": "color",
+      "id": "tbga",
+      "label": "Tab background (active tab)",
+      "default": "#000",
+      "visible_if": "{{ section.settings.tab_style == '1' or section.settings.tab_style == '4' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr",
+      "label": "Tab border",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "bdra",
+      "label": "Tab border (active tab)",
+      "default": "#eee",
+      "visible_if": "{{ section.settings.tab_style != '5' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "addbox",
+      "label": "Add border",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "box_rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ section.settings.addbox }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "desc",
+      "name": "Product description",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Product Details"
+        }
+      ]
+    },
+    {
+      "type": "shipping",
+      "name": "Shipping & Returns",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Shipping & Returns"
+        }
+      ]
+    },
+    {
+      "type": "care",
+      "name": "Care & Maintenance",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Care & Maintenance"
+        }
+      ]
+    },
+    {
+      "type": "custom",
+      "name": "Custom Tab",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Custom Tab"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Description tabs",
+      "blocks": {
+        "product_description": {
+          "type": "desc",
+          "settings": {
+            "title": "Product Details"
+          }
+        },
+        "shipping_returns": {
+          "type": "shipping",
+          "settings": {
+            "title": "Shipping & Returns"
+          }
+        },
+        "care_maintenance": {
+          "type": "care",
+          "settings": {
+            "title": "Care & Maintenance"
+          }
+        },
+        "custom_tab": {
+          "type": "custom",
+          "settings": {
+            "title": "Custom Tab"
+          }
+        }
+      },
+      "block_order": [
+        "product_description",
+        "shipping_returns",
+        "care_maintenance",
+        "custom_tab"
+      ]
+    }
+  ]
+}
+{% endschema %}

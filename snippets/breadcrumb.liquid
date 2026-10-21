@@ -1,0 +1,45 @@
+<a href="{{ routes.root_url }}" title="{{ 'general.breadcrumbs.home_link_title' | t }}">{{ 'general.breadcrumbs.home' | t }}</a>
+    {% if template contains 'product' %}
+        {% if collection %}
+               <span class="bc-icon" aria-hidden="true">{% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %}</span>
+            {% if collection.handle %}
+                {% capture url %}{{ routes.collections_url }}/{{ collection.handle }}{% endcapture %}
+                {{ collection.title | link_to: url }}
+            {% endif %}
+        {% endif %}
+        <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+        <span class="fw-500">{{ product.title }}</span>
+    {% elsif template contains 'collection' and collection.handle %}
+           <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+        {% if current_tags %}
+            {% capture url %}{{ routes.collections_url }}/{{ collection.handle }}{% endcapture %}
+            {{ collection.title | link_to: url }}
+            <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+            <span>{{ current_tags | join: " + " }}</span>
+        {% else %}
+            <span class="fw-500">{{ collection.title }}</span>
+        {% endif %}
+    {% elsif template == 'blog' %}
+           <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+        {% if current_tags %}
+            {{ blog.title | link_to: blog.url }}
+               <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+            <span>{{ current_tags | join: " + " }}</span>
+        {% else %}
+            <span class="fw-500">{{ blog.title }}</span>
+        {% endif %}
+    {% elsif template == 'article' %}
+           <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+        {{ blog.title | link_to: blog.url }}
+           <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+        <span class="fw-500">{{ article.title }}</span>
+    {% elsif template contains 'page' %}
+           <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+        <span class="fw-500">{{ page.title }}</span>
+    {% elsif template contains 'cart' %}
+           <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+        <span class="fw-500">{{ 'cart.general.title' | t }}</span>
+    {% else %}
+        <span class="bc-icon" aria-hidden="true"> {% if block_st.br-icon == 'arrow' %} <svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>  {% else %} | {% endif %} </span>
+        <span class="fw-500">{{ page_title }}</span>
+    {% endif %}

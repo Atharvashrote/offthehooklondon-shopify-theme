@@ -1,0 +1,91 @@
+{%- liquid
+  assign section_st = section.settings
+  assign block_st = block.settings
+-%}
+<div class="sidebar-widget search-block" {{ block.shopify_attributes }}>
+  {%- if block_st.title != blank -%}
+        <div class="widget-title head {{ section_st.ttlpreset }}{% if section_st.bottom_border %} border-bottom mb15{% endif %}{% if section_st.text-upper %} text-upper{% endif %}">{{ block_st.title }}</div>
+    {%- endif -%}
+  <div class="widget-content">
+    <form action="{{ routes.search_url }}" method="get" class="adth-inputs fl" role="search" style="--border_cl:{{ block_st.border_cl }};--icns:14px;--icon_cl:{{ block_st.icon_cl }};--btn_radius:{{block_st.corner_radius }}px">
+      <input type="hidden" name="type" value="article">
+      <input class="w-100" type="search" name="q" value="{{ search.terms | escape }}" {% if block_st.sph != blank %}placeholder="{{ block_st.sph }}"{% endif %} autocomplete="off">
+      <input type="hidden" name="options[prefix]" value="last" aria-hidden="true">
+      <button class="border-0" type="submit" title="{{ 'general.search.submit' | t }}"><svg class="at-icon"><use xlink:href="#icon-search"></use></svg></button>
+    </form>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Search",
+  "tag": null,
+  "settings": [
+    { 
+      "type":"text",
+      "id":"title",
+      "label":"Title",
+      "default": "Search in blog"
+    }, 
+    { 
+      "type":"text",
+      "id":"sph",
+      "label":"Text placeholder",
+      "default": "Search..."
+    },
+    {
+      "type": "color",
+      "id": "border_cl",
+      "label": "Border color",
+      "default": "#333"
+    },
+    {
+      "type": "color",
+      "id": "icon_cl",
+      "label": "Icon color",
+      "default": "#333"
+    },
+    {
+                "type": "range",
+                "id": "corner_radius",
+                "label": "Corner radius",
+                "default":0,
+                "min":0,
+                "max": 50,
+                "step": 1,
+                "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidemb",
+      "label": "Hide on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Search",
+      "category": "Sidebar"
+    }
+  ]
+}
+{% endschema %}

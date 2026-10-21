@@ -1,0 +1,79 @@
+{%- liquid
+    assign section_st = section.settings
+    assign block_st = block.settings
+	assign drower = ''
+	if section_st.sbpos != 'top'
+		assign drower = 'open'
+	endif
+
+    assign tags = block_st.filter_tags | split: ','
+-%}
+<details class="sidebar-widget filters-item pr js-filter" {{ drower }}>
+    <summary class="widget-title filters-title head {{ section_st.ttlpreset }} fl f-jcsb f-aic{% if section_st.bottom_border %} border-bottom mb15{% endif %}">
+        <span class="{{ section_st.bx_ttlw }} {{ section_st.text_case }} {{ section_st.tff }}">{{ block_st.title }}</span>
+        {% if section_st.show_toggle_icon %}
+            <svg class="at-icon plus"><use xlink:href="#icon-plus"></use></svg>
+            <svg class="at-icon minus"><use xlink:href="#icon-minus"></use></svg>
+        {% endif %}
+    </summary>
+    <ul class="filters-select__list {{ section_st.opt_text_case }}{% if block_st.pill %} fl f-wrap gap{% endif %}" role="list" style="{% if block_st.pill %}--gap:8px;--gapm:8px;{% endif %}{% if block_st.twocall %}column-count:2{% endif %}">
+        {% for filter_t in tags %}
+            {% assign tag = filter_t | strip %}
+            {% assign tag_value = tag | handleize %}
+            {% assign filtertag = forloop.index | minus:1 %}
+            {% assign filtertagid = 2 | times : filtertag %}
+            {% if collection.tags contains tag %}
+                <li{% if block_st.pill %} class="pill"{% endif %}>
+                    <label for="{{block.id}}-{{filtertagid}}">
+                        <input class="custCheck optTag" type="checkbox" value="{{ tag_value }}" id="{{block.id}}-{{filtertagid}}" {% if current_tags contains tag %}checked{% endif %} />
+                        {%- if block_st.pill -%}<span class="filter-swatch">{{ tag }}</span>{%- else -%}<span class="checkbox"></span>{{ tag }}{%- endif -%}
+                    </label>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</details>
+{% schema %}
+{
+  "name": "Filter by tags",
+  "tag": null,
+  "settings": [
+    {
+        "type": "paragraph",
+        "content": "Not compatible with dynamic filters. Use either dynamic filters or tag-based product filters. [How to set?](https://www.adornthemes.com/documentation/avone/#ProductFilters)"
+    },
+    {
+        "type": "text",
+        "id": "title",
+        "label": "Title",
+        "default": "Filter By Title",
+        "info": "i.e 'Filter by Size, Filter by Brands'"
+    },
+    {
+        "type": "textarea",
+        "id": "filter_tags",
+        "label": "Add tag names",
+        "info": "Separate by a comma, i.e Tag1, Tag2, Tag3..."
+    },
+    {
+        "type": "checkbox",
+        "id": "pill",
+        "label": "Show in pill style",
+        "default": false
+    },
+    {
+        "type": "checkbox",
+        "id": "twocall",
+        "label": "Show List in two column",
+        "default": false,
+        "visible_if": "{{ block.settings.pill == false }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Filter by tags",
+      "category": "Sidebar"
+    }
+  ]
+}
+{% endschema %}

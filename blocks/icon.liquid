@@ -1,0 +1,448 @@
+{%- liquid
+  assign block_st = block.settings
+
+  capture classes
+      if block_st.isbg
+        echo "bg-custom "
+      endif
+      if block_st.ispd
+        echo "pd-custom "
+      endif
+  endcapture
+   
+  assign img_alt = block_st.image.alt | escape
+  assign img_class = 'img-auto'
+  capture icnsizes
+    echo "(min-width:1024px) " | append: block_st.icns | append: "px, " | append: block_st.icnsm | append: "px"
+  endcapture
+  capture widths
+    echo block_st.icns | append: ", " | append: block_st.icns | times: 1.5 | round | append: ", " | append: block_st.icns | times: 2 | round
+  endcapture
+  if block_st.image.src contains ".svg" and block_st.custom_cl_override
+    assign img_class = 'img-auto svg-icon'
+  endif
+-%}
+{%- capture styles -%}
+    --icncl:{{ block_st.cl }};--icns:{{ block_st.icns }}px;--icnsm:{{ block_st.icnsm }}px;
+    {%- if block_st.isbg -%}
+      --gr_bg:{% if block_st.bgg != blank %}{{ block_st.bgg }}{% else %}{{ block_st.bg }}{% endif %};
+      --gr_bd:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+    {% endif %}
+    {%- if block_st.ispd -%}
+      --gr_pd:{{ block_st.pd }}px;--gr_pdm:{{ block_st.pdm }}px;
+    {%- endif -%}
+{%- endcapture -%}
+{%- if block_st.url != blank -%}<a href="{{ block_st.url }}" class="btn-icon anim" {% if block_st.newtab %} target="_blank"{% endif %}>{%- endif -%}
+<div id="blk-{{ block.id }}" class="at-box__icons {{ block_st.rounded }} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %} {{ classes }}" style="{{ styles }}" {{ block.shopify_attributes }}>
+    {%- if block_st.icon == 'custom' and block_st.image != blank -%}
+      {{- block_st.image | image_url: width: block_st.image.width | image_tag: loading:'lazy', class:img_class, sizes: icnsizes, widths: widths, alt: img_alt -}}
+    {%- else -%}
+    {% render 'icons', icon: block_st.icon %}                                                                                                     
+    {%- endif -%}
+</div>{%- if block_st.url != blank -%}</a>{%- endif -%}
+{% schema %}
+{
+  "name": "Icon",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "check",
+      "options": [
+       {
+          "value": "custom",
+          "label": "Custom icon"
+        },
+        {
+          "value": "check",
+          "label": "Check 1"
+        },
+        {
+          "value": "check2",
+          "label": "Check 2"
+        },	
+          {
+          "value": "check3",
+          "label": "Check 3"
+        },	
+        {
+          "value": "arrowr",
+          "label": "Arrow right"
+        },
+        {
+          "value": "truck",
+          "label": "Truck"
+        },
+                    {
+          "value": "email",
+          "label": "Email"
+        },
+                    {
+          "value": "phone",
+          "label": "Phone"
+        },
+                    {
+          "value": "phone2",
+          "label": "Phone 2"
+        },
+                    {
+          "value": "comment",
+          "label": "Comment"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "service",
+          "label": "Service"
+        },
+                    {
+          "value": "dollar",
+          "label": "Dollar"
+        },												
+        {
+          "value": "package",
+          "label": "Package"
+        },
+                    {
+          "value": "return",
+          "label": "Return"
+        },
+         {
+          "value": "return2",
+          "label": "Return 2"
+        },     
+        {
+          "value": "rocket",
+          "label": "Rocket"
+        },	
+                    {
+          "value": "plan",
+          "label": "Plane"
+        },
+        {
+          "value": "measure",
+          "label": "Measure"
+        },                      
+                    {
+          "value": "file",
+          "label": "File"
+        },                       
+        {
+          "value": "shield",
+          "label": "Shield"
+        },	                     
+                  {
+          "value": "lock",
+          "label": "Lock"
+        },	
+                  {
+          "value": "payment",
+          "label": "Payment"
+        },	
+                  {
+          "value": "progress",
+          "label": "Progress"
+        },	
+          {
+          "value": "heart",
+          "label": "Heart"
+        },										
+        {
+          "value": "star",
+          "label": "Star"
+        },
+                    {
+          "value": "like",
+          "label": "Like"
+        }, 
+        {
+          "value": "tag",
+          "label": "Tag"
+        },                		
+        {
+          "value": "info",
+          "label": "Info."
+        }, 
+        {
+          "value": "globe",
+          "label": "Globe"
+        },
+                    {
+          "value": "earth",
+          "label": "Earth"
+        },
+                    {
+          "value": "gift",
+          "label": "Gift"
+        },
+                    {
+          "value": "location",
+          "label": "Location"
+        },
+                    {
+          "value": "shop",
+          "label": "Shop"
+        },
+                    {
+          "value": "rain",
+          "label": "Rain"
+        },
+                    {
+          "value": "sun",
+          "label": "Sun"
+        },
+                    {
+          "value": "cloud",
+          "label": "Cloud"
+        },
+                    {
+          "value": "leaf",
+          "label": "Leaf"
+        },       
+        {
+          "value": "care2",
+          "label": "Care"
+        },  
+                    {
+          "value": "rabit",
+          "label": "Rabbit"
+        },
+        {
+          "value": "paraben",
+          "label": "Paraben"
+        },       
+         {
+          "value": "sale1",
+          "label": "Sale 1"
+        },
+         {
+          "value": "sale2",
+          "label": "Sale 2"
+        },	
+         {
+          "value": "sale3",
+          "label": "Sale 3"
+        },							                                    
+      ] 
+    },  
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Custom icon",
+       "visible_if":"{{ block.settings.icon == 'custom' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "icns",
+      "label": "Icon size",
+      "default": 50,
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "icnsm",
+      "label": "Icon size (mobile)",
+      "default": 35,
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "newtab",
+      "label": "Open in new tab",
+      "default": false,
+      "visible_if": "{{ section.settings.url != blank }}"
+    },
+      {
+        "type": "header",
+        "content": "Appearance"
+      },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Color",
+        "default": "#000",
+        "alpha": true,
+        "info": "Please click save and then check"
+      },
+      {
+        "type": "checkbox",
+        "id": "custom_cl_override",
+        "label": "Apply color to custom icon",
+        "default": false,
+        "info": "Overwrites your custom icon's original colors with the color above. Only affects SVG custom icons.",
+        "visible_if": "{{ block.settings.icon == 'custom' }}"
+      },
+        {
+            "type": "checkbox",
+            "id": "isbg",
+            "label": "Add background",
+            "default": false
+        },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background",
+        "alpha": true,
+        "default":"#fff",
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+          "type": "color_background",
+          "id": "bgg",
+          "label": "Background gradient",
+          "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+        "type": "select",
+        "id": "bdr",
+        "label": "Borders",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "solid",
+            "label": "Solid"
+          }
+        ],
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+            "type": "range",
+            "id": "brd_sz",
+            "label": "Border thickness",
+            "default":1,
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "color",
+        "id": "bdr-cl",
+        "label": "Border color",
+        "alpha": true,
+        "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "select",
+        "id": "rounded",
+        "label": "Corner radius",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "round-xs",
+            "label": "Extra small"
+          },
+          {
+            "value": "round-sm",
+            "label": "Small"
+          },
+          {
+            "value": "round-md",
+            "label": "Medium"
+          },
+          {
+            "value": "round-lg",
+            "label": "Large"
+          },
+          {
+            "value": "round-full",
+            "label": "Full"
+          }
+        ],
+        "visible_if": "{{ block.settings.isbg or block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "header",
+        "content": "Padding"
+      },
+      {
+          "type": "checkbox",
+          "id": "ispd",
+          "label": "Add padding",
+          "default": false
+      },
+      {
+            "type": "range",
+            "id": "pd",
+            "label": "Padding",
+            "default":15,
+            "min": 0,
+            "max": 30,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },
+      {
+            "type": "range",
+            "id": "pdm",
+            "label": "Padding (mobile)",
+            "default":15,
+            "min": 0,
+            "max": 30,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },
+    {
+        "type": "paragraph",
+       "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}

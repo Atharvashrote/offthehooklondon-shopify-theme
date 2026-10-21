@@ -1,0 +1,84 @@
+{%- liquid
+  assign section_st = section.settings
+  assign block_st = block.settings
+-%}
+<div class="sidebar-widget categories" style="--bottom_bdr:{{ block_st.divider }}" {{ block.shopify_attributes }}>
+    {%- if block_st.title != blank -%}
+      <div class="widget-title head {{ section_st.ttlpreset }}{% if section_st.bottom_border %} border-bottom mb15{% endif %}{% if section_st.text-upper %} text-upper{% endif %}">{{ block_st.title }}</div>
+    {%- endif -%}
+    <div class="widget-content">
+    {% for article in blogs[blog.handle].articles limit: block_st.count %}
+        <div class="post recent-post fl f-aic">
+            <a href="{{ article.url }}" class="article-img pr mr15">
+                {{- article.image | image_url: width: article.image.width | image_tag: loading:'lazy', class:'img-fit' , sizes:'(max-width:600px) 100px,100px', widths:"180,320" -}}
+            </a>
+            <div class="fl1 details">
+                <a href="{{ article.url }}" class="post_name">{{ article.title }}</a>
+                <span class="post_date">{{ article.published_at | time_tag: format: 'month_day_year' }}</span>
+            </div>
+        </div>
+        {% unless forloop.last == true %}<hr />{% endunless %}
+    {% endfor %}
+    </div>
+</div>
+{% schema %}
+{
+  "name": "Recent posts",
+  "tag": null,
+  "settings": [
+    { 
+      "type":"text",
+      "id":"title",
+      "label":"Title",
+      "default": "Recent posts"
+    },
+    {
+      "type": "range",
+      "id": "count",
+      "label": "Post limit",
+      "default": 5,
+      "min": 1,
+      "max": 10,
+      "step": 1
+    },
+      {
+      "type": "color",
+      "id": "divider",
+      "label": "Divider border",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidemb",
+      "label": "Hide on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recent posts",
+      "category": "Sidebar"
+    }
+  ]
+}
+{% endschema %}

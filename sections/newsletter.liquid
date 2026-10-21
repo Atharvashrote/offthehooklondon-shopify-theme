@@ -1,0 +1,214 @@
+{%- capture newsletter -%}
+{%- liquid 
+    assign section_st = section.settings
+-%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %} custom-block {{section_st.style }}">  
+        <div class="display-grid custom-cnt gap" style="--gap:{{ section_st.gspace }}px;--gapm:{{ section_st.gspacem }}px;">{%- content_for 'blocks' -%}</div>
+    </div>
+</div>
+{%- endcapture -%}
+{{ newsletter | strip_newlines | remove: '  ' | remove: '	' }}
+{% schema %}
+{
+  "name": "Newsletter",
+  "class": "newsletter-sec",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "blocks": [
+    {
+      "type": "_column"
+    }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Gap",
+      "default": 30,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Gap (mobile)",
+      "default": 10,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+     {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },  
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg}}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 25
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter signup",
+      "category": "Contact",
+      "blocks": [
+        {
+          "type": "_column",
+          "settings": {
+            "column_dk": "6",
+            "align": "left",
+            "pad_tb":0,
+            "pad_tbt":0,
+            "pad_tbm":0
+          },
+          "blocks": [
+            {
+              "type": "heading",
+              "settings": {
+                "text": "Newsletter",
+                "preset":"h4",
+                "mb":0,
+                "mbm":0
+               }
+            },
+            {
+              "type": "text",
+              "settings": {
+                "text": "<p>Sign up to stay in the loop. Receive updates, access to exclusive deals, and more.</p>",
+                "mb":0,
+                "mbm":10
+               }
+            }
+          ]
+        },
+        {
+          "type": "_column",
+          "settings": {
+            "column_dk": "6",
+            "align": "right",
+            "pad_tb":0,
+            "pad_tbt":0,
+            "pad_tbm":0
+          },
+          "blocks": [
+            {
+              "type": "email-signup",
+              "settings": {
+                "bdr-cl":"#ddd"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

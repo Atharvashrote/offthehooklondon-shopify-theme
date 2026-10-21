@@ -1,0 +1,386 @@
+{{ 'overlay-text.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- liquid assign block_st = block.settings %}
+
+{%- capture styles -%}
+    --ovtxt-cl:{{ block_st.cl }};--ovtxt-x:{{ block_st.pos_x }}px;--ovtxt-y:{{ block_st.pos_y }}px;--ovtxt-w:{% if block_st.width_unit == 'percent' %}{{ block_st.width_pct }}%{% else %}{{ block_st.width_px }}px{% endif %};--ovtxt-h:{% if block_st.height_auto %}auto{% else %}{{ block_st.height_px }}px{% endif %};--ovtxt-min-h:{% if block_st.height_auto %}{{ block_st.height_px }}px{% else %}auto{% endif %};--ovtxt-z:{{ block_st.z_index }};{% if block_st.bg_type == 'color' %}--ovtxt-bg:{{ block_st.bg_color }};{% endif %}--ovtxt-pd-tb:{{ block_st.pd_tb }}px;--ovtxt-pd-lr:{{ block_st.pd_lr }}px;
+    {% if block_st.preset == 'custom' %}
+      --fs:{{  block_st.fs }}px; --fsm:{{block_st.fsm}}px; --lh: {{block_st.lh }}; --fw:{{ block_st.fw  }};
+    {% endif %}
+{%- endcapture -%}
+
+
+<div id="blk-{{ block.id }}" class="ovtxt-wrap pa left-0 top-0 reg-text rte {{block_st.preset}}{% if block_st.preset == 'custom' %} {{ block_st.ff }}{% endif %}{% if block_st.hide_mb %} hide-sm{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="{{ styles }}" {{ block.shopify_attributes }}>
+  <div class="fl f-jcc f-aic ovtxt-box w-100 t-center {{ block_st.rounded }} {% unless block_st.height_auto -%}h-100{% endunless %}{% if block_st.bg_type == 'image' and block_st.bg_image != blank %} ovtxt-box--img{% endif %}"
+  style="--bg:url('{{ block_st.bg_image | image_url: width: 2000 }}');--bg-pos:{{ block_st.bg_position }};--bg-size:{{ block_st.bg_size }};">
+    {{- block_st.text -}}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Overlay text",
+  "tag": null,
+  "settings": [
+    {
+      "type":"paragraph",
+      "content":"Overlay text positioned absolutely within the parent container"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Overlay <br/>text",
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false      
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit default presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "custom",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#111111"
+    }, 
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft1",
+      "visible_if": "{{ block.settings.preset == 'custom' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },   
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 16,
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 14,
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom' }}"
+    },    
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "600",
+      "visible_if": "{{ block.settings.preset == 'custom' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.1,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ block.settings.preset == 'custom' }}"
+    },        
+    {
+      "type": "select",
+      "id": "bg_type",
+      "label": "Background type",
+      "default": "color",
+      "options": [       
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.bg_type == 'color' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image",
+      "visible_if": "{{ block.settings.bg_type == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "bg_size",
+      "label": "Image size",
+      "default": "cover",
+      "visible_if": "{{ block.settings.bg_type == 'image' }}",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        },
+        {
+          "value": "100% 100%",
+          "label": "Stretch"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "bg_position",
+      "label": "Image position",
+      "default": "center center",
+      "visible_if": "{{ block.settings.bg_type == 'image' }}",
+      "options": [
+        {
+          "value": "center center",
+          "label": "Center"
+        },
+        {
+          "value": "Top center",
+          "label": "Top"
+        },
+        {
+          "value": "Bottom center",
+          "label": "Bottom"
+        },
+        {
+          "value": "center left",
+          "label": "Left"
+        },
+        {
+          "value": "center right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "round-full",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width_unit",
+      "label": "Width in",
+      "default": "pixel",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "Pixels"
+        },
+        {
+          "value": "percent",
+          "label": "Percent"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "width_px",
+      "label": "Width",
+      "default": 100,
+      "min": 50,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "visible_if": "{{ block.settings.width_unit == 'pixel' }}"
+    },
+    {
+      "type": "range",
+      "id": "width_pct",
+      "label": "Width",
+      "default": 100,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "visible_if": "{{ block.settings.width_unit == 'percent' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "height_auto",
+      "label": "Auto height",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "height_px",
+      "label": "Min-height",
+      "default": 100,
+      "min": 50,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "visible_if":"{{ block.settings.height_auto != true}}"      
+    },
+    {
+      "type": "range",
+      "id": "pd_lr",
+      "label": "Horizontal padding ",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pd_tb",
+      "label": "Vertical padding ",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },    
+    {
+      "type": "header",
+      "content": "Position"
+    },
+    {
+      "type": "paragraph",
+      "content": "Position from the top/left and left/right"
+    },
+    {
+      "type": "range",
+      "id": "pos_x",
+      "label": "Horizontal offset ",
+      "default": 0,
+      "min": -700,
+      "max": 700,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pos_y",
+      "label": "Vertical offset ",
+      "default": 0,
+      "min": -700,
+      "max": 700,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "z_index",
+      "label": "Z-index",
+      "default": 6,
+      "min": 0,
+      "max": 9,
+      "step": 1,
+      "info":"optional"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Overlay text"     
+    }
+  ]
+}
+{% endschema %}

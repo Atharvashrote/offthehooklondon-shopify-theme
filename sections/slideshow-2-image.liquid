@@ -1,0 +1,302 @@
+{%- capture slideshow -%}
+    {% assign section_st = section.settings %} 
+    {% capture navstl %}
+		--arrow: {{ section_st.arrowc }};--arrow-bg: {{ section_st.arrowbg}};--dots_active: {{ section_st.dots }};--dots: {{ section_st.dots |   color_modify:'alpha', 0.5 }};
+    {% endcapture %}
+  
+    <div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}">
+        {%- if section.blocks.size > 0 -%}
+            <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" style="{{ navstl }}">
+                <slide-section class="slideshow swiper pr of-hidden {{ section_st.rounded }}" data-swiper='{ "slidesPerView":"1", "loop":{{ section_st.loop }}, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "effect":"{% if section_st.fade %}fade{% else %}slide{% endif %}","preloadImages":false, "lazy":true, "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+                    <div class="swiper-wrapper">{%- content_for 'blocks' -%}</div>
+                    {%- render 'swiper-navigation', id:section.id, section_st:section_st -%}
+                </slide-section>
+            </div>
+        {%- else -%}
+            <div class="placeholder-noblocks">{{ 'homepage.onboarding.no_content' | t }}</div>
+        {%- endif -%}
+    </div>
+{%- endcapture -%}
+{{- slideshow | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Slideshow (2 Images)",
+  "class": "slideshow-wrap",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "blocks": [
+    {
+      "type": "_slide-2"
+    }
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "imganim",
+      "label": "Enable image animation",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "fade",
+      "label": "Slide fade effect",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 1,
+      "max": 60,
+      "step": 1,
+      "unit": "sec"
+    },
+    {
+            "type": "checkbox",
+            "id": "arrow",
+            "label": "Show arrows on desktop",
+            "default": true			
+        },
+		{
+            "type": "checkbox",
+            "id": "arrowm",
+            "label": "Show arrows on mobile",
+            "default": false			
+        },
+		{
+            "type": "color",
+            "id": "arrowc",
+            "label": "Color",
+            "default": "#000",
+            "visible_if": "{{ section.settings.arrow or section.settings.arrowm }}"
+        },
+        {
+            "type": "color",
+            "id": "arrowbg",
+            "label": "Background",
+            "default": "#fff",
+            "visible_if": "{{ section.settings.arrow or section.settings.arrowm }}"
+       },	      
+		{
+            "type": "checkbox",
+            "id": "dot",
+            "label": "Show pagination on desktop",
+            "default": false			
+        },
+		{
+            "type": "checkbox",
+            "id": "dotm",
+            "label": "Show pagination on mobile",
+            "default": true			
+        },
+		{
+            "type": "color",
+            "id": "dots",
+            "label": "Pagination color",
+            "default": "#ddd",
+            "visible_if": "{{ section.settings.dot or section.settings.dotm }}"
+        },
+    {
+          "type": "header",
+          "content": "Layout"
+      },
+      {
+          "type": "checkbox",
+         "id": "fullwidth",
+          "label": "Full width",
+          "default": true
+      },
+      {
+          "type": "checkbox",
+          "id": "npd",
+          "label": "Remove side margins",
+          "default": true,
+          "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+          "visible_if": "{{ section.settings.fullwidth }}"            
+      },
+      {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+              {
+              "value": "none",
+              "label": "None"
+              },
+              {
+              "value": "round-xs",
+              "label": "Extra small"
+              },
+              {
+              "value": "round-sm",
+              "label": "Small"
+              },
+              {
+              "value": "round-md",
+              "label": "Medium"
+              },
+              {
+              "value": "round-lg",
+              "label": "Large"
+              },
+              {
+              "value": "round-full",
+              "label": "Full"
+              }
+          ],
+          "visible_if": "{{ section.settings.npd == false or section.settings.fullwidth == false }}"
+      },
+      {
+          "type": "checkbox",
+          "id": "addbg",
+          "label": "Add background",
+          "default": false
+      },
+      {
+          "type": "color",
+          "id": "bg",
+          "label": "Background",
+          "default": "#f7f7f7",
+          "visible_if": "{{ section.settings.addbg }}"
+      },                   
+      {
+          "type": "checkbox",
+          "id": "hidem",
+          "label": "Hide on mobile",
+          "default": false
+      },
+      {
+          "type": "checkbox",
+          "id": "hided",
+          "label": "Hide on desktop",
+          "default": false
+      },
+      {
+          "type": "header",
+          "content": "Section padding"
+      },
+      {
+          "type": "range",
+          "id": "sst",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Top padding",
+          "unit": "px",
+          "default": 40
+      },
+      {
+          "type": "range",
+          "id": "ssb",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Bottom padding",
+          "unit": "px",
+          "default": 40
+      },
+      {
+          "type": "range",
+          "id": "sstm",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Top padding (mobile)",
+          "unit": "px",
+          "default": 20
+      },
+      {
+          "type": "range",
+          "id": "ssbm",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Bottom padding (mobile)",
+          "unit": "px",
+          "default": 20
+      }
+  ],
+  "presets": [
+    {
+      "name": "Slideshow: Split",
+      "category": "Image",
+      "settings": {
+        "autoplay": true,
+        "speed": 5
+      },
+      "blocks": {
+        "slide-1": {
+          "type": "_slide-2",
+          "blocks": {
+            "heading": {
+              "type": "heading",
+              "settings": {
+                "text": "BEST SELLING <br>SHOPIFY THEME"
+              }
+            },
+            "text": {
+              "type": "text",
+              "settings": {
+                "text": "<p>We at Adornthemes make beautiful conversion-focused,<br> high-quality Shopify themes.</p>"
+              }
+            },
+            "button": {
+              "type": "button",
+              "settings": {
+                "text": "Shop now",
+                "url": "shopify://collections/all"
+              }
+            }
+          },
+          "block_order": ["heading", "text", "button"]
+        },
+        "slide-2": {
+          "type": "_slide-2",
+          "blocks": {
+            "heading": {
+              "type": "heading",
+              "settings": {
+                "text": "BEST SELLING <br>SHOPIFY THEME"
+              }
+            },
+            "text": {
+              "type": "text",
+              "settings": {
+                "text": "<p>We at Adornthemes make beautiful conversion-focused,<br> high-quality Shopify themes.</p>"
+              }
+            },
+            "button": {
+              "type": "button",
+              "settings": {
+                "text": "Shop now",
+                "url": "shopify://collections/all"
+              }
+            }
+          },
+          "block_order": ["heading", "text", "button"]
+        }
+      },
+      "block_order": ["slide-1", "slide-2"]
+    }
+  ]
+}
+{% endschema %}

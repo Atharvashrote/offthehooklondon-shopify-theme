@@ -1,0 +1,61 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign shot_description = product.metafields.custom.shotdiscripstions.value
+-%}
+
+{% if shot_description != blank %}
+    <div
+        class="product-shot-description"
+        id="ShotDescription-{{ section.id }}"
+        role="status"
+        {{ block.shopify_attributes }}
+    >
+        <h2
+            class="shot-description-value"
+            style="
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 14px !important;
+                line-height: 1.5 !important;
+                font-weight: 400 !important;
+                letter-spacing: normal !important;
+                text-transform: none !important;
+            "
+        >
+            {{ shot_description }}
+        </h2>
+    </div>
+{% endif %}
+
+<style>
+.product-shot-description {
+    display: block !important;
+    width: 100% !important;
+    margin: 2px !important;
+    padding: 0 !important;
+}
+</style>
+
+{% schema %}
+{
+  "name": "SKU",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "islabel",
+      "label": "Show label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "SKU",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

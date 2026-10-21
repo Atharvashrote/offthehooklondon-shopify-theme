@@ -1,0 +1,1130 @@
+{%- liquid
+  assign section_st = section.settings
+  assign page_width = settings.cntwd | append: 'px'
+  if section_st.sw
+    assign page_width = '100vw'
+  endif
+-%}
+{%- capture info_banner -%}  
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+        <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}">
+            <div class="image-text__row fl f-aist f-jcsb w-100 row-{{ section.id }} f-col f-row-md of-hidden{% if section_st.npd == false or section_st.fullwidth == false %} {{ section_st.rounded }}{% endif %}"  style="--bg:{% if section_st.tbgg != blank %}{{ section_st.tbgg }}{% else %}{{ section_st.tbg }}{% endif %};--mwd:{{ section_st.image.width }}px;">				
+				<div class="fl fl1 f-aic jcc tc{% if section_st.layout == 'right' %} order2-md{% endif %} w-100 of-hidden {{ section_st.irounded }} {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
+                    {% if section_st.image != blank %}
+                        {%- capture sizes -%} (min-width:1024px) calc({{ page_width }} / 2),(min-width:768px) calc(100vw / 2), calc(100vw - 30px){%- endcapture -%}
+                        {% if section_st.link != blank %}<a class="db w-100" href="{{ section_st.link }}">{% endif %}
+                            {{ section_st.image | image_url: width: section_st.image.width | image_tag: loading:'lazy', width:section_st.image.width, height:section_st.image.height, class:'h-auto', sizes:sizes, widths:"1500,1200,900,740,560,400" }}
+                        {% if section_st.link != blank %}</a>{% endif %}
+                    {% else %}
+                        {{ 'blog-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                    {% endif %}
+                </div>				
+                <div class="image-text__content fl fl1 of-hidden w-100 {{ section_st.talignv }}" style="--cl:{{ section_st.cl }};--text-width:70ch;">
+                     <div class="image-text__content-inner {{ section_st.talign }}{% if section_st.txtpd %} nobg{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
+						
+                        {% if section_st.title != blank %}
+                            <h3 class="head {{ section_st.preset }} mb15" style="{%- if section_st.preset == 'custom-hd' -%}--fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;--ff:var(--{{ section_st.ff }});--fw:{{ section_st.fw }};--lh:{{ section_st.lh }};--ls:{{ section_st.ls }}px;{%- endif -%}">{{ section_st.title }}</h3>
+                        {% endif %}
+                        {% if section_st.text != blank %}
+                            <div class="reg-text rte mb30" style="{%- if section_st.tpreset == 'custom' -%}--fs:{{ section_st.tfs }}px;--fsm:{{ section_st.tfsm }}px;--fw:{{ section_st.tfw }};--lh:{{ section_st.tlh }};{%- endif -%}">{{ section_st.text }}</div>
+                        {% endif %}
+
+                        {% if section.blocks.size > 0 %}
+                        <ul class="grid {{ section_st.style }} rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }}{% if section_st.talign == 'tc' %} tc{% endif %}"  {%- if section_st.showicn -%} style="--icns:{{ section_st.icns }}px;--icnsm:{{ section_st.icnsm }}px;--icncl:{{ section_st.icn_cl }};"{%- endif -%}>
+                            {% for block in section.blocks limit: section.blocks.size %}
+                                {%- assign block_st = block.settings -%}
+                                <li class="reg-text gitem mb25" {{ block.shopify_attributes }} >
+                                    <div class="{% if section_st.style == 'stl2' %} fl{% elsif section_st.style == 'stl3'%} fl f-aic{% endif %}">                                          
+                                        {% if section_st.showicn %}
+                                        <div class="at-box__icons{% if section_st.style == 'stl1' %} mb15{% else %} mr15{% endif %}{% if section_st.style == 'stl2' %} mt4{% endif %}">
+                                          {%- if block_st.icon == 'custom' and block_st.image != blank -%}
+                                                {% assign img_alt = block_st.image.alt | default: block_st.title | escape %}
+                                                {% capture icnsizes %}((min-width:1024px) {{ section_st.icns }}px, {{ section_st.icnsm }}px{% endcapture %}
+                                                {% capture widths %}{{ section_st.icns }}, {{ section_st.icns | times: 1.5 | round }}, {{ section_st.icns | times: 2 }}{% endcapture %}
+                                                {{ block_st.image | image_url: width:block_st.image.width | image_tag: loading:'lazy', width:section_st.icns, height:section_st.icns, class:'img-fill svg-icon', sizes:icnsizes, widths:widths, alt: img_alt }}
+                                            {%- else -%}
+                                                {% render 'icons', icon: block_st.icon %}                                                                                                     
+                                            {%- endif -%}
+                                        </div>
+                                        {% endif %}                                                                                                        
+                                        <div class="fl1">
+                                            {% if block_st.title %}<div class="head {{ section_st.preset_ttl }} mb5" style="{%- if section_st.preset_ttl == 'custom-hd' -%}--ff:var(--{{ section_st.ttl_ff }});--fs:{{ section_st.ttl_fs }}px;--fsm:{{ section_st.ttl_fsm }}px;--lh:{{ section_st.ttl_lh }};--fw:{{ section_st.ttl_fw }};{% endif %}">{{ block_st.title }}</div>{% endif %}
+                                            {% if section_st.style != 'stl3' and block_st.text != blank %}<div class="reg-text {{ section_st.preset_text }}" style="{%- if section_st.preset_text == 'custom' -%}--fs:{{ section_st.text_fs }}px;--fsm:{{ section_st.text_fsm }}px;--lh:{{ section_st.text_lh }};--fw:{{ section_st.text_fw }};{% endif %}">{{ block_st.text }}</div>{% endif %}
+                                        </div>                              
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <br />
+						{% endif %}
+                        {% if section_st.btn != blank and section_st.link != blank %}
+                            <a href="{{ section_st.link }}" class="btn {{ section_st.btn-size }} {{ section_st.btn-style }}">{{ section_st.btn }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+{%- endcapture -%}
+{{ info_banner | strip_newlines | remove: '  ' | remove: '	' }}
+{% schema %}
+{
+  "name": "Featured banner",
+  "class": "featured-banner",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Image alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "irounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "color",
+      "id": "tbg",
+      "label": "Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color_background",
+      "id": "tbgg",
+      "label": "Background gradient"
+    },
+    {
+      "type": "select",
+      "id": "talign",
+      "label": "Text alignment",
+      "default": "tl",
+      "options": [
+        { "value": "tl", "label": "Left" },
+        { "value": "tc", "label": "Center" },
+        { "value": "tr", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "talignv",
+      "label": "Text position",
+      "default": "f-aic",
+      "options": [
+        { "value": "f-ais", "label": "Top" },
+        { "value": "f-aic", "label": "Middle" },
+        { "value": "f-aie", "label": "Bottom" }
+      ]
+    },   
+    {
+      "type": "checkbox",
+      "id": "txtpd",
+      "label": "Remove text padding on mobile",
+      "info": "Text left and right space for mobile view",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "----------------------------------------------"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Our Story, Our Promise"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h2",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "700",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default": 0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "----------------------------------------------"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Pair text with an image to give customers insight into your brand. Tell a story, explain a product detail, or describe a new promotion.</p>"
+    },
+    {
+      "type": "select",
+      "id": "tpreset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "tff",
+      "label": "Font",
+      "default": "ft1",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },   
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "400",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tlh",
+      "label": "Line height",
+      "default": 1.5,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Icons with text"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "stl1",
+      "options": [
+        {
+          "value": "stl1",
+          "label": "Style 1 : Multiple line text"
+        },
+        {
+          "value": "stl2",
+          "label": "Style 2 : 2 Line text"
+        },
+        {
+          "value": "stl3",
+          "label": "Style 3 : 1 Line text"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "showicn",
+      "label": "Show icon",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "icns",
+      "label": "Icon size",
+      "default": 30,
+      "min": 16,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.showicn }}"
+    },
+    {
+      "type": "range",
+      "id": "icnsm",
+      "label": "Icon size (mobile)",
+      "default": 30,
+      "min": 16,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.showicn }}"
+    },
+    {
+      "type": "color",
+      "id": "icn_cl",
+      "label": "Color",
+      "default": "#000",
+      "visible_if": "{{ section.settings.showicn }}"
+    },
+     {
+      "type": "paragraph",
+      "content": "--------------------------------------------"
+    },
+    {
+      "type": "select",
+      "id": "preset_ttl",
+      "label": "Preset (title)",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h5",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ttl_ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset_ttl == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ttl_fs",
+      "label": "Title font",
+      "default": 15,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset_ttl == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ttl_fsm",
+      "label": "Title font (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset_ttl == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "ttl_fw",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "visible_if": "{{ section.settings.preset_ttl == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ttl_lh",
+      "label": "Line height",
+      "default": 1.3,
+      "min": 1.0,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.preset_ttl == 'custom-hd' }}"
+    },
+    {
+      "type": "select",
+      "id": "preset_text",
+      "label": "Preset (text)",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_fs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset_text == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "text_fsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset_text == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "text_fw",
+      "label": "Font weight",
+      "default": "400",
+      "visible_if": "{{ section.settings.preset_text == 'custom' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_lh",
+      "label": "Line height",
+      "default": 1.5,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.preset_text == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#222"
+    },
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Columns (desktop)",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "gridtb",
+      "label": "Columns (tablet)",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "gridmb",
+      "label": "Columns (mobile)",
+      "default": 1,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "btn",
+      "label": "Button label",
+      "default": "Read More"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Button link",
+      "default": "/",
+      "visible_if": "{{ section.settings.btn != empty }}"
+    },
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ],
+      "visible_if": "{{ section.settings.btn != empty }}"
+    },
+    {
+      "type": "select",
+      "id": "btn-size",
+      "label": "Buttons size",
+      "default": "btn-md",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ],
+      "visible_if": "{{ section.settings.btn != empty }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+     "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ section.settings.npd == false or section.settings.fullwidth == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "check2",
+          "options": [
+            {
+              "value": "custom",
+              "label": "Custom icon"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "check2",
+              "label": "Check 2"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "email",
+              "label": "Email"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "phone2",
+              "label": "Phone 2"
+            },
+            {
+              "value": "comment",
+              "label": "Comment"
+            },
+            {
+              "value": "support",
+              "label": "Support"
+            },
+            {
+              "value": "dollar",
+              "label": "Dollar"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "return",
+              "label": "Return"
+            },
+            {
+              "value": "return2",
+              "label": "Return 2"
+            },  
+            {
+              "value": "rocket",
+              "label": "Rocket"
+            },
+            {
+              "value": "plan",
+              "label": "Plane"
+            },
+            {
+              "value": "measure",
+              "label": "Measure"
+            },
+            {
+              "value": "file",
+              "label": "File"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "payment",
+              "label": "Payment"
+            },
+            {
+              "value": "progress",
+              "label": "Progress"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "like",
+              "label": "Like"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "tag2",
+              "label": "Tag"
+            },
+            {
+              "value": "info",
+              "label": "Info."
+            },
+            {
+              "value": "globe",
+              "label": "Globe"
+            },
+            {
+              "value": "earth",
+              "label": "Earth"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "location",
+              "label": "Location"
+            },
+            {
+              "value": "shop",
+              "label": "Shop"
+            },
+            {
+              "value": "rain",
+              "label": "Rain"
+            },
+            {
+              "value": "sun",
+              "label": "Sun"
+            },
+            {
+              "value": "cloud",
+              "label": "Cloud"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "care2",
+              "label": "Care"
+            },
+            {
+              "value": "rabit",
+              "label": "Rabbit"
+            },
+            {
+              "value": "paraben",
+              "label": "Paraben"
+            }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom icon",
+          "visible_if": "{{ block.settings.icon == 'custom' }}"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Add a title or tagline"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Add feature short description</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured banner",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

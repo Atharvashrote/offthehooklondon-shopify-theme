@@ -1,0 +1,334 @@
+/* =========================================================
+   NEW LAUNCHES — PREMIUM PRODUCT SLIDER
+   ========================================================= */
+
+.premium-slider {
+    width: 100%;
+    padding: 40px 0 10px;
+}
+
+
+/* =========================================================
+   SECTION HEADER
+   ========================================================= */
+
+.premium-slider .section-heading {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 0 10px;
+}
+
+
+/* Heading */
+
+.premium-slider .section-heading h2 {
+    margin: 0 0 16px;
+
+    font-family: inherit !important;
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    line-height: 30px !important;
+    letter-spacing: 0 !important;
+    text-transform: uppercase;
+
+    color: #111 !important;
+}
+
+
+/* Description */
+
+.premium-slider .section-heading p {
+    max-width: 700px;
+    margin: 0 auto 10px;
+
+    font-family: inherit !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 26px !important;
+    letter-spacing: 0 !important;
+
+    color: #666 !important;
+}
+
+
+/* Small line */
+
+.premium-slider .heading-line {
+    display: block;
+
+    width: 62px;
+    height: 1px;
+
+    margin: 0 auto;
+
+    background: #111;
+}
+
+
+/* =========================================================
+   SWIPER
+   ========================================================= */
+
+.premium-slider .premiumSwiper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.premium-slider .swiper-slide {
+    height: auto;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
+
+.premium-slider .premium-card {
+    height: 100%;
+    border-right: 1px solid #ececec;
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE
+   ========================================================= */
+
+.premium-slider .premium-image {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    aspect-ratio: 1 / 1;
+
+    background: #f7f7f7;
+}
+
+
+.premium-slider .image-one,
+.premium-slider .image-two {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    transition: opacity 0.5s ease;
+}
+
+
+.premium-slider .image-two {
+    opacity: 0;
+}
+
+
+/* Hover */
+
+.premium-slider .premium-card:hover .image-one {
+    opacity: 0;
+}
+
+.premium-slider .premium-card:hover .image-two {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   PRODUCT INFORMATION
+   ========================================================= */
+
+.premium-slider .premium-info {
+    padding: 16px 10px 28px;
+
+    text-align: center;
+}
+
+
+/* Product title */
+
+.premium-slider .premium-info h3 {
+    margin: 0 0 7px;
+
+    font-family: inherit !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    line-height: 23px !important;
+    letter-spacing: 0 !important;
+}
+
+
+.premium-slider .premium-info h3 a {
+    color: #222;
+
+    text-decoration: none;
+}
+
+
+.premium-slider .premium-info h3 a:hover {
+    color: #000;
+}
+
+
+/* Price */
+
+.premium-slider .premium-price {
+    display: block;
+
+    margin-top: 4px;
+
+    font-family: inherit !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    line-height: 22px !important;
+    letter-spacing: 0 !important;
+
+    color: #111 !important;
+}
+
+
+/* =========================================================
+   SLIDER ARROWS
+   ========================================================= */
+
+.premium-slider .swiper-button-prev,
+.premium-slider .swiper-button-next {
+    width: 52px;
+    height: 52px;
+
+    margin-top: -26px;
+
+    background: #fff;
+
+    border: 1px solid #ddd;
+    border-radius: 50%;
+
+    color: #111;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+
+.premium-slider .swiper-button-prev {
+    left: 20px;
+}
+
+.premium-slider .swiper-button-next {
+    right: 20px;
+}
+
+
+.premium-slider .swiper-button-prev:hover,
+.premium-slider .swiper-button-next:hover {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+}
+
+
+/* Arrow icon */
+
+.premium-slider .swiper-button-prev::after,
+.premium-slider .swiper-button-next::after {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media screen and (max-width: 1200px) {
+
+    .premium-slider .swiper-button-prev,
+    .premium-slider .swiper-button-next {
+        display: none;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 767px) {
+
+    .premium-slider {
+        padding: 10px 0 45px;
+    }
+
+
+    .premium-slider .section-heading {
+        margin-bottom: 30px;
+        padding: 0 15px;
+    }
+
+
+    .premium-slider .section-heading h2 {
+        margin-bottom: 12px;
+
+        font-size: 26px !important;
+        line-height: 31px !important;
+    }
+
+
+    .premium-slider .section-heading p {
+        margin-bottom: 20px;
+
+        font-size: 14px !important;
+        line-height: 23px !important;
+    }
+
+
+    .premium-slider .heading-line {
+        width: 55px;
+    }
+
+
+    .premium-slider .premium-info {
+        padding: 13px 8px 22px;
+    }
+
+
+    .premium-slider .premium-info h3 {
+        font-size: 15px !important;
+        line-height: 21px !important;
+    }
+
+
+    .premium-slider .premium-price {
+        font-size: 14px !important;
+        line-height: 20px !important;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 420px) {
+
+    .premium-slider .section-heading h2 {
+        font-size: 24px !important;
+        line-height: 29px !important;
+    }
+
+
+    .premium-slider .section-heading p {
+        font-size: 14px !important;
+        line-height: 22px !important;
+    }
+
+}

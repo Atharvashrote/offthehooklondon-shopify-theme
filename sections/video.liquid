@@ -1,0 +1,239 @@
+{% capture video_banner %}
+{% assign section_st = section.settings %}
+<style>
+  .video_bnr { font-size:0px; }
+  .video_bnr video { width: 100%; }
+</style>
+<div class="section-cover{% if section_st.hidem %} hide-sm{% endif %}{% if section_st.hided %} hide-md hide-lg{% endif %}" style="--sbg:{% if section_st.bgg != blank %}{{ section_st.bgg }}{% else %}{{ section_st.bg }}{% endif %};--sst:{{ section_st.sst }}px;--ssb:{{ section_st.ssb }}px;--sstm:{{ section_st.sstm }}px;--ssbm:{{ section_st.ssbm }}px;" >  	
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" > 
+
+         <div class="video_bnr pr">
+                {% capture video_data %}
+                  {%- liquid
+                      assign poster = section_st.poster | default: section_st.video.preview_image
+                      assign poster_size = poster | image_url: width: poster.width
+                      assign psratio = '56.25'
+                      if poster
+                         assign psratio = 1 | divided_by: poster.aspect_ratio | times: 100
+                      endif                    
+                      assign loop = false                    									
+                  -%}
+                  <div class="video-wrap" style="--ratio:{{ psratio }}%;">
+                    {% # theme-check-disable RemoteAsset,DeprecateBgsizes %}
+                    {% if section_st.source == 'url' and section_st.video_url == blank %}
+                        <iframe class="db" src="//www.youtube.com/embed/_9VUPq3SxOc?rel=0&showinfo=0&vq=720" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+                    {% elsif section_st.source == 'url' and section_st.video_url != blank %}
+                        {% if section_st.video_url.type == "youtube" %}
+                            <iframe class="db" src="//www.youtube.com/embed/{{ section_st.video_url.id }}?controls=0&autoplay=1&rel=0&showinfo=0" width="850" height="480" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+                        {% endif %}
+                        {% if section_st.video_url.type == "vimeo" %}
+                            <iframe class="db" src="//player.vimeo.com/video/{{ section_st.video_url.id }}?background=1&byline=0&portrait=0&badge=0" width="850" height="480" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                        {% endif %}
+                    {% elsif section_st.video != blank %}
+                        {{ section_st.video | video_tag: image_size:poster_size, loop:loop,controls:section_st.controls, poster:poster_size, class:'w-100 db' }} 
+                    {% endif %}
+                    {% # theme-check-enable DeprecateBgsizes,DeprecateBgsizes %}
+                  </div>
+                {% endcapture %}
+     
+                <a href="{{ section_st.video_url }}?controls=0&autoplay=1&rel=0&showinfo=0" class="video_pop popup-link pr" data-popup="vd{{ section.id }}" aria-haspopup="dialog">
+                   <div class="video-wrap {% if section_st.npd == false or section_st.fullwidth == false %}{{ section_st.rounded }}{% endif %}" style="--ratio:{{ 1 | divided_by: poster.aspect_ratio | times: 100 }}%;">
+                      {% if poster %}
+                          {{ poster | image_url: width: poster.width | image_tag: class:'img-fit ctimg', widths:"200,400,600,800,1000,1200,1400,1600,2000" }}
+                      {% else %}
+                          <div class="pr">{% capture current %}{% cycle 1, 2 %}{% endcapture -%}{{- 'hero-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg w-100' }}</div>
+                      {% endif %}
+                      <svg class="at-icon pa play-btn top-50 left-50 translate-50 op-7" style="--icns:50px;color:#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 504c137 0 248-111 248-248S393 8 256 8 8 119 8 256s111 248 248 248zM40 256c0-118.7 96.1-216 216-216 118.7 0 216 96.1 216 216 0 118.7-96.1 216-216 216-118.7 0-216-96.1-216-216zm331.7-18l-176-107c-15.8-8.8-35.7 2.5-35.7 21v208c0 18.4 19.8 29.8 35.7 21l176-101c16.4-9.1 16.4-32.8 0-42zM192 335.8V176.9c0-4.7 5.1-7.6 9.1-5.1l134.5 81.7c3.9 2.4 3.8 8.1-.1 10.3L201 341c-4 2.3-9-.6-9-5.2z"/></svg>             
+                   </div>                       
+                </a>                
+                <div id="vd{{ section.id }}" class="tinglebox pp-hide vd">{{ video_data | replace: "video-wrap","video-wrap1" }}</div>
+                                  
+          </div>         
+    </div>
+</div>
+{% endcapture %}
+{{- video_banner | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Video popup",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+     {
+          "type": "select",
+          "id": "source",
+          "label": "Source",
+          "default": "uploaded",
+          "options": [
+            {
+              "value": "uploaded",
+              "label": "Uploaded"
+            },
+            {
+              "value": "url",
+              "label": "External URL"
+            }
+          ]
+        },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "Video link",
+      "accept": ["youtube", "vimeo"],
+      "visible_if": "{{ section.settings.source == 'url' }}"
+    },
+     {
+      "type": "video",
+      "id": "video",
+      "label": "MP4 video",
+      "visible_if": "{{ section.settings.source == 'uploaded' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "Poster image"
+    },   
+    {
+      "type": "checkbox",
+      "id": "controls",
+      "label": "Enable controls",
+      "default": false,
+      "info": "Show video play/pause buttons",
+      "visible_if": "{{ section.settings.source == 'uploaded' }}"
+    },     
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+        "type": "checkbox",
+        "id": "npd",
+        "label": "Remove side margins",
+        "default": true,
+        "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+        "visible_if": "{{ section.settings.fullwidth }}"            
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+          {
+          "value": "none",
+          "label": "None"
+          },
+          {
+          "value": "round-xs",
+          "label": "Extra small"
+          },
+          {
+          "value": "round-sm",
+          "label": "Small"
+          },
+          {
+          "value": "round-md",
+          "label": "Medium"
+          },
+          {
+          "value": "round-lg",
+          "label": "Large"
+          },
+          {
+          "value": "round-full",
+          "label": "Full"
+          }
+       ],
+      "visible_if": "{{ section.settings.npd == false or section.settings.fullwidth == false }}"
+    },      
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },     
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }  
+  ],
+  "presets": [
+    {
+      "name": "Video popup",
+      "category": "Storytelling"
+    }
+  ]
+}
+{% endschema %}

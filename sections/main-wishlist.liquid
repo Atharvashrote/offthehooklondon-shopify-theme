@@ -1,0 +1,304 @@
+{%- liquid
+    assign is_rtl = false
+    assign list_rtl = 'ar,dv,ha,he,ku,fa,ur,ug' | split: ','
+    if list_rtl contains request.locale.iso_code or settings.rtl
+        assign is_rtl = true
+    endif
+    
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+-%}
+{%- capture sizes -%}
+(min-width:1024px) calc({{ page_width }} / {{ section_st.grid }}),(min-width:768px) calc(100vw / {{ section_st.gridtb }}), calc(100vw / {{ section_st.gridmb }})
+{%- endcapture -%}
+<style>
+#wishlist .addwishlist {display:none;}
+#wishlist .remove-item { position:absolute; {% if is_rtl %}left{% else %}right{% endif %}:15px; top:10px; z-index:2; opacity:1; visibility:visible; }
+#wishlist .remove-item .tooltip-label { bottom:auto; right:50px; left:inherit; }
+
+
+
+</style>
+<style>
+
+/* Wishlist loading */
+.wishlist-loading {
+    width: 100%;
+    min-height: 220px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    color: #555;
+
+    text-align: center;
+}
+
+/* Empty wishlist */
+.wlnull {
+    display: none !important;
+}
+
+.wlnull.show {
+    display: block !important;
+}
+
+/* Wishlist grid */
+#wishlist {
+    position: relative;
+}
+
+/* Product cards */
+#wishlist .gitem {
+    position: relative !important;
+}
+
+/* Remove individual product */
+#wishlist .wishlist-remove-item {
+    position: absolute !important;
+
+    top: 14px !important;
+    right: 14px !important;
+
+    width: 40px !important;
+    height: 40px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    background: #fff !important;
+    color: #111 !important;
+
+    border: none !important;
+    border-radius: 50% !important;
+
+    box-shadow: 0 3px 12px rgba(0,0,0,.12) !important;
+
+    cursor: pointer;
+    z-index: 20 !important;
+
+    transition: all .2s ease;
+}
+
+#wishlist .wishlist-remove-item:hover {
+    background: #111 !important;
+    color: #fff !important;
+}
+
+#wishlist .wishlist-remove-item svg {
+    width: 14px !important;
+    height: 14px !important;
+    pointer-events: none;
+}
+
+/* Clear wishlist */
+.wishlist-clear-wrap {
+    width: 100%;
+
+    display: flex;
+    justify-content: flex-end;
+
+    margin-bottom: 24px;
+
+    grid-column: 1 / -1;
+}
+
+.wishlist-clear-all {
+    height: 42px;
+
+    padding: 0 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #111 !important;
+    color: #fff !important;
+
+    border: 1px solid #111 !important;
+    border-radius: 0 !important;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    letter-spacing: .7px;
+
+    cursor: pointer;
+
+    transition: all .25s ease;
+}
+
+.wishlist-clear-all:hover {
+    background: #fff !important;
+    color: #111 !important;
+}
+
+/* Mobile */
+@media screen and (max-width: 767px) {
+
+    .wishlist-clear-wrap {
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .wishlist-clear-all {
+        width: 100%;
+        max-width: 220px;
+    }
+
+    #wishlist .wishlist-remove-item {
+        width: 34px !important;
+        height: 34px !important;
+
+        top: 8px !important;
+        right: 8px !important;
+    }
+}
+
+</style>
+<div class="section-cover{% if section_st.hidem %} hide-sm{% endif %}" style="--sbg:{{ section_st.bg }};--sst:{{ section_st.sst }}px;--ssb:{{ section_st.ssb }}px;--sstm:{{ section_st.sstm }}px;--ssbm:{{ section_st.ssbm }}px">  
+	 <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}">
+        {% unless section_st.hidettl %} <h1 class="page-title tc{% if settings.ttl_c %} text-upper{% endif %}">{{ page.title }}</h1>{% endunless %}
+     <div class="wishlist-loading">
+    Loading your wishlist...
+</div>
+
+<div class="empty-page wlnull tc" style="display:none;">
+    <p>{{ 'products.wishlist.wishlist-empty' | t }}</p>
+    <a href="{{ routes.root_url }}" class="btn">
+        {{ 'products.wishlist.shop_link' | t }}
+    </a>
+</div>
+
+<wishlist-items
+    id="wishlist"
+    data-url="{{ routes.search_url }}"
+    class="mt20 grid rwcols-2 rwcols-md-3 rwcols-lg-4 grid-products"
+    style="display:none;">
+
+    {% for item in search.results %}
+        <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
+            {% render 'product-card-grid', product: item, section_st:section_st, sizes: sizes %}
+        </div>
+    {% endfor %}
+
+</wishlist-items>
+	</div>
+</div>
+<script src="{{ 'wishlist.js' | asset_url }}" defer="defer"></script>
+{% schema %}
+  {
+    "name": "Wishlist page",
+    "class": "index-section",
+    "settings": [	
+        {
+            "type": "checkbox",
+            "id": "hidettl",
+            "label": "Hide page title",
+            "default": false            
+        },		
+	    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },   
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 25
+    }   
+    ]
+  }
+{% endschema %}

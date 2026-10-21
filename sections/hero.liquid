@@ -1,0 +1,581 @@
+{%- capture hero_banner -%}
+{%- liquid
+    assign section_st = section.settings
+    assign block_link = false
+    if section_st.ol_link and section_st.hero_link != blank
+        assign block_link = true
+    endif
+-%}
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}">
+  <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}">
+        <div class="hero pr {% if section_st.npd == false or section_st.fullwidth == false %}{{ section_st.rounded }} of-hidden {% endif %}{% render 'animate-data', css:true, text:true %}">
+            {%- if section_st.image != blank or section_st.imagem != blank -%}
+                {%- liquid
+                    assign banner_img = section_st.image
+                    assign banner_imgm = section_st.imagem
+                    assign banner_imgm_srcset = banner_imgm | image_url: width: banner_imgm.width | image_tag: widths: '360,480,760' | split: 'srcset="' | last | split: '"' | first
+                -%}
+                <picture class="pa all0 of-hidden brad{% if section_st.parallax %} parallax-img{% endif %} overlay {{ section_st.ovr-direction }}" style="--img-pos:{{ section_st.image.presentation.focal_point | default: 'center center' }};--overlay:{{ section_st.ovr }};--overlay-down:{{ section_st.ovr | color_to_hex }}00;" data-u-scale="1.3">
+                    {%- if section_st.imagem != blank -%}
+                        <source media="(max-width: 767px)" srcset="{{ banner_imgm_srcset }}" width="{{ banner_imgm.width }}" height="{{ banner_imgm.height }}">
+                    {%- endif -%}
+                    {{- banner_img | image_url: width: banner_img.width | image_tag: class:'img-fit heroImg', width:banner_img.width, height:banner_img.height, widths:"400,600,800,1000,1200,1400,1600,2000,2400,3000" -}}
+                </picture>
+            {%- endif -%}
+            {%- if section_st.image == blank -%}<div class="ph_bg">{{ 'hero-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}</div>{%- endif -%}
+
+            {%- if block_link -%}
+                <a href="{{ section_st.hero_link }}" class="pa all0 zi1"></a>
+            {%- endif -%}
+
+            <div class="hero-wrapper wd100 fl m-auto pr zi1 {{ section_st.txtpos }} {{ section_st.txtposm }}{% if block_link %} link-over{% endif %}" style="--mht:{{ section_st.height_desk }}px;--mhtt:{{ section_st.height_tab }}px;--mhtm:{{ section_st.height_mob }}px;--page-width:{{ section_st.contwd }}px;">
+                <div class="group-bk fl f-col gap {{ section_st.box_rounded }} t-{{ section_st.alignm }} t-{{ section_st.align }}-md {% render 'group-settings', section_st:section_st, class: true %}" style="{% render 'group-settings', section_st:section_st, styles:true %}">
+                    {%- content_for 'blocks' -%}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endcapture -%}
+{{- hero_banner | strip_newlines | remove: '  ' | remove: '	' -}}
+
+{%- schema -%}
+{
+  "name": "Hero banner",
+  "class": "hero-section",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner height"
+    },
+    {
+      "type": "range",
+      "id": "height_desk",
+      "label": "Desktop",
+      "default": 600,
+      "min": 100,
+      "max": 1000,
+      "step": 10
+    },
+    {
+      "type": "range",
+      "id": "height_tab",
+      "label": "Tablet",
+      "default": 500,
+      "min": 100,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "type": "range",
+      "id": "height_mob",
+      "label": "Mobile",
+      "default": 400,
+      "min": 100,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Recommended width 2000px and height as per above desktop height"
+    },
+    {
+      "type": "image_picker",
+      "id": "imagem",
+      "label": "Mobile Image",
+      "info": "Recommended width 750px and height as per above mobile height. If mobile image is blank, dekstop image will be used."
+    },    
+    {
+      "type": "color",
+      "id": "ovr",
+      "label": "Overlay color",
+      "alpha": true,
+      "default": "#00000060"     
+    }, 
+    {
+          "type": "select",
+          "id": "ovr-direction",
+          "label": "Overlay direction",
+          "default": "full",
+          "options": [
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" },
+            { "value": "full", "label": "Full" }
+          ]
+        },
+     {
+      "type": "checkbox",
+      "id": "ol_link",
+      "label": "Enable click on image",
+      "default": false
+    },  
+     {
+      "type": "url",
+      "id": "hero_link",
+      "label": "Add url",
+      "visible_if": "{{ section.settings.ol_link }}"
+    }, 
+    {
+      "type": "checkbox",
+      "id": "parallax",
+      "label": "Enable parallax scrolling",
+      "default": true,
+      "info": "For Parallax Effect Recommanded Image width : 1900 and height  = Banner height + 300. Effect will not work on mobile device."
+    },
+     {
+      "type": "header",
+      "content": "Caption"
+    },  
+    {
+      "type": "range",
+      "id": "contwd",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "label": "Container width",
+      "unit": "px",
+      "default": 1400,
+      "info": "Apply for desktop only"
+    }, 
+    {
+      "type": "select",
+      "id": "txtpos",
+      "label": "Position",
+      "default": "f-aic-md f-jcc-md",
+      "options": [
+        { "label": "Top left", "value": "f-ais-md f-jcs-md" },
+        { "label": "Top center", "value": "f-ais-md f-jcc-md" },
+        { "label": "Top right", "value": "f-ais-md f-jce-md" },
+        { "label": "Left", "value": "f-aic-md f-jcs-md" },
+        { "label": "Center", "value": "f-aic-md f-jcc-md" },
+        { "label": "Right", "value": "f-aic-md f-jce-md" },
+        { "label": "Bottom left", "value": "f-aie-md f-jcs-md" },
+        { "label": "Bottom center", "value": "f-aie-md f-jcc-md" },
+        { "label": "Bottom right", "value": "f-aie-md f-jce-md" }
+      ]
+    },  
+     {
+      "type": "select",
+      "id": "txtposm",
+      "label": "Position (mobile)",
+      "default": "f-aic f-jcc",    
+      "options": [
+        { "label": "Top left", "value": "f-ais f-jcs" },
+        { "label": "Top center", "value": "f-ais f-jcc" },
+        { "label": "Top right", "value": "f-ais f-jce" },
+        { "label": "Left", "value": "f-aic f-jcs" },
+        { "label": "Center", "value": "f-aic f-jcc" },
+        { "label": "Right", "value": "f-aic f-jce" },
+        { "label": "Bottom left", "value": "f-aie f-jcs" },
+        { "label": "Bottom center", "value": "f-aie f-jcc" },
+        { "label": "Bottom right", "value": "f-aie f-jce" }
+      ]
+    },  
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Alignment",
+      "default": "center"
+    },       
+     {
+      "type": "text_alignment",
+      "id": "alignm",
+      "label": "Alignment (mobile)",
+      "default": "center"
+    },    
+    {
+      "type": "header",
+      "content": "Content box"
+    },           
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "custom",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ct_width",
+      "min": 300,
+      "max": 1300,
+      "step": 10,
+      "label": "Custom width",
+      "unit": "px",
+      "default": 500,
+      "visible_if": "{{ section.settings.width == 'custom' }}"
+    },    
+    {
+      "type": "select",
+      "id": "widthm",
+      "label": "Width (mobile)",
+      "default": "fit",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ct_widthm",
+      "min": 100,
+      "max": 600,
+      "step": 5,
+      "label": "Custom width",
+      "unit": "px",
+      "default": 300,
+      "visible_if": "{{ section.settings.widthm == 'custom' }}"
+    },         
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "box_bg",
+      "label": "Background",
+      "alpha": true,
+      "default":"#fff",
+      "visible_if": "{{ section.settings.isbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "box_bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.isbg }}"
+    },
+    {
+      "type": "select",
+      "id": "bdr",
+      "label": "Borders",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "visible_if": "{{ section.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "brd_sz",
+      "label": "Border thickness",
+      "default": 1,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.isbg and section.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "alpha": true,
+      "visible_if": "{{ section.settings.isbg and section.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "box_rounded",
+      "label": "Corner radius",
+      "default": "round-sm",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ section.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "gapm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap (mobile)",
+      "default": 10
+    },  
+    {
+      "type": "header",
+      "content": "Text padding"
+    },
+    {
+      "type": "checkbox",
+      "id": "ispd",
+      "label": "Add padding",
+      "default": true
+    },    
+    {
+      "type": "range",
+      "id": "pd-lr",
+      "label": "Horizontal",
+      "default": 30,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.ispd }}"
+    },        
+    {
+      "type": "range",
+      "id": "pd-tb",
+      "label": "Vertical",
+      "default": 30,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.ispd }}"
+    },  
+    {
+      "type": "range",
+      "id": "pd-lrm",
+      "label": "Horizontal (mobile)",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.ispd }}"
+    },  
+    {
+      "type": "range",
+      "id": "pd-tbm",
+      "label": "Vertical (mobile)",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.ispd }}"
+    },
+    {
+          "type": "header",
+          "content": "Layout"
+      },
+      {
+          "type": "checkbox",
+          "id": "fullwidth",
+          "label": "Full width",
+          "default": true
+      },
+      {
+          "type": "checkbox",
+          "id": "npd",
+          "label": "Remove side margins",
+          "default": true,
+          "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+          "visible_if": "{{ section.settings.fullwidth }}"            
+      },
+      {
+          "type": "select",
+          "id": "rounded",
+          "label": "Corner radius",
+          "default": "none",
+          "options": [
+              {
+              "value": "none",
+              "label": "None"
+              },
+              {
+              "value": "round-xs",
+              "label": "Extra small"
+              },
+              {
+              "value": "round-sm",
+              "label": "Small"
+              },
+              {
+              "value": "round-md",
+              "label": "Medium"
+              },
+              {
+              "value": "round-lg",
+              "label": "Large"
+              },
+              {
+              "value": "round-full",
+              "label": "Full"
+              }
+          ],
+          "visible_if": "{{ section.settings.npd == false or section.settings.fullwidth == false }}"
+      },
+      {
+          "type": "checkbox",
+          "id": "addbg",
+          "label": "Add background",
+          "default": false
+      },
+      {
+          "type": "color",
+          "id": "bg",
+          "label": "Background",
+          "default": "#f7f7f7",
+          "visible_if": "{{ section.settings.addbg }}"
+      },                   
+      {
+          "type": "checkbox",
+          "id": "hidem",
+          "label": "Hide on mobile",
+          "default": false
+      },
+      {
+          "type": "checkbox",
+          "id": "hided",
+          "label": "Hide on desktop",
+          "default": false
+      },
+      {
+          "type": "header",
+          "content": "Section padding"
+      },
+      {
+          "type": "range",
+          "id": "sst",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Top",
+          "unit": "px",
+          "default": 40
+      },
+      {
+          "type": "range",
+          "id": "ssb",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Bottom",
+          "unit": "px",
+          "default": 40
+      },
+      {
+          "type": "range",
+          "id": "sstm",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Top (mobile)",
+          "unit": "px",
+          "default": 20
+      },
+      {
+          "type": "range",
+          "id": "ssbm",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Bottom (mobile)",
+          "unit": "px",
+          "default": 20
+      }  	
+  ],
+  "presets": [
+    {
+      "name": "Hero banner",
+      "category": "Banners",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "BEST SELLING SHOPIFY THEME",
+            "preset":"h3"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>We at Adornthemes craft beautiful, user-friendly Shopify themes that turn your visitors into customers. It's not just a theme — it is a complete design toolkit that helps you design your store quickly and effortlessly.</p>",
+            "mb":20,
+            "mbm":10
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "text": "Shop now",
+            "url": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": ["heading", "text", "button"]
+    }
+  ]
+}
+{%- endschema -%}

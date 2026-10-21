@@ -1,0 +1,117 @@
+{%- liquid
+  assign section_st = section.settings
+  assign block_st = block.settings
+-%}
+<div class="sidebar-widget hide-sm hide-md" {{ block.shopify_attributes }}>
+    {%- if block_st.title != blank -%}
+        <div class="widget-title head {{ section_st.ttlpreset }}{% if section_st.bottom_border %} border-bottom mb15{% endif %}{% if section_st.text-upper %} text-upper{% endif %}">{{ block_st.title }}</div>
+    {%- endif -%}
+    <div class="widget-content">
+      {%- if block_st.products != blank -%}
+        {%- if block_st.type == "list" -%}
+            {%- for product in block_st.products -%}
+                {% render 'product-card-columns', product: product, block: block.settings, section: section.settings %}
+            {% endfor %}
+        {%- else -%}
+            <slide-section class="grid swiper rwcols-1" data-swiper='{ "slidesPerView":"auto", "loop":true, {% if block_st.autoplay %}"autoplay":{ "delay":"{{ block_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ block.id }}","prevEl":".swp{{ block.id }}" },"pagination":{ "el":".swpg{{ block.id }}","clickable":true }}'>
+                <div class="swiper-wrapper">
+                    {%- for product in block_st.products -%}
+                        <div class="gitem swiper-slide">{% render 'product-card-grid', product: product, block: block.settings %}</div>
+                    {% endfor %}
+                </div>
+                <div class="swiper-arrows swiper-button-next swn{{ block.id }}"></div>
+                <div class="swiper-arrows swiper-button-prev swp{{ block.id }}"></div>
+            </slide-section>
+        {%- endif -%}
+      {%- else -%}
+        <p>Please Products from block settings</p>
+      {%- endif -%}
+      {%- if block_st.is_btn and block_st.btn_txt != blank -%}
+        <div class="t-center"><a href="{{ block_st.url }}" class="btn mt20">{{ block_st.btn_txt }}</a></div>
+      {%- endif -%}
+    </div>
+  </div>
+{% schema %}
+{
+  "name": "Products",
+  "tag": null,
+  "settings": [
+    { 
+        "type":"text",
+        "id":"title",
+        "label":"Title",
+        "default":"Popular Products"
+    },
+    {
+        "type": "product_list",
+        "id": "products",
+        "label": "Products"
+    },
+    {
+      "type": "select",
+      "id": "type",
+      "label": "Display as",
+      "default": "list",
+      "options": [
+        {
+          "value": "list",
+          "label": "List"
+        },
+        {
+          "value": "slider",
+          "label": "Slider"
+        }
+      ]
+    },
+    {
+        "type": "checkbox",
+        "id": "autoplay",
+        "label": "Auto-rotate product",
+        "default": true,
+        "visible_if": "{{  block.settings.type == 'slider' }}"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "Sec",
+      "visible_if": "{{ block.settings.type == 'slider' and block.settings.autoplay }}"
+    },
+    {
+        "type": "checkbox",
+        "id": "is_btn",
+        "label": "Show view more button",
+        "default": false
+    },
+    {
+        "type": "text",
+        "id": "btn_txt",
+        "label": "Button label",
+        "default": "View More",
+        "visible_if": "{{ block.settings.is_btn }}"
+    },
+    {
+        "type": "url",
+        "id": "url",
+        "label": "Link",
+        "visible_if": "{{ block.settings.is_btn }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidemb",
+      "label": "Hide on mobile",
+      "default": true
+    }   
+  ],
+  "presets": [
+    {
+      "name": "Products",
+      "category": "Sidebar"
+    }
+  ]
+}
+{% endschema %}

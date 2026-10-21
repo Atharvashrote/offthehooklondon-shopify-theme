@@ -1,0 +1,315 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "cl": "#111111",
+        "bg": "#f9f9f9",
+        "fsz": 13,
+        "case": false,
+        "fullwidth": false,
+        "tc": false,
+        "hidemb": false
+      }
+    },
+    "banner": {
+      "type": "page-banner",
+      "blocks": {
+        "heading_TDpzCk": {
+          "type": "heading",
+          "name": "Heading",
+          "settings": {
+            "text": "{{ closest.page.title }}",
+            "htag": "h2",
+            "hide_mb": false,
+            "cl": "#000000",
+            "preset": "h1",
+            "fs": 20,
+            "fsm": 18,
+            "ff": "ft2",
+            "fw": "700",
+            "text-upper": false,
+            "lh": 1.2,
+            "ls": 0,
+            "isbg": false,
+            "bg": "#ffffff",
+            "bgg": "",
+            "bdr": "none",
+            "brd_sz": 1,
+            "bdr-cl": "",
+            "rounded": "none",
+            "ispd": false,
+            "pd-lr": 20,
+            "pd-tb": 5,
+            "pd-lrm": 15,
+            "pd-tbm": 5,
+            "mb": 0,
+            "mbm": 0
+          },
+          "blocks": {}
+        },
+        "text_ej6p4E": {
+          "type": "text",
+          "name": "Text",
+          "settings": {
+            "text": "<p>Provides answers to a list of typical questions that users might ask<\/p>",
+            "hide_br": false,
+            "hide_mb": false,
+            "cl": "",
+            "preset": "default",
+            "fs": 14,
+            "fsm": 13,
+            "ff": "ft1",
+            "fw": "400",
+            "lh": 1.6,
+            "tac": false,
+            "mb": 0,
+            "mbm": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": ["heading_TDpzCk", "text_ej6p4E"],
+      "settings": {
+        "height_desk": 180,
+        "height_tab": 180,
+        "height_mob": 120,      
+        "ovr": "#00000061",
+        "bg": "#ffffff",
+        "bgg": "",
+        "contwd": 1400,
+        "gap": 10,
+        "gapm": 10,
+        "txtpos": "f-aic-md f-jcc-md",
+        "txtposm": "f-aic f-jcc",
+        "align": "center",
+        "alignm": "center"
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "hidettl": false,
+        "hide_hdft": false,
+        "maxwd": 1300,
+        "fullwidth": false,
+        "addbg": false,
+        "bg": "",
+        "bgg": "",
+        "overlay": "",
+        "headings_cl": "",
+        "sst": 30,
+        "ssb": 30,
+        "sstm": 25,
+        "ssbm": 25
+      }
+    },
+    "faq_nTx76R": {
+      "type": "faq",
+      "blocks": {
+        "ttl_DNVY7F": {
+          "type": "ttl",
+          "settings": {
+            "title": "General"
+          }
+        },
+        "faqs_txtVW3": {
+          "type": "faqs",
+          "settings": {
+            "title": "Can i order over the phone?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_3cm6ab": {
+          "type": "faqs",
+          "settings": {
+            "title": "I am having difficulty placing an order?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_6nchX6": {
+          "type": "faqs",
+          "settings": {
+            "title": "What payment methods does accept?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "ttl_iRAy3e": {
+          "type": "ttl",
+          "settings": {
+            "title": "Shopping Information"
+          }
+        },
+        "faqs_bdCYHc": {
+          "type": "faqs",
+          "settings": {
+            "title": "How do i know if my order was successful?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_nzaXhL": {
+          "type": "faqs",
+          "settings": {
+            "title": "What if my order is incorrect?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_ABMPMe": {
+          "type": "faqs",
+          "settings": {
+            "title": "How much is shipping and how long will it take?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_KeWwfU": {
+          "type": "faqs",
+          "settings": {
+            "title": "What payment methods does accept?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "ttl_NYKiV6": {
+          "type": "ttl",
+          "settings": {
+            "title": "Payment Information"
+          }
+        },
+        "faqs_8VU73D": {
+          "type": "faqs",
+          "settings": {
+            "title": "What if my item is damaged or faulty?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_JB9pGn": {
+          "type": "faqs",
+          "settings": {
+            "title": "Why does the refund amount exclude delivery?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_3AFTbG": {
+          "type": "faqs",
+          "settings": {
+            "title": "Why does the refund amount exclude delivery?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "ttl_WUR9rL": {
+          "type": "ttl",
+          "settings": {
+            "title": "Order & Returns"
+          }
+        },
+        "faqs_HAaW3x": {
+          "type": "faqs",
+          "settings": {
+            "title": "What if my order is incorrect?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_UjgBUz": {
+          "type": "faqs",
+          "settings": {
+            "title": "I am having difficulty placing an order?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_EGwAVw": {
+          "type": "faqs",
+          "settings": {
+            "title": "How much is shipping and how long will it take?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "ttl_qetdL3": {
+          "type": "ttl",
+          "settings": {
+            "title": "Help & Support"
+          }
+        },
+        "faqs_VWjVAD": {
+          "type": "faqs",
+          "settings": {
+            "title": "What if my order is incorrect?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_WAUynq": {
+          "type": "faqs",
+          "settings": {
+            "title": "I am having difficulty placing an order?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        },
+        "faqs_gDfRWd": {
+          "type": "faqs",
+          "settings": {
+            "title": "Why does the refund amount exclude delivery?",
+            "answer": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled to make type.<\/p>",
+            "open": false
+          }
+        }
+      },
+      "block_order": ["ttl_DNVY7F", "faqs_txtVW3", "faqs_3cm6ab", "faqs_6nchX6", "ttl_iRAy3e", "faqs_bdCYHc", "faqs_nzaXhL", "faqs_ABMPMe", "faqs_KeWwfU", "ttl_NYKiV6", "faqs_8VU73D", "faqs_JB9pGn", "faqs_3AFTbG", "ttl_WUR9rL", "faqs_HAaW3x", "faqs_UjgBUz", "faqs_EGwAVw", "ttl_qetdL3", "faqs_VWjVAD", "faqs_WAUynq", "faqs_gDfRWd"],
+      "name": "FAQs",
+      "settings": {
+        "subtitle": "",
+        "title": "",
+        "text": "",
+        "page_width": 700,
+        "accor": true,
+        "acc_style": "1",
+        "tcl": "#222222",
+        "tfs": 22,
+        "tfsm": 20,
+        "tfw": "600",
+        "qu": "#333333",
+        "fs": 15,
+        "fsm": 14,
+        "fw": "500",
+        "an": "#444444",
+        "fst": 13,
+        "fsmt": 13,
+        "bdr": "#eeeeee",
+        "links": true,
+        "lfs": 15,
+        "lfsm": 15,
+        "lfw": "500",
+        "lcl": "#111111",
+        "lclh": "#ca192c",
+        "lbg": "#fafafa",
+        "lbd": "#eeeeee",
+        "fullwidth": false,
+        "addbg": false,
+        "bg": "#ffffff",
+        "bgg": "",
+        "overlay": "",
+        "headings_cl": "",
+        "hidem": false,
+        "hided": false,
+        "sst": 50,
+        "ssb": 50,
+        "sstm": 0,
+        "ssbm": 25
+      }
+    }
+  },
+  "order": ["breadcrumb", "banner", "main", "faq_nTx76R"]
+}

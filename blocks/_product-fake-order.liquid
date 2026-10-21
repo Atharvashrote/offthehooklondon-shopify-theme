@@ -1,0 +1,132 @@
+{%- liquid
+    assign block_st = block.settings
+    assign ordermsg = block_st.omsg | replace: '[orders]','<strong id="odItems"></strong>' | replace: '[hours]','<strong id="odTime"></strong>'
+-%}
+<div class="fl f-aic mb{{ block_st.mbm }} mb{{ block_st.mb }}-md fw-500{% if block_st.icon_anim %} icon-anim{% endif %} gap" style="color:{{ block_st.cl }};--icns:18px;--gap:10px" data-user="{{ block_st.orders }}" data-time="{{ block_st.otime }}" {{ block.shopify_attributes }}>
+  {% if block_st.image != blank and block_st.icon == 'custom' -%}
+    <img loading="lazy" class="at-icon" src="{{ block_st.image | image_url: width: '60' }}" width="18" height="18" alt="" >
+  {%- else -%}
+    {%- render 'icons', icon: block_st.icon %}
+  {% endif %}
+  <div> {{ ordermsg }}</div>
+</div>
+<script>document.getElementById("odItems").innerHTML = Math.floor(Math.random() * {{ block_st.orders }}) + 1;document.getElementById("odTime").innerHTML = Math.floor(Math.random() * {{ block_st.otime }}) + 1;</script>
+{% schema %}
+{
+  "name": "Fake order",
+  "tag": null,
+  "settings": [
+     {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "fire2",
+      "options": [
+         {
+              "value": "none",
+              "label": "None"
+        },
+        {
+          "value": "custom",
+          "label": "Custom icon"
+        },
+        {
+          "value": "fire1",
+          "label": "Fire 1"
+        },
+        {
+          "value": "fire2",
+          "label": "Fire 2"
+        },
+        {
+          "value": "fire3",
+          "label": "Fire 3"
+        },
+        {
+          "value": "fire4",
+          "label": "Fire 4"
+        },
+        {
+          "value": "fire5",
+          "label": "Fire 5"
+        }               
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_anim",
+      "label": "Icon animation",
+      "default":true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Custom icon",
+      "visible_if": "{{ block.settings.icon == 'custom' }}"
+    },
+    {
+        "type": "range",
+        "id": "orders",
+        "label": "Max Items",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 20,
+        "unit": "qty"
+    },
+    {
+        "type": "range",
+        "id": "otime",
+        "label": "Order time",
+        "min": 5,
+        "max": 48,
+        "step": 1,
+        "default": 24,
+        "unit": "h"
+    },
+    {
+        "type": "textarea",
+        "id": "omsg",
+        "label": "Orders Message",
+        "default": "[orders] sold in last [hours] hours",
+        "info": "Use '[orders]' for items counts and '[hours]' for hours counts"
+    },
+    {
+        "type": "color",
+        "id": "cl",
+        "label": "Color",
+        "default": "#111"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Fake order",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

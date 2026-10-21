@@ -1,0 +1,873 @@
+{%- capture quotes -%}
+{%- liquid 
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+-%}
+{%- if section_st.isratings -%}
+<svg style="position:absolute;width:0;height:0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <symbol id="icon-star1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><polygon points="512,197.816 325.961,185.585 255.898,9.569 185.835,185.585 0,197.816 142.534,318.842 95.762,502.431 255.898,401.21 416.035,502.431 369.263,318.842"/></symbol>
+        <symbol id="icon-star" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M512,197.819l-185.933-12.228L256,9.571l-70.067,176.021L0,197.82l142.658,120.93L95.856,502.429L256,401.214 l160.144,101.215l-46.8-183.671L512,197.819z M256,365.724l-112.464,71.08l32.827-128.831L75.829,222.888l130.971-8.603 L256,90.687l49.2,123.599l131.124,8.602l-100.689,85.077l32.829,128.839L256,365.724z"/></symbol>
+    </defs>
+</svg>
+{%- endif -%}
+{%- capture style -%}
+    --cl:{{ section_st.cl }};--gap:{{ section_st.gspace }}px;
+    --grsp:{{ section_st.gspace | divided_by: 2.0 }}px;--grspm:10px;--bg:{{ section_st.bbg }};--bpd:{{ section_st.bpd }}px;--icon_cl:{{ section_st.eye_cl }};--icon_bg:{{ section_st.eye_bg }};
+    {%- if section_st.isratings -%}--rating:{{ section_st.icon_cl }};--icns:{{ section_st.icon_size }}px;{% endif %}
+    {%- if section_st.tpreset == 'custom' -%}--fs:{{ section_st.tfs }}px;--fsm:{{ section_st.tfsm }}px;--ff:var(--{{ section_st.tff }});--fw:{{ section_st.tfw }};--lh:{{ section_st.tlh }};{%- endif -%}
+{%- endcapture -%}
+{%- if section_st.preset == 'custom-hd' -%}
+    <style>#{{ section.id }} .head { --fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;--ff:var(--{{ section_st.ff }});--fw:{{ section_st.fw }};--lh:{{ section_st.lh }}; }</style>
+{%- endif -%}
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}" data-section-id="{{ section.id }}" data-section-style="quote{{ section_st.style }}">
+        <div class="product-review">
+            {%- render 'sec-title' -%}            
+            {%- capture testimonialdata -%}
+                {%- for block in section.blocks -%}
+                    {%-liquid
+                        assign block_st = block.settings
+                        assign sindex = forloop.index0
+                        capture start_ratings
+                            for i in (1..5)
+                            assign num = forloop.index
+                            if num <= block_st.rating
+                                echo '<svg class="at-icon" style="enable-background:new 0 0 512 512;"><use xlink:href="#icon-star1"></use></svg>'
+                            else
+                                echo '<svg class="at-icon" style="enable-background:new 0 0 512 512;"><use xlink:href="#icon-star"></use></svg>'
+                            endif
+                            endfor
+                        endcapture -%}
+                    <div class="swiper-slide gitem fckSl{% if block_st.author_pic != blank %} apic{% endif %}" id="{{ block.id }}" data-slide="{{ sindex }}" {{ block.shopify_attributes }}>
+                        <div class="fl f-col f-row-md f-jcs m-auto w-100 h-100 {{ section_st.rounded }} of-hidden border">                                 
+                            {% if section_st.show_image %}
+                              {%- liquid
+                                  assign has_video = false
+                                  if block_st.video_source == 'uploaded' and block_st.video != blank
+                                      assign has_video = true
+                                  elsif block_st.video_source == 'url' and block_st.video_url != blank
+                                      assign has_video = true
+                                  endif
+                                  assign video_poster = block_st.image | default: block_st.video.preview_image
+                                  assign video_poster_size = video_poster | image_url: width: video_poster.width
+                                  assign quick_url = all_products[block_st.product].url | split: "?" | first
+                              -%}
+                              <div class="product-review__image pr {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--wd:{{ section_st.bnrwd }}%;">
+                                  {%- if has_video and block_st.video_source == 'uploaded' -%}
+                                      {{- block_st.video | video_tag: image_size: video_poster_size, autoplay: true, loop: true, muted: true, controls: false, playsinline: true, poster: video_poster_size, class: 'img-fit' -}}
+                                  {%- elsif has_video and block_st.video_source == 'url' and block_st.video_url.type == 'youtube' -%}
+                                      <iframe class="img-fit" src="//www.youtube.com/embed/{{ block_st.video_url.id }}?autoplay=1&mute=1&loop=1&playlist={{ block_st.video_url.id }}&controls=0&rel=0&showinfo=0" width="850" height="480" frameborder="0" allow="autoplay" title="{{ block_st.title }}"></iframe>
+                                  {%- elsif has_video and block_st.video_source == 'url' and block_st.video_url.type == 'vimeo' -%}
+                                      <iframe class="img-fit" src="//player.vimeo.com/video/{{ block_st.video_url.id }}?autoplay=1&muted=1&loop=1&background=1&byline=0&portrait=0&badge=0" width="850" height="480" frameborder="0" allow="autoplay" title="{{ block_st.title }}"></iframe>
+                                  {%- elsif block_st.image != blank -%}
+                                      {%- liquid
+                                          assign column = 100.00 | divided_by: block_st.bnrwd | times: 1
+                                          assign divide_colunm = 1.00 | divided_by: column | round: 2
+                                      %}
+                                      {%- capture sizes -%}(min-width:1024px) calc(({{ page_width }} - 30px * {{ column | minus: 1 }}) * {{ divide_colunm }}), calc(100vw - 30px){%- endcapture -%}
+                                      {{- block_st.image | image_url: width: block_st.image.width | image_tag: loading:'lazy', width:block_st.image.width, height:block_st.image.height, class:'img-fit', sizes:sizes, widths:"400,600,800,1000,1200,1500" -}}
+                                  {%- else -%}
+                                      {{ 'detailed-apparel-1' | placeholder_svg_tag: 'placeholder-svg img-fit' }} 
+                                  {%- endif -%}
+
+                                  {%- if block_st.product != blank -%}
+                                      <product-card>
+                                          <button type="button" data-url="{{ quick_url }}?section_id=quick-view" class="grid-button pa quick-view round-full anim border-0" aria-label="{{ 'products.product.quick_shop' | t }}"><span class="txt db"><svg class="at-icon" style="--icns:14px;"><use xlink:href="#icon-eye"></use></svg></span><svg class="at-icon at-spin"><use xlink:href="#icon-loading"></use></svg></button>
+                                      </product-card>
+                                  {%- endif -%}
+                              </div>
+                            {% endif %}
+                           
+                            <div class="product-review__content fl fl1 f-col {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
+                                <div class="fl {{ section_st.alignment }} f-col product-review__text m-auto h-100">
+                                    {%- if section_st.isratings and section_st.rating == '1' -%}<p class="ratings mb10">{{ start_ratings }}</p>{%- endif -%}
+
+                                    {%- if block_st.title != blank -%}<{{ section_st.htag }} class="head {{ section_st.preset }} mb10">{{ block_st.title }}</{{ section_st.htag }}>{%- endif -%}
+
+                                    {%- if block_st.text != blank -%}<div class="rte mb20 reg-text {{ section_st.tpreset }}">{{ block_st.text }}</div>{% endif %}
+
+                                    {%- if section_st.isratings and section_st.rating == '2' -%}<span class="ratings mb10 db">{{ start_ratings }}</span>{%- endif -%}
+
+                                    {%- if block_st.author != blank -%}<div class="small-font fw-600 mt10">{{ block_st.author }}</div>{%- endif -%}
+                                    {%- if block_st.author_bio != blank -%}<div class="small-font">{{ block_st.author_bio }}</div>{%- endif -%}
+
+                                    {%- if block_st.image == blank -%}
+                                        {%- assign product = all_products[block_st.product] -%}
+                                        {% if product.title.size > 0 %}
+                                            <div class="review-product m0">
+                                                <div class="fl f-aic">
+                                                    <div class="mini-products__img mr15">
+                                                        <a class="db grid-image" href="{{ product.url | within: collection }}">
+                                                            {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:'lazy', width:product.featured_image.width, height:product.featured_image.height, class:'img-fit', sizes:'80px', widths:"100,200,320" }}
+                                                        </a>
+                                                    </div>
+                                                    <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
+                                                </div>
+                                            </div>
+                                        {%- endif -%}
+                                    {%- endif -%}
+                                </div>
+                            </div>                              
+                        </div>
+                    </div>
+                {%- endfor -%}
+            {%- endcapture -%}
+            {%- if section.blocks.size > 0 -%}
+                {%- if section_st.carousel -%}
+                    <slide-section class="grid gspace swiper rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }}" style="{{ style }}" data-swiper='{ "slidesPerView":"auto", "loop":{{ section_st.loop }}, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+                        <div class="swiper-wrapper h-auto">{{ testimonialdata }}</div>
+                        {%- render 'swiper-navigation', id:section.id, section_st:section_st -%}
+                    </slide-section>
+                {%- else -%}
+                    <div class="grid gspace rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }}" style="{{ style }}"> {{ testimonialdata }}</div>
+                {%- endif -%}
+            {%- endif -%}
+            {%- if section.blocks.size == 0 -%}{% render 'no-blocks' %}{%- endif -%}
+        </div>
+    </div>
+</div>
+{%- endcapture -%}
+{{- quotes | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Testimonials 2",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Testimonials"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Influence the reputation of the online store itself, <br/>as positive reviews can enhance credibility and attract more customers</p>"
+    },
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Grid gap",
+      "default": 30,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Columns (desktop)",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "gridtb",
+      "label": "Columns (tablet)",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "gridmb",
+      "label": "Columns (mobile)",
+      "default": 1,
+      "min": 0,
+      "max": 2,
+      "step": 1
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+     {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show images",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "bnrwd",
+      "min": 25,
+      "max": 60,
+      "step": 1,
+      "label": "Image column width (desktop)",
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Text appearance"
+    },
+    {
+      "type": "select",
+      "id": "htag",
+      "label": "Heading tag",
+     "info": "Specify heading type to improve SEO and accessibility.",
+      "default": "h3",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "p",
+          "label": "P"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Heading preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h5",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 18,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 16,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "600",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "select",
+      "id": "tpreset",
+      "label": "Text preset",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "tff",
+      "label": "Font",
+      "default": "ft1",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },    
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "400",
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tlh",
+      "label": "Line height",
+      "default": 1.5,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.tpreset == 'custom' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "isratings",
+      "label": "Show ratings?",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "default": 14,
+      "min": 14,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.isratings }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_cl",
+      "label": "Icon color",
+      "default": "#EBB868",
+      "visible_if": "{{ section.settings.isratings }}"
+    },
+    {
+      "type": "select",
+      "id": "rating",
+      "label": "Position",
+      "default": "1",
+      "options": [
+        { "value": "1", "label": "Top" },
+        { "value": "2", "label": "Bottom" }
+      ],
+      "visible_if": "{{ section.settings.isratings }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "----------------------------------------------"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text",
+      "default": "#222"
+    },
+    {
+      "type": "color",
+      "id": "bbg",
+      "label": "Text background",
+      "default": "#fff"
+    },
+     {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "alpha": true,
+      "default": "#eee"
+    },
+    {
+      "type": "range",
+      "id": "bpd",
+      "label": "Text padding",
+      "default": 35,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },   
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Vertical alignment",
+      "default": "f-jcs",
+      "options": [
+        { "value": "f-jcs", "label": "Top" },
+        { "value": "f-jcc", "label": "Middle" },
+        { "value": "f-jce", "label": "Bottom" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "round-sm",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "eye_cl",
+      "label": "Eye icon",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "eye_bg",
+      "label": "Icon background",
+      "default": "#111"
+    },
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel",
+      "label": "Enable carousel",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate slide",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "Sec",
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrow",
+      "label": "Show arrows on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "arrowm",
+      "label": "Show arrows on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Show dots on desktop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "dotm",
+      "label": "Show dots on mobile",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Image size should be same for all. Also used as the video poster below.",
+          "visible_if": "{{ section.settings.show_image  }}"
+        },
+        {
+          "type": "header",
+          "content": "Video review"
+        },
+        {
+          "type": "select",
+          "id": "video_source",
+          "label": "Video source",
+          "default": "none",
+          "info": "Plays muted and on a loop in place of the image.",
+          "options": [
+            { "value": "none", "label": "No video" },
+            { "value": "uploaded", "label": "Uploaded" },
+            { "value": "url", "label": "External URL" }
+          ],
+          "visible_if": "{{ section.settings.show_image }}"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "MP4 video",
+          "visible_if": "{{ section.settings.show_image and block.settings.video_source == 'uploaded' }}"
+        },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "label": "Video link",
+          "accept": ["youtube", "vimeo"],
+          "visible_if": "{{ section.settings.show_image and block.settings.video_source == 'url' }}"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "The Shopify theme you must consider to try"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Content",
+          "default": "<p>I'm not usually that impressed by themes but this one has surpassed my expectations in terms of features, documentation, and support.</p>"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Name",
+          "default": "HELEN MORRIS"
+        },
+        {
+          "type": "text",
+          "id": "author_bio",
+          "label": "Short bio",
+          "default": "Short Bio"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "default": 5,
+          "min": 1,
+          "max": 5,
+          "step": 1
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Select product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials : Design 2",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "quote"
+        },
+        {
+          "type": "quote"
+        },
+        {
+          "type": "quote"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

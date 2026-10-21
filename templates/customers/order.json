@@ -1,0 +1,24 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "cl": "#111111",
+        "bg": "#f9f9f9",
+        "fsz": 13,
+        "case": false,
+        "fullwidth": false,
+        "tc": false,
+        "hidemb": false
+      }
+    },
+    "order": {
+      "type": "main-order",
+      "settings": {}
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "order"
+  ]
+}

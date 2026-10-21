@@ -1,0 +1,671 @@
+{%- capture tabs -%}
+{%- liquid 
+   assign section_st = section.settings
+   assign page_width = settings.cntwd | append: 'px'
+   if section_st.sw
+        assign page_width = '100vw'
+   endif
+-%}
+{%- capture sizes -%}(min-width:1024px) calc(({{ page_width }} - {{ settings.grid_space | times: section_st.grid | minus:settings.grid_space }}px) / {{ section_st.grid }}),(min-width:768px) calc((100vw - {{ settings.grid_space | times: section_st.gridtb | minus:settings.grid_space }}px) / {{ section_st.gridtb }}), calc((100vw - {{ settings.grid_spacem | times: section_st.gridmb | minus:settings.grid_spacem }}px) / {{ section_st.gridmb }}){%- endcapture -%}
+{% capture tabs_style %}
+  --tab-fs:{{ section_st.tfs }}px;--tab-fsm:{{ section_st.tfsm }}px;--tab-fw:{{ section_st.tfw }};--tab-color:{{ section_st.cl }};--tab-color-active:{{ section_st.cla }};--tab-bg:{{ section_st.tbg }};--tab-bg-active:{{ section_st.tbga }};--tab-border:{{ section_st.bdr }};--tab-border-active:{{ section_st.bdra }};--tab-color-mob:{{ section_st.cl-m }};--tab-color-mob-active:{{ section_st.cla-m }};--tab-bg-mob:{{ section_st.tbg-m }};--tab-bg-mob-active:{{ section_st.tbga-m }};
+ {% endcapture %}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+  <tabs-section class="db tab-section {% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}" id="{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="carousel" style="{{ tabs_style }}">     
+      {% render 'sec-title' %}
+      <div class="fl f-wrap gap mb30 cl-tabs tbstl{{ section_st.tab_style }} {{ section_st.tab_align }}{% if section_st.acc %} hide-sm{% endif %}">
+        <div class="fl gap cl-tabs_inner" style="{% if section_st.tab_style == '1' %}--gap:15px;{% else %}--gap:40px;--gapm:20px{% endif %}">
+            {%- for block in section.blocks limit: section.blocks.size -%}
+              {%- if block.settings.title != blank -%}
+                <button type="button" class="tab-button {{ section_st.tff }} {{ section_st.rounded }} anim{% if forloop.first %} active{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %} data-id="cl{{ block.id }}" {{ block.shopify_attributes }}>{{ block.settings.title }}</button>
+              {%- endif -%}
+            {%- endfor -%}  
+        </div>
+      </div>
+
+      {% for block in section.blocks limit: section.blocks.size %}
+        {% assign block_st = block.settings %}
+         {%- assign collection = collections[block.settings.collection] -%}
+         {%- capture products_data -%}
+           {% if block.settings.collection != blank %}
+                {% for product in collection.products limit: section_st.rows %}
+                  <div class="swiper-slide gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>{% render 'product-card-grid', product: product, block: block.settings, section_st:section_st, sizes: sizes %}</div>
+                {% endfor %}
+            {% else %}
+                {% for i in (1..section_st.rows) %}
+                    <div class="swiper-slide gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
+                        <div class="grid-content">
+                            <a href="#" class="grid_lnk">
+                                <div class="grid-image__wrapper">{% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'product-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}</div><br/>
+                                <div class="h5 grid-title">{{ 'homepage.onboarding.product_title' | t }}</div>
+                                <div class="grid-price"> {% render 'product-price' %} </div>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+         {%- endcapture -%}
+         {% capture more_button %}
+           {% if block.settings.btntxt != blank %}<p class="tc w-100 mt10 mb0 {% render 'animate-data', css:true %}">
+            <a href="{{ block.settings.collection.url }}" title="{{ block.settings.btntxt }}" class="btn {{ section_st.btn-size }} {{ section_st.btn-style }}">{{ block.settings.btntxt }}</a></p>{% endif %}
+         {% endcapture %}
+
+            {%- if section_st.acc and block.settings.title != blank -%}
+              <h2 class="tab-accordion border-0 js-toggle fl f-aic hide-md hide-lg mb10 {{ section_st.rounded }}{% if forloop.first %} active{% endif %}">{{ block_st.title }} <svg class="at-icon ml-auto updown"><use xlink:href="#icon-arrow"></use></svg></h2>
+            {%- endif -%}
+          {%- if section_st.carousel -%}
+            <slide-section id="cl{{ block.id }}" class="tab-panel grid grid-products rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} swiper{% if forloop.first %} active{% endif %}"
+              data-swiper='{ "slidesPerView":"auto", "loop":{{ section_st.loop }}, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+                <div class="swiper-wrapper">{{ products_data }}</div>
+                {% render 'swiper-navigation', id:section.id, section_st:section_st %}
+                {{ more_button }}
+            </slide-section>
+        {%- else -%}
+            <div id="cl{{ block.id }}" class="tab-panel grid grid-products rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }}{% if forloop.first %} active{% endif %}">
+                {{- products_data -}}
+                {{ more_button }}
+            </div>
+        {%- endif -%}
+
+      {% endfor %}
+  </tabs-section>
+</div>
+{%- endcapture -%}
+{{- tabs | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Products: Tabs", 
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "max_blocks": 8,
+  "settings": [
+   {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Trending"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Weekly Best Sellers"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Indulge in the luxury of choice at your fingertips</p> "
+    }, 
+    {
+      "type": "header",
+      "content": "Grid appearance"
+    },
+     {
+      "type": "select",
+      "id": "prbox_style",
+      "label": "Style",
+      "default": "grid-1",
+      "options": [
+        {
+          "value": "grid-1",
+          "label": "Icons - bottom center"
+        },
+        {
+          "value": "grid-2",
+          "label": "Content on image hover"
+        },
+        {
+          "value": "grid-3",
+          "label": "Icons - bottom Left"
+        },
+        {
+          "value": "grid-4",
+          "label": "Icons - top right"
+        },
+         {
+          "value": "grid-5",
+          "label": "Icons - below image"
+        },
+         {
+          "value": "grid-6",
+          "label": "Text button "
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_swatch",
+      "label": "Show color swatch",
+      "default": true
+    },
+
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },   
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Columns (desktop)",
+      "default": 4,
+      "min": 2,
+      "max": 6,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "gridtb",
+      "label": "Columns (tablet)",
+      "default": 3,
+      "min": 1,
+      "max": 5,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "gridmb",
+      "label": "Columns (mobile)",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "rows",
+      "label": "Products to show",
+      "default": 5,
+      "min": 2,
+      "max": 50,
+      "step": 1
+    },
+    {
+      "type": "paragraph",    
+      "content": "Find additional grid options under [theme settings](/editor?context=theme&category=Products grid)",
+    },  
+    {
+      "type": "header",
+      "content": "Tabs design"
+    },
+    {
+      "type": "select",
+      "id": "tab_style",
+      "label": "Design",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Background and border"
+        },
+        {
+          "value": "2",
+          "label": "Bottom border"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "acc",
+      "label": "Enable accordion for mobile",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "tab_align",
+      "label": "Tab alignment",
+      "options": [
+        {
+          "value": "f-jcs",
+          "label": "Left"
+        },
+        {
+          "value": "f-jcc",
+          "label": "Center"
+        }
+      ],
+      "default": "f-jcc"
+    },
+    {
+      "type": "select",
+      "id": "tff",
+      "label": "Font",
+      "default": "ft1",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },     
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "tbg",
+      "label": "Background",
+      "default": "#eee",
+      "visible_if": "{{ section.settings.tab_style == '1' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr",
+      "label": "Border",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "cla",
+      "label": "Text (active)",
+      "default": "#eee"
+    },
+    {
+      "type": "color",
+      "id": "tbga",
+      "label": "Background (active)",
+      "default": "#000",
+      "visible_if": "{{ section.settings.tab_style == '1' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdra",
+      "label": "Border (active)",
+      "default": "#eee"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ section.settings.tab_style == '1' }}"
+    },   
+    {
+      "type": "header",
+      "content": "Tabs (mobile)"
+    },
+       {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px"
+    },
+     {
+      "type": "color",
+      "id": "cl-m",
+      "label": "Text",
+      "default": "#111"
+    },
+    {
+      "type": "color",
+      "id": "tbg-m",
+      "label": "Background",
+      "default": "#f5f5f5"     
+    },
+    {
+      "type": "color",
+      "id": "cla-m",
+      "label": "Text (active)",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "tbga-m",
+      "label": "Background (active)",
+      "default": "#111"     
+    },
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel",
+      "label": "Enable carousel",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate slide",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "Sec",
+      "visible_if": "{{ section.settings.carousel and section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrow",
+      "label": "Show arrows on desktop",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrowm",
+      "label": "Show arrows on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Show dots on desktop",
+      "default": false,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dotm",
+      "label": "Show dots on mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.carousel }}"
+    },
+    {
+      "type": "header",
+      "content": "Button"      
+    },   
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]    
+    },
+    {
+      "type": "select",
+      "id": "btn-size",
+      "label": "Button size",
+      "default": "btn-md",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ]     
+    },
+   {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+     "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },  
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }  
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Tab name",
+          "default": "Tab Name"
+        },
+        {
+          "id": "collection",
+          "type": "collection",
+          "label": "Collection"
+        },
+        {
+          "id": "btntxt",
+          "type": "text",
+          "label": "Button label",
+          "info": "Keep empty to hide button",
+          "default": "VIEW ALL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Products: Tabs",
+      "category": "Products",
+      "blocks": [
+        {
+          "type": "tab"
+        },
+        {
+          "type": "tab"
+        },
+        {
+          "type": "tab"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

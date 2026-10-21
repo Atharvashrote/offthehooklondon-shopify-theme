@@ -1,0 +1,21 @@
+input[type="tel"] { direction:ltr; text-align:right; }
+select { background-position:left 15px center; }
+.sort-by { padding: 8px 15px 8px 30px; }
+
+.arw.left { transform:rotate(-90deg) }
+.arw.right { transform:rotate(90deg) }
+.icon-arrow { transform:rotate(180deg) }
+
+@keyframes scroling { 0% { transform: translateX(100%); } 100% { transform: translateX(0); }}
+@-webkit-keyframes scroling { 0% { transform: translateX(100%); } 100% { transform: translateX(0); }}
+
+.tooltip-label { transform: translate(50%); }
+.tooltip-label.right:before { border-right-color:transparent; border-left-color:var(--tooltip_bg); }
+.tooltip-label.left:before { border-left-color:transparent; border-right-color:var(--tooltip_bg); }
+
+.cart-count.pp { margin-left:0; margin-right:-8px; }
+.cart-drawer { transform:translate(-100%); order:0; }
+.mini-products__cart s { margin-left:0; margin-right:10px; }
+
+.upsell-bundle__variant { padding:8px 15px 8px 30px; } 
+

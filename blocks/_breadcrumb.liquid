@@ -1,0 +1,87 @@
+{% liquid
+  assign block_st = block.settings
+%}
+<nav class="breadcrumb inline fl f-wrap f-aic f-jcc mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hidemb %} hide-sm{% endif %}" role="navigation" aria-label="breadcrumbs" style="--cl:{{ block_st.cl }};--fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px">
+    {%- render 'breadcrumb', block_st:block_st, -%}
+</nav>
+{% schema %}
+{
+  "name": "Breadcrumb",
+  "tag": null,
+  "settings": [
+    {
+        "type": "checkbox",
+        "id": "hidemb",
+        "label": "Hide on mobile",
+        "default": true
+    },    
+    {
+        "type": "range",
+        "id": "fs",
+        "label": "Font size",
+        "default": 13,
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+    },
+    {
+        "type": "range",
+        "id": "fsm",
+        "label": "Font size (mobile)",
+        "default": 12,
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "unit": "px"
+    },
+    {
+        "type": "color",
+        "id": "cl",
+        "label": "Color",
+        "default": "#666"
+    },
+    {
+        "type": "select",
+        "id": "br-icon",
+        "label": "Icon",
+        "default": "pipe",
+        "options": [
+          {
+            "value": "pipe",
+            "label": "Pipe"
+          },
+          {
+            "value": "arrow",
+            "label": "Arrow"
+          }
+        ]
+      },
+    {
+        "type": "range",
+        "id": "mb",
+        "label": "Bottom margin",
+        "default": 0,
+        "min": 0,
+        "max": 50,
+        "step": 5,
+        "unit": "px"
+    },
+    {
+        "type": "range",
+        "id": "mbm",
+        "label": "Bottom margin (mobile)",
+        "default": 0,
+        "min": 0,
+        "max": 30,
+        "step": 5,
+        "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumb"      
+    }
+  ]
+}
+{% endschema %}

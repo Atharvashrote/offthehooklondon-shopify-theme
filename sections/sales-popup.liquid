@@ -1,0 +1,211 @@
+{%- capture someone_purchased -%}
+{%-liquid
+    assign section_st = section.settings
+    assign products = section_st.products
+    assign random_number = "now" | date: "%N" | modulo: products.count | plus: 1
+    assign location = section_st.location | replace: ' | ', '|' | replace: ' |', '|' | replace: '| ', '|' | split: '|'
+    assign loc_numb = "now" | date: "%N" | modulo: location.size | plus: 1
+    assign time = "now" | date: "%N" | modulo: 60 | plus: 10
+    assign delay = section_st.delay | times: 1000
+    assign display = section_st.display | times: 1000
+-%}
+{%- capture showexitpp -%}{% if section_st.index %}index,{% endif %}{% if section_st.product %}product,{% endif %}{% if section_st.collection %}collection,{% endif %}{% if section_st.article %}article,{% endif %}{% if section_st.blog %}blog,{% endif %}{% if section_st.cart %}cart,{% endif %}{% if section_st.page %}page{%- endif -%}{%- endcapture -%}
+{%- if showexitpp contains request.page_type and section_st.products != blank -%}
+<div id="product-alert" class="fl anim customized{% if section_st.hide_mb %} hide-sm{% endif %}" style="--cl:{{ section_st.cl }};--bg:{{ section_st.bg }};--bd:{{ section_st.bd }}">
+    <close-notify class="product-alert__close cpointer" title="{{ 'accessibility.close' | t }}"><svg class="at-icon" style="--icns:12px;"><use xlink:href="#icon-close"></use></svg></close-notify>
+    {%- for product in section_st.products -%}
+        {%- if forloop.index == random_number -%}
+            <a href="{{ product.url }}" target="_blank" title="{{ product.title }}" style="widht:80px;">
+                {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:'lazy', class:'img-fill', sizes:'100px', widths:"120,240" }}
+            </a>
+            <div class="grid-meta fl1 f-asc">
+                {%- if section_st.msg != blank -%}<p class="mb5" style="font-size:93%;">{{ section_st.msg }}</p>{%- endif -%}
+                <p class="mb15"><a href="{{ product.url }}" target="_blank"><span class="fw-600">{{ product.title }}</span></a></p>
+                <p style="font-size:93%;">
+                    {%- if section_st.fake_time -%}{{ time }} {{ section_st.time_msg }} {%- endif -%}
+                    {%- if section_st.location != blank -%}{{ section_st.location_msg }} {{ location[loc_numb] }}{%- endif -%}
+                </p>
+            </div>
+        {%- endif -%}
+    {%- endfor -%}
+</div>
+<script>
+  var pntPp = document.querySelector('#product-alert');
+  function showPopup(){
+      pntPp.classList.add("active");
+      setTimeout(function(){
+          fetch('{{ routes.root_url }}?section_id={{ section.id }}').then(response => response.text()).then(text => {
+            const html = document.createElement('div');
+              html.innerHTML = text;
+            const pdata = html.querySelector('#product-alert');
+            if (pdata && pdata.innerHTML.trim().length) pntPp.innerHTML = pdata.innerHTML;
+          })
+          .finally(() => {
+          })
+          .catch(e => {
+            console.error(e);
+          });
+          pntPp.classList.remove("active");
+          popupTime();
+      }, {{ display }});
+  }
+  function popupTime(){
+    setTimeout(showPopup, {{ delay }});
+  }
+  popupTime();
+
+  class CloseNotifyBtn extends HTMLElement {
+    constructor() {
+      super();
+      this.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.closest('#product-alert').remove();
+      });
+    }
+  }
+  customElements.define('close-notify', CloseNotifyBtn);
+</script>
+{%- endif -%}
+{%- endcapture -%}
+{{- someone_purchased | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Products notification",
+  "class": "product-alert",
+  "limit": 1,
+  "enabled_on": {
+    "groups": ["custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": true
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Products"
+    },
+    {
+      "type": "text",
+      "id": "msg",
+      "label": "Title",
+      "default": "Someone liked and purchased "
+    },
+    {
+      "type": "checkbox",
+      "id": "fake_time",
+      "label": "Show fake time",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "time_msg",
+      "label": "Time text",
+      "default": "Minutes ago",
+      "visible_if": "{{ section.settings.fake_time }}"
+    },
+    {
+      "type": "text",
+      "id": "location_msg",
+      "label": "Location label",
+      "default": "From"
+    },
+    {
+      "type": "text",
+      "id": "location",
+      "label": "Fake locations",
+      "default": "Singapore | New York | Dubai | Paris | London | Amsterdam | Sydney"
+    },
+    {
+      "type": "range",
+      "id": "delay",
+      "label": "Delay time",
+      "default": 3,
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "unit": "sec"
+    },
+    {
+      "type": "range",
+      "id": "display",
+      "label": "Display time",
+      "default": 5,
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "sec"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "bd",
+      "label": "Border",
+      "default": "#ccc"
+    },
+    {
+      "type": "header",
+      "content": "Display on:"
+    },
+    {
+      "type": "checkbox",
+      "id": "index",
+      "label": "Home page",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "product",
+      "label": "Product page"
+    },
+    {
+      "type": "checkbox",
+      "id": "collection",
+      "label": "Collection page"
+    },
+    {
+      "type": "checkbox",
+      "id": "article",
+      "label": "Article page"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog",
+      "label": "Blog page"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart",
+      "label": "Cart page"
+    },
+    {
+      "type": "checkbox",
+      "id": "page",
+      "label": "Other page"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Products notification"
+    }
+  ]
+}
+{% endschema %}

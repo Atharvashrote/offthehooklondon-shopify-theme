@@ -1,0 +1,575 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'customer.js' | asset_url }}" defer></script>
+{% assign section_st = section.settings %}
+{%- capture styles -%}
+    {%- if section_st.preset == 'custom-hd' -%}
+      --fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;--ff:var(--{{ section_st.ff }});--fw:{{ section_st.fw }};--lh:{{ section_st.lh }};--ls:{{ section_st.ls }};
+    {%- endif -%}
+{%- endcapture -%}
+<div  class="section-cover" {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+  <div class="page-width">     
+    <h1 class="page-title mb25 mb40-md tc{% if settings.ttl_c %} text-upper{% endif %}">{{ 'customer.addresses.title' | t }}</h1> 
+     <p class="hide-lg mb25"> {{ 'customer.account.welcome_text' | t }} <b class="dbi">{{ customer.name }}</b></p>
+    {% paginate customer.addresses by 5 %}
+      <div class="grid fl f-col f-row-md">       
+        
+        <div class="gitem wd33-md">
+            <div class="account-links fl f-row f-col-md round-xs of-hidden">           
+                <a href="{{ routes.account_url }}" > {{ 'customer.orders.link_name' | t }} </a> 
+                <a href="{{ routes.account_addresses_url }}" class="active"> {{ 'customer.addresses.link_name' | t }}</a>
+                <a href="{{ routes.account_logout_url }}"><b>{{ 'customer.account.logout' | t }}</b></a> 
+            </div>
+         </div>      
+      <div class="gitem wd66-md " style="{{ styles }}">
+      <div class="fl f-aic gap hide-sm" style="--gap:10px;"> <span> {{ 'customer.account.welcome_text' | t }} <b class="dbi">{{ customer.name }}</b></span> | <a href="{{ routes.account_logout_url }}"><b>{{ 'customer.account.logout' | t }}</b></a> </div>
+      <br class="hide-sm">
+      <div class="m-auto" style="max-width:800px;--grsp:7.5px;--grspm:0;" data-customer-addresses>                
+      <div data-address>
+          <button
+            type="button"
+            aria-expanded="false"
+            aria-controls="AddAddress"
+            class="btn {{ section_st.btn }} {{ section_st.btnsz }} address-new-toggle mb15"
+          >
+            {{ 'customer.addresses.add_new' | t }}
+          </button>
+          <div id="AddressNewForm" class="customerform form-vertical hide tl round-xs">
+            {%- form 'customer_address', customer.new_address, aria-labelledBy: 'AddressNewHeading' -%}
+              <h4 class="head {{ section_st.preset }}">{{ 'customer.addresses.add_new' | t }}</h4>
+              <div class="grid gspace">
+                <div class="gitem wd50-md">
+                  <label for="AddressFirstNameNew" class="hidden_txt">{{ 'customer.addresses.first_name' | t }}</label>
+                  <input
+                    type="text"
+                    id="AddressFirstNameNew"
+                    name="address[first_name]"
+                    value="{{ form.first_name }}"
+                    placeholder="{{ 'customer.addresses.first_name' | t }}"
+                  >
+                </div>
+                <div class="gitem wd50-md">
+                  <label for="AddressLastNameNew" class="hidden_txt">{{ 'customer.addresses.last_name' | t }}</label>
+                  <input
+                    type="text"
+                    id="AddressLastNameNew"
+                    name="address[last_name]"
+                    value="{{ form.last_name }}"
+                    placeholder="{{ 'customer.addresses.last_name' | t }}"
+                  >
+                </div>
+              </div>
+              <label for="AddressCompanyNew" class="hidden_txt">{{ 'customer.addresses.company' | t }}</label>
+              <input
+                type="text"
+                id="AddressCompanyNew"
+                name="address[company]"
+                value="{{ form.company }}"
+                placeholder="{{ 'customer.addresses.company' | t }}"
+              >
+
+              <label for="AddressAddress1New" class="hidden_txt">{{ 'customer.addresses.address1' | t }}</label>
+              <input
+                type="text"
+                id="AddressAddress1New"
+                name="address[address1]"
+                value="{{ form.address1 }}"
+                placeholder="{{ 'customer.addresses.address1' | t }}"
+              >
+
+              <label for="AddressAddress2New" class="hidden_txt">{{ 'customer.addresses.address2' | t }}</label>
+              <input
+                type="text"
+                id="AddressAddress2New"
+                name="address[address2]"
+                value="{{ form.address2 }}"
+                placeholder="{{ 'customer.addresses.address2' | t }}"
+              >
+
+              <div class="grid gspace">
+                <div class="gitem wd33-md">
+                  <label for="AddressCityNew" class="hidden_txt">{{ 'customer.addresses.city' | t }}</label>
+                  <input
+                    type="text"
+                    id="AddressCityNew"
+                    name="address[city]"
+                    value="{{ form.city }}"
+                    placeholder="{{ 'customer.addresses.city' | t }}"
+                  >
+                </div>
+                <div class="gitem wd33-md">
+                  <label for="AddressCountryNew" class="hidden_txt">{{ 'customer.addresses.country' | t }}</label>
+                  <select id="AddressCountryNew" name="address[country]" data-default="{{ form.country }}">
+                    {{ country_option_tags }}
+                  </select>
+                </div>
+                <div class="gitem wd33-md" id="AddressProvinceContainerNew" style="display:none">
+                  <label for="AddressProvinceNew" class="hidden_txt">{{ 'customer.addresses.province' | t }}</label>
+                  <select id="AddressProvinceNew" name="address[province]" data-default="{{ form.province }}"></select>
+                </div>
+              </div>
+              <div class="grid gspace">
+                <div class="gitem wd50-md">
+                  <label for="AddressZipNew" class="hidden_txt">{{ 'customer.addresses.zip' | t }}</label>
+                  <input
+                    type="text"
+                    id="AddressZipNew"
+                    name="address[zip]"
+                    value="{{ form.zip }}"
+                    autocapitalize="characters"
+                    placeholder="{{ 'customer.addresses.zip' | t }}"
+                  >
+                </div>
+                <div class="gitem wd50-md">
+                  <label for="AddressPhoneNew" class="hidden_txt">{{ 'customer.addresses.phone' | t }}</label>
+                  <input type="tel" id="AddressPhoneNew" name="address[phone]" value="{{ form.phone }}">
+                </div>
+              </div>
+              <p>
+                <label for="address_default_address_new">
+                  {{- form.set_as_default_checkbox }}
+                  {{ 'customer.addresses.set_default' | t -}}
+                </label>
+              </p>
+              <div class="fl f-wrap">
+                <button type="submit" class="btn address-new-toggle {{ section_st.btn }} {{ section_st.btnsz }} mr20">
+                  {{ 'customer.addresses.add' | t }}
+                </button>
+                <button type="reset" class="btn btn2">{{ 'customer.addresses.cancel' | t }}</button>
+              </div>
+            {% endform %}
+          </div>
+        </div>
+
+        {% for address in customer.addresses %}
+          <div class="address round-xs mb20 mt20" data-address>
+            {% if address == customer.default_address %}
+              <h3 class="head {{ section_st.preset }}">{{ 'customer.addresses.default' | t }}</h3>
+            {% endif %}
+            <div class="mb30">{{ address | format_address }}</div>
+            <button
+              type="button"
+              class="btn btn-sm address-edit-toggle mr15"
+              id="EditFormButton_{{ address.id }}"
+              aria-label="{{ 'customer.addresses.edit_address' | t }} {{ forloop.index }}"
+              aria-controls="EditAddress_{{ address.id }}"
+              aria-expanded="false"
+              data-address-id="{{ address.id }}"
+            >
+              {{ 'customer.addresses.edit' | t }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn2"
+              aria-label="{{ 'customer.addresses.delete' | t }} {{ forloop.index }}"
+              data-target="{{ address.url }}"
+              data-confirm-message="{{ 'customer.addresses.delete_confirm' | t }}"
+            >
+              {{ 'customer.addresses.delete' | t }}
+            </button>
+            <div id="EditAddress_{{ address.id }}" class="customerform form-vertical hide">
+              <h3 class="head {{ section_st.preset }}">{{ 'customer.addresses.edit_address' | t }}</h3>
+              {% form 'customer_address', address %}
+                <div class="grid gspace">
+                  <div class="gitem wd50-md">
+                    <label for="AddressFirstName_{{ form.id }}" class="hidden_txt">
+                      {{- 'customer.addresses.first_name' | t -}}
+                    </label>
+                    <input
+                      type="text"
+                      id="AddressFirstName_{{ form.id }}"
+                      name="address[first_name]"
+                      value="{{ form.first_name }}"
+                      placeholder="{{ 'customer.addresses.first_name' | t }}"
+                    >
+                  </div>
+                  <div class="gitem wd50-md">
+                    <label for="AddressLastName_{{ form.id }}" class="hidden_txt">
+                      {{- 'customer.addresses.last_name' | t -}}
+                    </label>
+                    <input
+                      type="text"
+                      id="AddressLastName_{{ form.id }}"
+                      name="address[last_name]"
+                      value="{{ form.last_name }}"
+                      placeholder="{{ 'customer.addresses.last_name' | t }}"
+                    >
+                  </div>
+                </div>
+
+                <label for="AddressCompany_{{ form.id }}" class="hidden_txt">
+                  {{- 'customer.addresses.company' | t -}}
+                </label>
+                <input
+                  type="text"
+                  id="AddressCompany_{{ form.id }}"
+                  name="address[company]"
+                  value="{{ form.company }}"
+                  placeholder="{{ 'customer.addresses.company' | t }}"
+                >
+
+                <label for="AddressAddress1_{{ form.id }}" class="hidden_txt">
+                  {{- 'customer.addresses.address1' | t -}}
+                </label>
+                <input
+                  type="text"
+                  id="AddressAddress1_{{ form.id }}"
+                  name="address[address1]"
+                  value="{{ form.address1 }}"
+                  placeholder="{{ 'customer.addresses.address1' | t }}"
+                >
+
+                <label for="AddressAddress2_{{ form.id }}" class="hidden_txt">
+                  {{- 'customer.addresses.address2' | t -}}
+                </label>
+                <input
+                  type="text"
+                  id="AddressAddress2_{{ form.id }}"
+                  name="address[address2]"
+                  value="{{ form.address2 }}"
+                  placeholder="{{ 'customer.addresses.address2' | t }}"
+                >
+
+                <div class="grid gspace">
+                  <div class="gitem wd33-md">
+                    <label for="AddressCity_{{ form.id }}" class="hidden_txt">
+                      {{- 'customer.addresses.city' | t -}}
+                    </label>
+                    <input
+                      type="text"
+                      id="AddressCity_{{ form.id }}"
+                      name="address[city]"
+                      value="{{ form.city }}"
+                      placeholder="{{ 'customer.addresses.city' | t }}"
+                    >
+                  </div>
+                  <div class="gitem wd33-md">
+                    <label for="AddressCountry_{{ form.id }}" class="hidden_txt">
+                      {{- 'customer.addresses.country' | t -}}
+                    </label>
+                    <select
+                      id="AddressCountry_{{ form.id }}"
+                      name="address[country]"
+                      data-address-country-select
+                      data-default="{{ form.country }}"
+                      data-form-id="{{ form.id }}"
+                      autocomplete="country"
+                    >
+                      {{ all_country_option_tags }}
+                    </select>
+                  </div>
+                  <div class="gitem wd33-md" id="AddressProvinceContainer_{{ form.id }}" style="display:none">
+                    <label for="AddressProvince_{{ form.id }}" class="hidden_txt">
+                      {{- 'customer.addresses.province' | t -}}
+                    </label>
+                    <select
+                      id="AddressProvince_{{ form.id }}"
+                      name="address[province]"
+                      data-default="{{ form.province }}"
+                      autocomplete="address-level1"
+                    ></select>
+                  </div>
+                </div>
+                <div class="grid gspace">
+                  <div class="gitem wd50-md">
+                    <label for="AddressZip_{{ form.id }}" class="hidden_txt">{{ 'customer.addresses.zip' | t }}</label>
+                    <input
+                      type="text"
+                      id="AddressZip_{{ form.id }}"
+                      name="address[zip]"
+                      value="{{ form.zip }}"
+                      autocapitalize="characters"
+                      placeholder="{{ 'customer.addresses.zip' | t }}"
+                    >
+                  </div>
+                  <div class="gitem wd50-md">
+                    <label for="AddressPhone_{{ form.id }}" class="hidden_txt">
+                      {{- 'customer.addresses.phone' | t -}}
+                    </label>
+                    <input
+                      type="tel"
+                      id="AddressPhone_{{ form.id }}"
+                      name="address[phone]"
+                      value="{{ form.phone }}"
+                      placeholder="{{ 'customer.addresses.phone' | t }}"
+                    >
+                  </div>
+                </div>
+                <p>
+                  {{ form.set_as_default_checkbox }}
+                  <label for="address_default_address_{{ form.id }}">{{ 'customer.addresses.set_default' | t }}</label>
+                </p>
+                <div class="fl f-wrap">
+                  <button
+                    type="submit"
+                    class="btn {{ section_st.btn }} {{ section_st.btnsz }} address-edit-toggle mr20"
+                    data-form-id="{{ form.id }}"
+                  >
+                    {{ 'customer.addresses.update' | t }}
+                  </button>
+                  <button type="reset" class="btn btn2">{{ 'customer.addresses.cancel' | t }}</button>
+                </div>
+              {% endform %}
+            </div>
+          </div>
+        {% endfor %}
+        {% if paginate.pages > 1 %}{% render 'pagination' %}{% endif %}        
+      </div>
+    </div>
+    {% endpaginate %}
+  </div>
+</div>
+<script>
+  window.addEventListener('load', () => {
+    typeof CustomerAddresses !== 'undefined' && new CustomerAddresses();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Addresses page",
+  "settings": [    
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 18,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },    
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "700",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default": 0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "select",
+      "id": "btn",
+      "label": "Buttons design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "btnsz",
+      "label": "Buttons size",
+      "default": "btn-sm",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ]
+}
+{% endschema %} 

@@ -1,0 +1,136 @@
+{%- liquid
+  assign block_st = block.settings
+  if block_st.style == '1'
+    assign class_name = "idf"
+  elsif block_st.style == '2'
+    assign class_name = "ibg"
+  endif
+-%}
+{%- capture styles -%}
+  --icns:{{ block_st.sz }}px;--gap:{{ block_st.gap }}px;--icncl:{{ block_st.cl }};--icnclh:{{ block_st.clh }};
+    {%- if block_st.style == '2' -%}
+        --icnbg:{{ block_st.bg }};--icnbgh:{{ block_st.bgh }};--icnbd:{{ block_st.bd }};--icnbdh:{{ block_st.bdh }};--icnbdr:{{ block_st.bdr }}px;
+    {%- endif -%}
+{%- endcapture -%}
+<ul class="fl f-wrap social-icons gap{% if block_st.style == '2' %} ibg{% endif %} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" style="{{ styles }}">
+    {%- render 'social-media', block_st:block_st, class_name: class_name  -%}
+</ul>
+{% schema %}
+{
+  "name": "Social media",
+  "tag": null,
+  "settings": [
+    {
+        "type": "paragraph",
+        "content": "To display your social media accounts, link them in your [theme settings](/editor?context=theme&category=Social media)"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Icons style",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "Default" },
+        { "value": "2", "label": "Background" }
+      ]
+    },
+            {
+                "type": "range",
+                "id": "sz",
+                "label": "Icon size",
+                "default": 12,
+                "min": 10,
+                "max": 50,
+                "step": 1,
+                "unit": "px"
+            },
+            {
+                "type": "range",
+                "id": "gap",
+                "label": "Gap",
+                "default": 10,
+                "min":0,
+                "max": 50,
+                "step": 1,
+                "unit": "px"
+            },
+            {
+                "type": "color",
+                "id": "cl",
+                "label": "Icons",
+                "default": "#333"
+            },
+            {
+                "type": "color",
+                "id": "bg",
+                "label": "Background",
+                "default": "#f4f4f4",
+                "visible_if": "{{ block.settings.style == '2' }}"
+            },
+            {
+                "type": "color",
+                "id": "bd",
+                "label": "Border",
+                "default": "#ccc",
+                "visible_if": "{{ block.settings.style == '2' }}"
+            },
+            {
+                "type": "color",
+                "id": "clh",
+                "label": "Icons hover",
+                "default": "#333"
+            },
+            {
+                "type": "color",
+                "id": "bgh",
+                "label": "Background hover",
+                "default": "#f4f4f4",
+                "visible_if": "{{ block.settings.style == '2' }}"
+            },
+            {
+                "type": "color",
+                "id": "bdh",
+                "label": "Border hover",
+                "default": "#ccc",
+                "visible_if": "{{ block.settings.style == '2' }}"
+            },
+            {
+                "type": "range",
+                "id": "bdr",
+                "label": "Corner radius",
+                "default":30,
+                "min":0,
+                "max":100,
+                "step":1,
+                "unit":"px",
+                "visible_if": "{{ block.settings.style == '2' }}"
+            },
+            {
+            "type": "range",
+            "id": "mb",
+            "label": "Bottom margin",
+            "default": 0,
+            "min": 0,
+            "max": 50,
+            "step": 5,
+            "unit": "px"
+          },
+          {
+            "type": "range",
+            "id": "mbm",
+            "label": "Bottom margin (mobile)",
+            "default": 0,
+            "min": 0,
+            "max": 50,
+            "step": 5,
+            "unit": "px"
+          }
+  ],
+  "presets": [
+    {
+      "name": "Social media",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,10 @@
+.exit-popup.sactive { display:flex!important; width:100%; position:fixed; top:15px; left:50%; transform: translateX(-50%); z-index:99999; align-items:center; justify-content:center; background-color:#00000060; }
+.exit-popup.sactive .exit-modal { width:90%; max-width:900px; box-shadow:0 0 15px rgba(0,0,0,0.2); }
+
+.grid-masonary { align-items:flex-start; }
+
+.newsletter-popup.sactive { display:flex!important; position:fixed!important; top:0; left:0; z-index:666; width:100%; height:100%; align-items:center; justify-content:center; background-color:#00000090; overflow:auto; }
+.newsletter-popup.sactive newsletter-popup { display:block; padding:0; width:100%; max-width:900px; }
+.newsletter-popup.sactive newsletter-popup.st1 { max-width:600px; }
+
+.sactive #product-alert { visibility:visible; opacity:1; transform:translateY(0); }

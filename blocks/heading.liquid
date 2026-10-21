@@ -1,0 +1,416 @@
+{%- liquid
+  assign block_st = block.settings
+
+  capture classes
+    if block_st.isbg
+      echo 'bg-custom '
+    endif
+
+    if block_st.ispd
+      echo 'pd-custom '
+    endif
+  endcapture
+-%}
+{%- capture styles -%}
+    {%- if block_st.preset == 'custom-hd' -%}
+      --fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--ff:var(--{{ block_st.ff }});--fw:{{ block_st.fw }};--lh:{{ block_st.lh }};--ls:{{ block_st.ls }};
+    {%- endif -%}
+    {%- if block_st.isbg -%}
+      --gr_bg:{% if block_st.bgg != blank %}{{ block_st.bgg }}{% else %}{{ block_st.bg }}{% endif %};{{-  -}}
+      --gr_bd:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+    {%- endif -%}
+    {%- if block_st.ispd -%}
+      --gr_pd:{{ block_st.pd-tb }}px {{ block_st.pd-lr }}px;--gr_pdm:{{ block_st.pd-tbm }}px {{ block_st.pd-lrm }}px;
+    {%- endif -%}
+{%- endcapture -%}
+<{{ block_st.htag }} id="blk-{{ block.id }}" class="head {{ block_st.preset }} wd-fit wd-fit-md text-block--{{ block.id }} {{ block_st.rounded }} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}{% if block_st.text-upper %} text-upper{% endif %} {{ classes }}"
+    style="--hdcl:{{ block_st.cl }};{{ styles }}" {{ block.shopify_attributes }}>
+    {{- block.settings.text -}}
+</{{ block_st.htag }}>
+{% schema %}
+{
+  "name": "Heading",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Heading Text"
+    },
+    {
+      "type": "select",
+      "id": "htag",
+      "label": "Heading tag",
+      "info": "Specify heading type to improve SEO and accessibility.",
+      "default": "h2",
+      "options": [
+        {
+          "value": "p",
+          "label": "P"
+        },
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "div",
+          "label": "Div"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h2",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "700",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "text-upper",
+      "label": "Use uppercase text",
+      "default": false      
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default": 0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#fff",
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "select",
+      "id": "bdr",
+      "label": "Borders",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "brd_sz",
+      "label": "Border thickness",
+      "default": 1,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "alpha": true,
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ block.settings.isbg or block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "checkbox",
+      "id": "ispd",
+      "label": "Add padding",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "pd-lr",
+      "label": "Horizontal",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pd-tb",
+      "label": "Vertical",
+      "default": 5,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pd-lrm",
+      "label": "Horizontal (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pd-tbm",
+      "label": "Vertical (mobile)",
+      "default": 5,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Heading",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}

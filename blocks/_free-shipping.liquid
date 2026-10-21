@@ -1,0 +1,54 @@
+{%- liquid
+    assign block_st = block.settings
+    assign freeship_rate = settings.freeship | times: 100 | default: 0
+    assign remain_amount = freeship_rate | minus: cart.total_price
+    assign free_amount = remain_amount | money
+    assign shipbar = remain_amount | times:100 | divided_by:freeship_rate
+-%}
+<div class="free-shipping mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" {{ block.shopify_attributes }}  style="--icns:18px">
+    {% if settings.ship_ico %}<svg class="at-icon mr5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M382.2,118.3h-66V81.6c0-7-5.5-12.7-12.3-12.7H12.3C5.5,68.8,0,74.5,0,81.6v301.6c0,7,5.5,12.7,12.3,12.7h41.2 c5.7,27.5,29.3,47.3,56.7,47.3c27.3,0,50.9-19.8,56.7-47.3H345c5.7,27.5,29.3,47.3,56.7,47.3c27.3,0,50.9-19.8,56.7-47.3h41.2 c6.8,0,12.3-5.7,12.3-12.7V252.6C512,178.6,453.8,118.3,382.2,118.3z M406,241c-16.1,0-29.2-13.6-29.2-30.2v-66.9h5.4 c53.3,0,98.9,42.5,104.6,97.2H406z M406,266.5h81.3v103.9h-28.8c-5.7-27.5-29.3-47.3-56.7-47.3c-27.3,0-50.9,19.8-56.7,47.3h-28.9 V143.8h36v66.9C352.1,241.5,376.3,266.5,406,266.5z M435.1,383.2c0,19-15,34.5-33.4,34.5s-33.4-15.5-33.4-34.5s15-34.5,33.4-34.5 S435.1,364.1,435.1,383.2z M291.5,313.8v56.7H167c-5.7-27.5-29.3-47.3-56.7-47.3c-27.3,0-50.9,19.8-56.7,47.3H24.6v-56.7H291.5z M110.2,348.6c18.4,0,33.4,15.5,33.4,34.5s-15,34.5-33.4,34.5s-33.4-15.5-33.4-34.5S91.8,348.6,110.2,348.6z M291.5,94.3v194H24.6 v-194H291.5z"></path></svg> {% endif %}
+    {% if remain_amount > 0 %}{{ settings.free_ship_msg | replace: '[price]', free_amount }}{% else %}{{ settings.got_free_ship }}{% endif %}
+    {% if settings.progress_bar %}<div class="shipping-bar"><span class="db anim" style="width:calc(100% - {{ shipbar }}%);"></span></div>{% endif %}
+</div>
+{% schema %}
+{
+  "name": "Free shipping",
+  "tag": null,
+  "settings": [
+    {
+        "type": "paragraph",
+        "content":"Manage shipping message from [theme settings](/editor?context=theme&category=general)"        
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Free shipping",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

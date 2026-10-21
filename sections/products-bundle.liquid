@@ -1,0 +1,488 @@
+{%- capture productslider -%}
+{%- liquid 
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+
+    assign rg_price = 0
+    assign cm_price_total = 0
+    assign total_price = 0
+-%}
+
+<style>
+  #{{ section.id }} .section-header { padding-bottom:25px;}
+  .bundle-wrapper { border: 1px solid {{ section_st.bd }}; padding:25px 20px;--border_color:{{ section_st.bd }}; }
+   product-bundle .products-bundle { max-width:65ch; margin:0 auto; padding:0 20px;}
+  .bundle-product.deactive { opacity:0.5 !important }
+</style>
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" id="{{ section.id }}">        
+        <product-bundle id="bundle{{ section.id }}" class="fl f-jcsb f-col f-aic f-row-md custom-banner">
+            <div class="pr of-hidden {{ section_st.irounded }} mb20 mb0-lg{% if section_st.pos %} order2{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--wd:{{ section_st.bnrwd }}%;--cl:{{section_st.hotspot}};--cl_down:{{section_st.hotspot | color_modify: 'alpha', 0.2 }};" >
+                <div style="{% if section_st.image != blank %}padding-bottom:{{ 1 | divided_by: section_st.image.aspect_ratio | times: 100 }}%;{% endif %}" class="overlay">                     
+                    {%- liquid
+                        assign column = 100.00 | divided_by: section_st.bnrwd | times: 1
+                        assign divide_colunm = 1.00 | divided_by: column | round: 2
+                    %}
+                    {%- if section_st.image != blank -%}
+                        {%- capture bnrsizes -%}
+                            (min-width:1024px) calc(({{ page_width }} - 30px * {{ column | minus: 1 }}) * {{ divide_colunm }}), calc(100vw - 30px)
+                        {%- endcapture -%}
+                        {{ section_st.image | image_url: width: section_st.image.width | image_tag: loading:'lazy', width:section_st.image.width, height:section_st.image.height, class:'img-fit', sizes:bnrsizes, widths:"180,320,400,560,740,900,1200,1600" }}
+                    {%- else -%}
+                        {{ 'collection-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                    {%- endif -%}
+                </div>  
+                {%- for block in section.blocks -%}
+                    {% liquid
+                        assign block_st = block.settings
+                        assign index = forloop.index0
+                        assign product = block_st.product
+                    -%}
+                    {%- if product != blank -%}
+                        <button type="button" data-index="{{ index }}" data-id="bundle-{{ product.id }}" class="grid-button btn-shop pa" style="--top:{{ block_st.top }}%;--left:{{ block_st.left }}%;--top_mobile:{{ block_st.top_mobile }}%;--left_mobile:{{ block_st.left_mobile }}%">.</button>
+                    {%- endif -%} 
+                {%- endfor -%}
+            </div>
+            <div class="products-bundle pr f-asc" style="--wd:calc({{ 100 | minus: section_st.bnrwd }}% - 80px);">
+                {%- render 'sec-title' -%}
+
+                {%-liquid
+                    assign product = collections['all'].products.first
+                    assign product_form_id = 'product-upsell-' | append: section.id 
+                -%}
+                {%- form 'product', product, id: product_form_id, class:'form', novalidate:'novalidate', data-type:'add-to-cart-form' -%}
+                    <div class="bundle-wrapper mb20 {{ section_st.rounded }}">
+                        {%- for block in section.blocks -%}
+                            {%- liquid
+                                assign product = block.settings.product
+                                assign product_url = product.url | within: collection
+                                if settings.clurl
+                                    assign product_url = product.url
+                                endif
+
+                                assign is_variants = product.variants | where: 'available', true
+                                assign current_variant = product.selected_or_first_available_variant
+                                assign index = forloop.index
+                                assign rg_price = current_variant.price
+                                assign total_price = total_price | plus:rg_price
+                                assign cm_price = current_variant.compare_at_price | default: current_variant.price
+                                assign cm_price_total = cm_price_total | plus: cm_price
+                                assign is_variants = product.variants | where: 'available', true
+                            -%}
+                            <div class="bundle-product fl f-aic of-hidden gap checked {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--gap:20px;--gapm:10px;" id="bundle-{{ product.id }}">
+                                <label class="fl bundle-label cpointer mb0">
+                                    <input type="checkbox" id="fbtCk{{ index }}" class="custCheck fbtCheck" checked="checked"><span class="checkbox m0"></span>
+                                </label>
+                                {% if product != blank %}
+                                    <div class="mini-products__img">    
+                                        <a class="grid-image" href="{{ product_url }}" aria-label="{{ product.title }}">
+                                            {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:'lazy', width:product.featured_image.width, height:product.featured_image.height, class:'img-fit', sizes:'80px', widths:"100,200,320" }}
+                                        </a>
+                                    </div>
+                                    <div class="fl1">
+                                        <div class="product-title mb10">
+                                            <a href="{{ product.url }}" title="{{ product.title }}">{{ product.title }}</a>
+                                        </div>
+                                        <div>
+                                            <label class="hidden_txt" for="PrSelect-{{ product.id }}">Select Variant</label>
+                                            <select name="items[][id]" id="PrSelect-{{ product.id }}" 
+                                                class="mb0 bundle-variant{% if product.variants[0].title == 'Default Title' or is_variants == blank %} hide{% endif %}{% unless current_variant.available %} disable{% endunless %}"
+                                                data-id="img{{ product.id }}">
+                                                {%- for variant in product.variants -%}
+                                                    {%- if variant.available -%}
+                                                        <option{% if variant == current_variant %} selected="selected"{% endif %} value="{{ variant.id }}" 
+                                                        {%- if variant.image -%}data-img="{{ variant.image | image_url: width: '160' }}"{% endif %}
+                                                        data-price="{{ variant.price }}"
+                                                        data-cmprice="{{ variant.compare_at_price | default: variant.price }}">{{ variant.title }}</option>
+                                                    {%- endif -%}
+                                                {%- endfor -%}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="price-wrapper tr">
+                                        <s class="cmprice{% if current_variant.compare_at_price < current_variant.price %} hide{% endif %}">{{ current_variant.compare_at_price | money }}</s>
+                                        <div class="price fw-600 fs15">{{ current_variant.price | money }}</div>
+                                    </div>
+                                {% else %}
+                                    <div class="mini-products__img">    
+                                        <a class="grid-image" href="#">{% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'product-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}</a>
+                                    </div>
+                                    <div class="fl1 product-title mb10">
+                                        <a href="{{ product.url }}" title="{{ product.title }}">{{ 'homepage.onboarding.product_title' | t }}</a>
+                                    </div>
+                                    <div class="price fw-600 fs15">{% render 'product-price' %}</div>
+                                {% endif %}
+                            </div>
+                            {%- unless forloop.last -%}
+                                <hr class="{% render 'animate-data', css:true %}" {% render 'animate-data' %} />
+                            {%- endunless -%}
+                        {%- endfor -%}
+                    </div>
+                    <div class="upsell-bundle__total fl f-col {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
+                        <div class="mb20 fl f-aic f-jcsb fs15">
+                            <span class="fw-600 db text-upper">{{ 'products.upsell.total' | t }}:</span> 
+                            <div class="fl f-aic gap" style="--gap:10px;">
+                                <s class="bundle__old-price fs15 fw-400">{{ cm_price_total | money }}</s>
+                                <span class="fw-600 bundle__total-price" style="font-size:110%;">{{ total_price | money }}</span>
+                            </div>
+                        </div>
+                        <div class="pform-error-wrap errors" role="alert" hidden>{{ 'icon-error.svg' | inline_asset_content }} <span class="ml5 pform-error-msg"></span></div>
+                        <button type="submit" name="add" id="AddToCart-{{ section.id }}" class="btn bundle-addcart {{ section_st.btn-style }}">
+                            <span class="txt">{{ 'products.upsell.button' | t }}</span>
+                            <div class="loading__spinner"><svg class="at-icon at-spin"><use xlink:href="#icon-loading"></use></svg></div>
+                        </button>
+                    </div>
+                {%- endform -%}
+            </div>
+        </product-bundle>
+    </div>
+</div>
+<script src="{{ 'products-bundle.js' | asset_url }}" defer="defer"></script>
+{%- endcapture -%}
+{{- productslider | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Products bundle",
+  "class": "products-bundle",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Shop The Group"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Most-Loved Looks of the day"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "range",
+      "id": "bnrwd",
+      "min": 20,
+      "max": 70,
+      "step": 1,
+      "label": "Column width",
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Image mobile"
+    },
+    {
+      "type": "select",
+      "id": "irounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "pos",
+      "label": "Show image on right",
+      "default": false
+    },   
+    {
+      "type": "color",
+      "id": "hotspot",
+      "label": "Hotspot color",
+      "info": "(product pin on image)",
+      "default": "#111"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "color",
+      "id": "bd",
+      "label": "Border Color",
+      "default": "#eee"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": false,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Product",
+      "type": "product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "header",
+          "content": "Hotspot position (desktop)"
+        },
+        {
+          "type": "range",
+          "id": "left",
+          "label": "Horizontal",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "top",
+          "label": "Vertical",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "header",
+          "content": "Hotspot position (mobile)"
+        },
+        {
+          "type": "range",
+          "id": "left_mobile",
+          "label": "Horizontal",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "top_mobile",
+          "label": "Vertical",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Products bundle",
+      "category": "Products",
+      "blocks": [
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

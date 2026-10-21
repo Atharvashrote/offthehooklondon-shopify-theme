@@ -1,0 +1,38 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign current_variant = product.selected_or_first_available_variant
+-%}
+<div class="product-type fl f-aic{% if current_variant.barcode.size == 0 %} hidden{% endif %}" id="type-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
+    {% if block_st.islabel %}
+        <span class="lbl mr5">{{ 'products.product.type' | t }}</span>
+    {% endif %}
+
+    {% if product.collections.size > 0 %}
+        <a href="{{ product.collections.first.url }}" class="variant-sku">
+            {{ product.type }}
+        </a>
+    {% else %}
+        <span class="variant-sku">{{ product.type }}</span>
+    {% endif %}
+</div>
+{% schema %}
+{
+  "name": "Type",
+  "tag": null,
+  "settings": [
+    {
+        "type": "checkbox",
+        "id": "islabel",
+        "label": "Show label",
+        "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Type",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,378 @@
+{% liquid
+    assign block_st = block.settings
+    assign cnt_width = settings.cntwd | append: 'px'
+    if section.settings.sw
+        assign cnt_width = '100vw'
+    endif
+
+    assign cmcolumn = 100.00 | divided_by: 60 | times: 1
+    assign cmdivide = 1.00 | divided_by: cmcolumn | round: 2
+-%}
+{%- capture sizes -%}
+    (min-width:1024px) calc((({{ cnt_width }} - 70px * {{ cmcolumn | minus: 1 }}) * {{ cmdivide }}) / {{ block_st.grid }}),(min-width:768px) calc((({{ cnt_width }} - 70px * {{ cmcolumn | minus: 1 }}) * {{ cmdivide }}) / {{ block_st.gridtb }}), calc(100vw / {{ block_st.gridmb }})
+{%- endcapture -%}
+{%- capture head_styles -%}
+    --hdcl:{{ block_st.cl }};
+    {%- if block_st.preset == 'custom-hd' -%}
+      --fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--ff:var(--{{ block_st.ff }});--fw:{{ block_st.fw }};--lh:{{ block_st.lh }};--ls:{{ block_st.ls }};
+    {%- endif -%}
+{%- endcapture -%}
+<div class="complementary-products recommendad-wrapper mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" {{ block_st.shopify_attributes }}>
+    {% if block_st.title != blank %}
+        <{{ block_st.htag }} id="blk-{{ block.id }}" class="head {{ block_st.preset }} mb15" style="{{ head_styles }}">{{- block_st.title -}}</{{ block_st.htag }}>
+    {% endif %}
+    <product-recommendations data-id="compSlider" data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ block_st.limit }}&intent=complementary"
+        class="grid gspace recomPr rwcols-{{ block_st.gridmb }} rwcols-md-{{ block_st.gridtb }} rwcols-lg-{{ block_st.grid }} recomprSlider swiper" role="list" id="compSlider" style="--grsp:7px;--grspm:5px;"
+        data-swiper='{ "slidesPerView":"auto", "loop":false, {% if block_st.autoplay %}"autoplay":{ "delay":"{{ block_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":false }}'>
+        {%- if recommendations.performed and recommendations.products_count > 0 -%}
+            <div class="swiper-wrapper">
+            {%- for product in recommendations.products limit: block_st.settings.products_per_page -%}
+                <div class="swiper-slide gitem tc">
+                    <div class="grid-content">
+                        <a class="grid-image mb15" href="{{ product.url | within: collection }}">
+                            {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:'lazy', class:'img-fit primary', sizes:sizes, widths:"100,200,300,450,600" }}
+                        </a>
+                    <div class="grid-title"><a href="{{ product.url | within: collection }}">{{ product.title }}</a></div>
+                    {% unless settings.catalogmode %}<div class="grid-price mt5">{% render 'product-price', product: product %}</div>{% endunless %}
+                    </div>
+                </div>
+            {%- endfor -%}
+            </div>
+            {% render 'swiper-navigation', id:section.id, section_st:block_st %}
+        {%- endif -%}
+    </product-recommendations>
+</div>
+{% schema %}
+{
+  "name": "Complementary products",
+  "tag": null,
+  "settings": [
+    {
+        "type": "paragraph",
+        "content": "To select complementary products, add the Search & Discovery app. [Learn more](https://shopify.dev/themes/product-merchandising/recommendations)"
+    },
+    {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Complete the look"
+    },
+    {
+      "type": "select",
+      "id": "htag",
+      "label": "Heading tag",
+      "info": "Specify heading type to improve SEO and accessibility.",
+      "default": "h4",
+      "options": [
+        {
+          "value": "p",
+          "label": "P"
+        },
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "div",
+          "label": "Div"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },        
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 16,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },    
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "700",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,     
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default":0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",     
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },				
+    {
+        "type": "header",
+        "content": "Products per row"
+    },
+    {
+        "type": "range",
+        "id": "limit",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 10,
+        "label": "Products limit"
+    },
+    {
+        "type": "range",
+        "id": "grid",
+        "label": "Desktop",
+        "default": 4,
+        "min": 2,
+        "max": 5,
+        "step": 1
+    },
+    {
+        "type": "range",
+        "id": "gridtb",
+        "label": "Tablet",
+        "default": 3,
+        "min": 1,
+        "max": 5,
+        "step": 1
+    },
+    {
+        "type": "range",
+        "id": "gridmb",
+        "label": "Mobile",
+        "default": 2,
+        "min": 1,
+        "max": 5,
+        "step": 1
+    },
+    {
+        "type": "range",
+        "id": "bm",
+        "min": 0,
+        "max": 30,
+        "step": 5,
+        "label": "Bottom margin",
+        "unit": "px",
+        "default": 15
+    },
+    {
+        "type": "header",
+        "content": "Slider settings"
+    },
+    {
+        "type": "checkbox",
+        "id": "loop",
+        "label": "Infinite loop",
+        "default": true
+    },
+    {
+        "type": "checkbox",
+        "id": "autoplay",
+        "label": "Auto-rotate slide",
+        "default": false			
+    },
+    {
+        "type": "range",
+        "id": "speed",
+        "label": "Autoplay speed",
+        "default": 5,
+        "min": 1,
+        "max": 30,
+        "step": 1,
+        "unit": "Sec"			
+    },		
+    {
+        "type": "checkbox",
+        "id": "arrow",
+        "label": "Show arrows on desktop",
+        "default": true			
+    },
+    {
+        "type": "checkbox",
+        "id": "arrowm",
+        "label": "Show arrows on mobile",
+        "default": false			
+    },		
+    {
+        "type": "checkbox",
+        "id": "dot",
+        "label": "Show dots on desktop",
+        "default": false			
+    },
+    {
+        "type": "checkbox",
+        "id": "dotm",
+        "label": "Show dots on mobile",
+        "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Complementary products",
+      "category": "Product",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

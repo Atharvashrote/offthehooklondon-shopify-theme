@@ -1,0 +1,79 @@
+{%- liquid
+    assign color_type = section.settings.color_type | default: settings.color_type
+    assign img_position = section.settings.vr_bg_position | default: settings.vr_bg_position
+    assign color_options = settings.colorOpt | downcase | replace:", ","," | replace:" , ","," | replace:" ,","," | split: ","
+-%}
+{%- unless product.options.size == 1 and product.variants[0].title == 'Default Title' -%}
+{%- capture color_swatch -%}
+    {%- for option in product.options_with_values -%}
+       {%- liquid
+          assign option_name = option.name | downcase
+          assign is_color = false
+          for value in option.values
+             if value.swatch.image or value.swatch.color or color_options contains option_name
+              assign is_color = true
+            endif
+          endfor
+       %}
+        {%- if is_color -%}
+          <ul class="grid-swatches fl f-wrap f-aic{% if source != "list" %} f-jcc{% else %} mb20{% endif %}" style="--img-pos:{{ img_position }};">
+              {%- for value in option.values -%}
+                {%- liquid
+                  assign cl_count = forloop.index
+                  assign swimg_size = settings.swatch_size | times: 2
+                  assign option_disabled = true
+                  if value.available
+                    assign option_disabled = false
+                  endif
+
+                  comment
+                    product.variants is capped at 250 in Liquid — do not loop it for grid swatch images.
+                    value.variant is the variant for this option value plus other selected options; fall back to swatch image.
+                  endcomment
+                  assign swatch_vi_img = nil
+                  if value.variant != blank and value.variant.image != blank
+                    assign swatch_vi_img = value.variant.image
+                  elsif is_color and product.variants.size > 0
+                    assign opt_pos = option.position
+                    for v in product.variants
+                      assign vr_media = false
+                      if opt_pos == 1 and v.option1 == value
+                        assign vr_media = true
+                      elsif opt_pos == 2 and v.option2 == value
+                        assign vr_media = true
+                      elsif opt_pos == 3 and v.option3 == value
+                        assign vr_media = true
+                      endif
+                      if vr_media and v.image != blank
+                        assign swatch_vi_img = v.image
+                        break
+                      endif
+                    endfor
+                  endif
+
+                  assign swatch_clr = value.swatch.color | default: value | downcase
+                  if value.swatch.image
+                     assign swatch_img = value.swatch.image | image_url: width: swimg_size
+                     assign swatch_clr = 'url(' | append: swatch_img | append: ')'
+                  endif
+                -%}
+                {%- if color_type == "vrimage" and swatch_vi_img != blank -%}
+                      <li class="swatch background-image color-swatch pr of-hidden{% if option_disabled %} disabled{% endif %}{% if cl_count > settings.clcount %} hide{% endif %}" title="{{ value }}" data-src="{{ swatch_vi_img | image_url: width: 500 }}">
+                          {{ swatch_vi_img | image_url: width: swimg_size | image_tag: class: 'img-fit', loading: 'lazy', widths: '50, 100, 150', sizes: "50px", alt: value | escape }}
+                          <span class="tooltip-label top">{{ value }}</span>
+                      </li>
+                {%- else -%}
+                      <li class="swatch color-swatch swatch-{{ value | handle }}{% if swatch_vi_img != blank %} noImg{% endif %}{% if option_disabled %} disabled{% endif %}{% if cl_count > settings.clcount %} hide{% endif %}" title="{{ value }}" style="background:{{ swatch_clr }};" {% if swatch_vi_img != blank %}data-src="{{ swatch_vi_img | image_url: width: 400 }}"{% endif %}>
+                          <span class="tooltip-label top">{{ value }}</span>
+                      </li>
+                {%- endif -%}
+              {%- endfor -%}
+              {%- if cl_count > settings.clcount -%}
+                  <li class="numb clcount">{{ option.values.size | minus: settings.clcount }}+</li>
+              {%- endif -%}
+            </ul>
+        {%- endif -%}
+    {%- endfor -%}
+{%- endcapture -%}
+{{- color_swatch | strip_newlines | remove: "  " | remove: "	" -}}
+{%- endunless -%}

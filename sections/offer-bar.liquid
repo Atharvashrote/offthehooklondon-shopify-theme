@@ -1,0 +1,1309 @@
+{%- assign section_st = section.settings -%}
+
+<div
+  id="{{ section.id }}"
+  class="oth-promo-bar"
+  style="
+    --promo-speed: {{ section_st.speed | default: 5 }}s;
+    --promo-font-size: {{ section_st.fts }}px;
+    --promo-font-size-mobile: {{ section_st.ftsm }}px;
+    --promo-font-weight: {{ section_st.fw }};
+    --promo-color: {{ section_st.cl }};
+    --promo-hover-color: {{ section_st.clhl }};
+    --promo-line-height: {{ section_st.lh }};
+  "
+>
+  <div class="oth-promo-window">
+
+    <div class="oth-promo-track">
+
+      <div class="oth-promo-content">
+
+        {% for block in section.blocks %}
+          {% assign block_st = block.settings %}
+
+          {% if block_st.title != blank %}
+
+            {% if block_st.link != blank %}
+              <a
+                href="{{ block_st.link }}"
+                {% if block_st.new_tab %}
+                  target="_blank"
+                  rel="noopener"
+                {% endif %}
+                class="oth-promo-item"
+                {{ block.shopify_attributes }}
+              >
+                {{ block_st.title }}
+              </a>
+            {% else %}
+              <span
+                class="oth-promo-item"
+                {{ block.shopify_attributes }}
+              >
+                {{ block_st.title }}
+              </span>
+            {% endif %}
+
+          {% endif %}
+        {% endfor %}
+
+      </div>
+
+
+      <!-- Duplicate copy for seamless loop -->
+
+      <div
+        class="oth-promo-content"
+        aria-hidden="true"
+      >
+
+        {% for block in section.blocks %}
+          {% assign block_st = block.settings %}
+
+          {% if block_st.title != blank %}
+
+            {% if block_st.link != blank %}
+              <a
+                href="{{ block_st.link }}"
+                {% if block_st.new_tab %}
+                  target="_blank"
+                  rel="noopener"
+                {% endif %}
+                class="oth-promo-item"
+                tabindex="-1"
+              >
+                {{ block_st.title }}
+              </a>
+            {% else %}
+              <span class="oth-promo-item">
+                {{ block_st.title }}
+              </span>
+            {% endif %}
+
+          {% endif %}
+        {% endfor %}
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<style>
+
+  /* =========================================
+     PROMOTION BAR
+     ========================================= */
+
+  .oth-promo-bar {
+    width: 100%;
+    height: 40px;
+
+    background: #000000;
+
+    color: var(--promo-color);
+
+    overflow: hidden;
+
+    position: relative;
+
+    z-index: 20;
+  }
+
+
+  /* =========================================
+     VIEWPORT
+     ========================================= */
+
+  .oth-promo-window {
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+  }
+
+
+  /* =========================================
+     MOVING TRACK
+     ========================================= */
+
+  .oth-promo-track {
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    flex-wrap: nowrap !important;
+
+    align-items: center !important;
+
+    width: max-content !important;
+
+    height: 100%;
+
+    flex-shrink: 0;
+
+    animation: othPromoScroll
+      calc(var(--promo-speed) * 5)
+      linear
+      infinite;
+
+    will-change: transform;
+  }
+
+
+  /* =========================================
+     EACH COPY
+     ========================================= */
+
+  .oth-promo-content {
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    flex-wrap: nowrap !important;
+
+    align-items: center !important;
+
+    width: max-content !important;
+
+    min-width: max-content !important;
+
+    height: 100%;
+
+    flex-shrink: 0;
+
+    white-space: nowrap;
+
+    padding-right: 60px;
+  }
+
+
+  /* =========================================
+     INDIVIDUAL PROMOTION
+     ========================================= */
+
+  .oth-promo-item {
+    display: inline-flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    flex: 0 0 auto !important;
+
+    width: max-content !important;
+
+    min-width: max-content !important;
+
+    height: 100%;
+
+    margin: 0 !important;
+
+    padding: 0 25px !important;
+
+    white-space: nowrap !important;
+
+    font-size: var(--promo-font-size);
+
+    line-height: var(--promo-line-height);
+
+    font-weight: var(--promo-font-weight);
+
+    color: var(--promo-color);
+
+    text-decoration: none;
+
+    box-sizing: border-box;
+  }
+
+
+  .oth-promo-item:hover {
+    color: var(--promo-hover-color);
+  }
+
+
+  /* =========================================
+     CONTINUOUS ANIMATION
+     ========================================= */
+
+  @keyframes othPromoScroll {
+
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+
+  }
+
+
+  /* =========================================
+     MOBILE
+     ========================================= */
+/* ==========================================
+   OFF THE HOOK - MOBILE HEADER
+   ========================================== */
+
+@media only screen and (max-width: 767px) {
+
+  /* ==========================================
+     MOBILE HEADER WRAPPER
+     ========================================== */
+
+  .template-index .header-wrap {
+    position: absolute !important;
+
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+
+    width: 100% !important;
+
+    height: 58px !important;
+    min-height: 58px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    border: 0 !important;
+    box-shadow: none !important;
+
+    z-index: 9999 !important;
+  }
+
+
+  /* ==========================================
+     ACTUAL HEADER
+     IMPORTANT:
+     Only the header moves down.
+     Promotion bar stays at the top.
+     ========================================== */
+
+  .template-index .header-wrap #header {
+    position: relative !important;
+
+    transform: translateY(30px) !important;
+
+    width: 100% !important;
+
+    height: 58px !important;
+    min-height: 58px !important;
+
+    padding: 0 14px !important;
+    margin: 0 !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    border: 0 !important;
+    box-shadow: none !important;
+
+    z-index: 10000 !important;
+  }
+
+
+  /* ==========================================
+     HEADER ROW
+     ========================================== */
+
+  .template-index .header-wrap .header-row {
+    position: relative !important;
+
+    width: 100% !important;
+
+    height: 58px !important;
+    min-height: 58px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    background: transparent !important;
+  }
+
+
+  /* ==========================================
+     LOGO
+     ========================================== */
+
+  .template-index .header-wrap .header-center {
+    position: absolute !important;
+
+    left: 14px !important;
+    top: 0 !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    height: 58px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    z-index: 10001 !important;
+  }
+
+
+  .template-index .header-wrap .logo_link {
+    display: flex !important;
+    align-items: center !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    white-space: nowrap !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+  .template-index .header-wrap .luxury-logo {
+    display: block !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+
+    font-size: 17px !important;
+    line-height: 1 !important;
+
+    font-weight: 500 !important;
+    letter-spacing: 1.2px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+  /* ==========================================
+     RIGHT SIDE ICONS
+     ========================================== */
+
+  .template-index .header-wrap .icons-col {
+    position: absolute !important;
+
+    right: 10px !important;
+    top: 0 !important;
+
+    width: auto !important;
+
+    height: 58px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+
+    gap: 9px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    flex: none !important;
+
+    z-index: 10002 !important;
+  }
+
+
+  /* ==========================================
+     INDIVIDUAL HEADER ICONS
+     ========================================== */
+
+  .template-index .header-wrap .icons-col .hdicon {
+    width: 19px !important;
+    height: 58px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    color: #ffffff !important;
+
+    flex-shrink: 0 !important;
+  }
+
+
+  /* ==========================================
+     ICON SVG
+     ========================================== */
+
+  .template-index .header-wrap .icons-col .hdicon svg {
+    width: 18px !important;
+    height: 18px !important;
+
+    color: #ffffff !important;
+
+    flex-shrink: 0 !important;
+  }
+
+
+  .template-index .header-wrap .icons-col .hdicon svg path {
+    stroke: #ffffff !important;
+  }
+
+
+  /* ==========================================
+     MENU ICON
+     ========================================== */
+
+  .template-index .header-wrap .nav_toggle {
+    width: 21px !important;
+    height: 58px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+
+  /* ==========================================
+     CART / WISHLIST COUNTERS
+     ========================================== */
+
+  .template-index .header-wrap .cart-count,
+  .template-index .header-wrap .wishlist-count {
+    font-size: 7px !important;
+
+    min-width: 12px !important;
+    width: 12px !important;
+    height: 12px !important;
+
+    line-height: 12px !important;
+
+    background: #ffffff !important;
+    color: #111111 !important;
+
+    border-radius: 50% !important;
+  }
+
+
+  /* ==========================================
+     PREVENT HEADER CONTENT FROM OVERFLOWING
+     ========================================== */
+
+  .template-index .header-wrap #header,
+  .template-index .header-wrap .header-row {
+    overflow: visible !important;
+  }
+
+}
+
+
+/* ==========================================
+   EXTRA SMALL MOBILE DEVICES
+   ========================================== */
+
+@media only screen and (max-width: 390px) {
+
+  .template-index .header-wrap #header {
+    transform: translateY(30px) !important;
+    padding: 0 10px !important;
+  }
+
+
+  .template-index .header-wrap .header-center {
+    left: 10px !important;
+  }
+
+
+  .template-index .header-wrap .luxury-logo {
+    font-size: 15px !important;
+    letter-spacing: 1px !important;
+  }
+
+
+  .template-index .header-wrap .icons-col {
+    right: 7px !important;
+    gap: 6px !important;
+  }
+
+
+  .template-index .header-wrap .icons-col .hdicon {
+    width: 18px !important;
+  }
+
+
+  .template-index .header-wrap .icons-col .hdicon svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+
+  .template-index .header-wrap .nav_toggle {
+    width: 20px !important;
+  }
+
+}
+
+  /* =========================================
+     STOP ANIMATION WHEN REDUCED MOTION
+     ========================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+
+    .oth-promo-track {
+      animation-play-state: paused !important;
+    }
+
+  }
+
+  
+
+</style>
+
+{% schema %}
+
+{
+
+  "name": "Offer Bar",
+
+  "disabled_on": {
+
+    "groups": ["custom.overlay"]
+
+  },
+
+  "settings": [
+
+    {
+
+      "type": "header",
+
+      "content": "Text appearance"
+
+    },
+
+    {
+
+      "type": "select",
+
+      "id": "fontFm",
+
+      "label": "Font",
+
+      "default": "ft1",
+
+      "options": [
+
+        { "value": "ft1", "label": "Body font" },
+
+        { "value": "ft2", "label": "Heading font" },
+
+        { "value": "ft3", "label": "Accent font" }
+
+      ]
+
+    },
+
+    {
+
+      "type": "range",
+
+      "id": "fts",
+
+      "label": "Font size",
+
+      "default": 16,
+
+      "min": 10,
+
+      "max": 100,
+
+      "step": 1,
+
+      "unit": "px"
+
+    },
+
+    {
+
+      "type": "range",
+
+      "id": "ftsm",
+
+      "label": "Font size (mobile)",
+
+      "default": 13,
+
+      "min": 10,
+
+      "max": 50,
+
+      "step": 1,
+
+      "unit": "px"
+
+    },
+
+    {
+
+      "type": "select",
+
+      "id": "fw",
+
+      "label": "Font weight",
+
+      "default": "600",
+
+      "options": [
+
+        {
+
+          "value": "300",
+
+          "label": "Light"
+
+        },
+
+        {
+
+          "value": "400",
+
+          "label": "Regular"
+
+        },
+
+        {
+
+          "value": "500",
+
+          "label": "Medium"
+
+        },
+
+        {
+
+          "value": "600",
+
+          "label": "Semi bold"
+
+        },
+
+        {
+
+          "value": "700",
+
+          "label": "Bold"
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "type": "range",
+
+      "id": "lh",
+
+      "label": "Line height",
+
+      "default": 1.0,
+
+      "min": 1.0,
+
+      "max": 2.0,
+
+      "step": 0.1
+
+    },
+
+    {
+
+      "type": "color",
+
+      "id": "cl",
+
+      "label": "Text color",
+
+      "default": "#fff"
+
+    },
+
+    {
+
+      "type": "color",
+
+      "id": "clhl",
+
+      "label": "Highlight text",
+
+      "default": "#ffde00"
+
+    },
+
+    {
+
+      "type": "color",
+
+      "id": "cnt_txt",
+
+      "label": "Countdown text",
+
+      "default": "#e74646"
+
+    },
+
+    {
+
+      "type": "select",
+
+      "id": "btn-style",
+
+      "label": "Button design",
+
+      "default": "btn1",
+
+      "options": [
+
+        {
+
+          "label": "Button 1",
+
+          "value": "btn1"
+
+        },
+
+        {
+
+          "label": "Button 2",
+
+          "value": "btn2"
+
+        },
+
+        {
+
+          "label": "Button 3",
+
+          "value": "btn3"
+
+        },
+
+        {
+
+          "label": "Outline Button 1",
+
+          "value": "btn4"
+
+        },
+
+        {
+
+          "label": "Outline Button 2",
+
+          "value": "btn5"
+
+        },       
+
+        {
+
+          "label": "Link",
+
+          "value": "btn-link"
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "type": "select",
+
+      "id": "btn-size",
+
+      "label": "Buttons size",
+
+      "default": "btn-md",
+
+      "options": [
+
+        {
+
+          "label": "Small",
+
+          "value": "btn-sm"
+
+        },
+
+        {
+
+          "label": "Medium",
+
+          "value": "btn-md"
+
+        },
+
+        {
+
+          "label": "Large",
+
+          "value": "btn-lg"
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "type": "header",
+
+      "content": "Slider settings"
+
+    },
+
+    {
+
+      "type": "checkbox",
+
+      "id": "fade",
+
+      "label": "Slide fade effect",
+
+      "default": true
+
+    },
+
+    {
+
+      "type": "checkbox",
+
+      "id": "autoplay",
+
+      "label": "Auto-rotate slide",
+
+      "default": false
+
+    },
+
+    {
+
+      "type": "range",
+
+      "id": "speed",
+
+      "label": "Autoplay speed",
+
+      "default": 5,
+
+      "min": 1,
+
+      "max": 30,
+
+      "step": 1,
+
+      "unit": "Sec",
+
+      "visible_if": "{{ section.settings.autoplay }}"
+
+    },
+
+    {
+
+      "type": "checkbox",
+
+      "id": "arrow",
+
+      "label": "Show arrows (desktop)",
+
+      "default": true
+
+    },
+
+    {
+
+      "type": "checkbox",
+
+      "id": "arrowm",
+
+      "label": "Show arrows (mobile)",
+
+      "default": false
+
+    },
+
+    {
+
+      "type": "select",
+
+      "id": "arr_show",
+
+      "label": "Arrows visibility",
+
+      "default": "hover",
+
+      "options": [
+
+        {
+
+          "value": "hover",
+
+          "label": "Show on hover"
+
+        },
+
+        {
+
+          "value": "forever",
+
+          "label": "Always show"
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "type": "header",
+
+      "content": "Layout"
+
+    },
+
+    {
+
+      "type": "checkbox",
+
+      "id": "fullwidth",
+
+      "label": "Full width",
+
+      "default": false
+
+    }, 
+
+    {
+
+      "type": "checkbox",
+
+      "id": "addbg",
+
+      "label": "Add background",
+
+      "default": true
+
+    },
+
+    {
+
+      "type": "color",
+
+      "id": "bg",
+
+      "label": "Background",
+
+      "default": "#111",
+
+      "visible_if": "{{ section.settings.addbg }}"
+
+    },
+
+    {
+
+      "type": "color_background",
+
+      "id": "bgg",
+
+      "label": "Background gradient",
+
+      "visible_if": "{{ section.settings.addbg }}"
+
+    },
+
+    {
+
+      "type": "image_picker",
+
+      "id": "bg-image",
+
+      "label": "Background image",
+
+      "visible_if": "{{ section.settings.addbg }}"
+
+    },
+
+    {
+
+      "type": "color",
+
+      "id": "overlay",
+
+      "label": "Image overlay",
+
+      "alpha": true,
+
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+
+    },  
+
+    {
+
+      "type": "checkbox",
+
+      "id": "hidem",
+
+      "label": "Hide on mobile",
+
+      "default": false
+
+    },
+
+    {
+
+      "type": "checkbox",
+
+      "id": "hided",
+
+      "label": "Hide on desktop",
+
+      "default": false
+
+    },
+
+     {
+
+      "type": "header",
+
+      "content": "Section padding"
+
+    },
+
+    {
+
+      "type": "range",
+
+      "id": "sst",
+
+      "min": 0,
+
+      "max": 100,
+
+      "step": 1,
+
+      "label": "Top padding",
+
+      "unit": "px",
+
+      "default": 15
+
+    },
+
+    {
+
+      "type": "range",
+
+      "id": "ssb",
+
+      "min": 0,
+
+      "max": 100,
+
+      "step": 1,
+
+      "label": "Bottom padding",
+
+      "unit": "px",
+
+      "default": 15
+
+    },
+
+    {
+
+      "type": "range",
+
+      "id": "sstm",
+
+      "min": 0,
+
+      "max": 100,
+
+      "step": 1,
+
+      "label": "Top padding (mobile)",
+
+      "unit": "px",
+
+      "default": 10
+
+    },
+
+    {
+
+      "type": "range",
+
+      "id": "ssbm",
+
+      "min": 0,
+
+      "max": 100,
+
+      "step": 1,
+
+      "label": "Bottom padding (mobile)",
+
+      "unit": "px",
+
+      "default": 10
+
+    }  
+
+  ],
+
+  "blocks": [
+
+    {
+
+      "type": "bar",
+
+      "name": "Text",
+
+      "settings": [
+
+        {
+
+          "type": "textarea",
+
+          "id": "title",
+
+          "label": "Text",
+
+          "default": "UP TO 80% OFF ON THE ENTIRE STORE! hurry up!",
+
+          "info": "Use shortcode [countdown] to show Countdown, [button] to show button and <span class=\"hl\">text</span> for text highlight "
+
+        },
+
+        {
+
+          "type": "text",
+
+          "id": "date",
+
+          "label": "End date",
+
+          "info": "Format: yyyy-mm-dd hh:mm:ss",
+
+          "default": "06\\/20\\/2026"
+
+        },
+
+        {
+
+          "type": "text",
+
+          "id": "btn_txt",
+
+          "label": "Button label",
+
+          "default": "Shop Now"
+
+        },
+
+        {
+
+          "type": "url",
+
+          "id": "link",
+
+          "label": "Button link"
+
+        },
+
+        {
+
+          "type": "checkbox",
+
+          "id": "new_tab",
+
+          "label": "Open in new tab",
+
+          "default": false
+
+        },
+
+        {
+
+          "type": "checkbox",
+
+          "id": "hdbtn",
+
+          "label": "Hide button on mobile",
+
+          "default": true
+
+        }
+
+      ]
+
+    }
+
+  ],
+
+  "presets": [
+
+    {
+
+      "name": "Offer bar",
+
+      "category": "Text",
+
+      "blocks": [
+
+        {
+
+          "type": "bar"
+
+        },
+
+        {
+
+          "type": "bar"
+
+        }
+
+      ]
+
+    }
+
+  ]
+
+}
+
+{% endschema %}

@@ -1,0 +1,27 @@
+{%- liquid
+    assign block_st = block.settings
+-%}
+{%- assign share_url = product.selected_variant.url | default: product.url | prepend: request.origin -%}
+{%- render 'social-sharing', block_st:block_st, share_link:share_url, share_title: product.title, share_permalink: product.url, share_image: product -%}
+{% schema %}
+{
+  "name": "Share link",
+  "tag": null,
+  "settings": [
+    {
+        "type": "paragraph",
+        "content": "Change link text from theme default content."
+    },
+    {
+        "type": "paragraph",
+        "content": "Manage social media platforms under [theme settings -> Social media](/editor?context=theme&category=Social media)"      
+    },
+  ],
+  "presets": [
+    {
+      "name": "Share link",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

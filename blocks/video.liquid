@@ -1,0 +1,389 @@
+{% liquid
+    assign block_st = block.settings
+    
+    capture classes
+        if block_st.direction == 'f-row-md' and block_st.wrap
+        echo 'f-wrap '
+        endif
+        echo 'wd-' | append: block_st.width | append: '-md '
+        echo 'wd-' | append: block_st.width | append: ' '
+        if block_st.isbg
+        echo 'bg-custom '
+        endif
+        if block_st.ispd
+        echo 'pd-custom '
+        endif
+    endcapture
+-%}
+{%- capture styles -%}
+    {%- if block_st.width == 'custom' -%}
+        --wd:{{ block_st.ct_width | default: '100%' }};
+    {%- endif -%}
+    {%- if block_st.widthm == 'custom' -%}
+        --wdm:{{ block_st.ct_widthm | default: '100%' }};
+    {%- endif -%}
+
+    {%- if block_st.isbg -%}
+      --gr_bg:transparent;
+      --gr_bd:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+    {% endif %}
+    {%- if block_st.ispd -%}
+      --gr_pd:{{ block_st.pd }}px;--gr_pdm:{{ block_st.pdm }}px;
+    {% endif %}
+{%- endcapture -%}
+
+<div class="video_bnr pr mb{{ block_st.mbm }} mb{{ block_st.mb }}-md of-hidden {{ block_st.rounded }} {{ classes }}" style="{{ styles }}" {{ block.shopify_attributes }}>
+      {%- capture video_data -%}
+        {%- liquid
+            if block_st.video_url.type == 'youtube'
+                assign video_src = 'https://www.youtube.com/embed/' | append: block_st.video_url.id | append: '?rel=0&showinfo=0'
+
+                if block_st.autoplay
+                    assign video_src = video_src | append: '&autoplay=1&mute=1'
+                endif
+
+                if block_st.loop
+                    assign video_src = video_src | append: '&playlist=' | append: block_st.video_url.id | append: '&loop=1'
+                endif
+                if block_st.controls == false
+                    assign video_src = video_src | append: '&controls=0&enablejsapi=1'
+                endif
+                assign class = 'js-youtube'
+           else
+                assign video_src = 'https://player.vimeo.com/video/' | append: block_st.video_url.id | append: '?'
+
+                if block_st.autoplay
+                    assign video_src = video_src | append: '&autoplay=1&muted=1'
+                endif
+                if block_st.loop
+                    assign video_src = video_src | append: '&loop=1'
+                endif
+                if block_st.controls == false
+                    assign video_src = video_src | append: '&controls=0&api=1'
+                endif
+                assign class = 'js-vimeo'
+            endif
+  
+            assign poster = block_st.poster | default: block_st.video.preview_image
+            assign poster_size = poster | image_url: width: poster.width
+            assign psratio = '56.25'
+            if poster
+               assign psratio = 1 | divided_by: poster.aspect_ratio | times: 100
+            endif
+        -%}
+        <div class="video-wrap {{ block_st.rounded }}" style="--ratio:{{ psratio }}%;">
+          {% # theme-check-disable RemoteAsset,DeprecateBgsizes %}
+          {% if block_st.source == 'url' and block_st.video_url == blank %}
+            <iframe class="db" src="//www.youtube.com/embed/_9VUPq3SxOc?rel=0&showinfo=0&vq=720" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+          {% elsif block_st.source == 'url' and block_st.video_url != blank %}
+            <iframe class="db lazyload {{ class }}" src="{{ video_src }}" width="850" height="480" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen title="{{ block_st.alt | escape }}"></iframe>
+          {% elsif block_st.video != blank %}
+              {{ block_st.video | video_tag: image_size:poster_size, loop:block_st.loop, autoplay:block_st.autoplay, muted:block_st.autoplay, controls:block_st.controls, poster:poster_size, class:'w-100 db' }}
+          {% else %}
+                <div class="ph_bg">{% capture current %}{% cycle 1, 2 %}{% endcapture -%}{{- 'hero-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg w-100' }}</div>
+          {% endif %}
+          {% # theme-check-enable DeprecateBgsizes,DeprecateBgsizes %}
+        </div>
+      {%- endcapture -%}
+
+      {%- if block_st.video_style == "pp" -%}
+        <a href="{{ block_st.video_url }}?controls=0&autoplay=1&rel=0&showinfo=0" class="video_pop popup-link" data-popup="vd{{ block.id }}" aria-haspopup="dialog">
+           <div class="video-wrap pr {{ block_st.rounded }}" style="--ratio:{{ 1 | divided_by: poster.aspect_ratio | times: 100 }}%;--icns:50px;color:#fff">
+              {%- if poster -%}
+                  {{ poster | image_url: width: poster.width | image_tag: class:'img-fit ctimg', loading:'lazy', widths:"200,400,600,800,1000,1200,1400,1600,2000" }}
+                  <svg class="at-icon pa left-50 top-50 translate-50 play-btn" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M256,0C114.617,0,0,114.615,0,256s114.617,256,256,256s256-114.615,256-256S397.383,0,256,0z M344.48,269.57l-128,80 c-2.59,1.617-5.535,2.43-8.48,2.43c-2.668,0-5.34-0.664-7.758-2.008C195.156,347.172,192,341.82,192,336V176 c0-5.82,3.156-11.172,8.242-13.992c5.086-2.836,11.305-2.664,16.238,0.422l128,80c4.676,2.93,7.52,8.055,7.52,13.57 S349.156,266.641,344.48,269.57z"/></svg>
+              {%- else -%}
+                  <p class="db pd30">Please upload video poster image.</p>
+              {%- endif -%}
+           </div>
+          </a>
+        <div id="vd{{ block.id }}" class="tinglebox pp-hide vd">{{ video_data | replace: "video-wrap","video-wrap1" }}</div>
+      {%- endif -%}
+
+     {%- if block_st.video_style == "df" -%}{{ video_data }}{%- endif -%}
+</div>
+{% schema %}
+{
+    "name": "Video",
+    "tag": null,
+    "settings": [
+       {
+              "type": "select",
+              "id": "video_style",
+              "label": "Style",
+              "default": "df",
+              "options": [                  
+                  {
+                      "value": "df",
+                      "label": "Default"
+                  },
+                  {
+                      "value": "pp",
+                      "label": "Popup"
+                  }
+              ]
+          },
+        {
+          "type": "select",
+          "id": "source",
+          "label": "Source",
+          "default": "uploaded",
+          "options": [
+            {
+              "value": "uploaded",
+              "label": "Uploaded"
+            },
+            {
+              "value": "url",
+              "label": "External URL"
+            }
+          ]
+        },
+          {
+              "type": "video_url",
+              "id": "video_url",
+              "label": "YouTube/Vimeo",
+              "accept": ["youtube", "vimeo"],
+              "visible_if": "{{ block.settings.source == 'url' }}"
+          },		        		
+          {
+              "type": "video",
+              "id": "video",
+              "label": "MP4 video",
+              "visible_if": "{{ block.settings.source == 'uploaded' }}"
+          },                  
+           {
+              "type": "image_picker",
+              "id": "poster",
+              "label": "Poster image",
+              "visible_if": "{{ block.settings.video_style == 'pp'  }}"                 
+          },
+          {
+              "type":"checkbox",
+              "id":"autoplay",
+              "label":"Enable autoplay",
+              "default": false,
+              "info":"Videos will be muted by default when autoplay is enabled.",
+              "visible_if": "{{ block.settings.video_style == 'df'  }}"              
+          },
+          {
+              "type":"checkbox",
+              "id":"loop",
+              "label":"Enable loop",
+              "default": false,
+              "info":"Loop the video when it ends"
+          },
+          {
+              "type":"checkbox",
+              "id":"controls",
+              "label":"Enable controls",
+              "default": false,
+              "info":"Show video controls like play, pause, volume, etc."
+          },
+    {
+      "type": "text",
+      "id": "alt",
+      "label": "Alt text",
+      "info": "Describe the video for accessibility",
+      "visible_if": "{{ block.settings.source == 'url' }}"
+    },
+       {
+              "type": "checkbox",
+              "id": "hidem",
+              "label": "Hide on mobile",
+              "default": false			
+          },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "fill",
+      "options": [
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "ct_width",
+      "label": "Custom width",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "widthm",
+      "label": "Width (mobile)",
+      "default": "fill",
+      "options": [
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "ct_widthm",
+      "label": "Custom width (mobile)",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.widthm == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add border",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "bdr",
+      "label": "Border",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "brd_sz",
+      "label": "Border thickness",
+      "default": 1,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "alpha": true,
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "checkbox",
+      "id": "ispd",
+      "label": "Add padding",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "pd",
+      "label": "Padding",
+      "default": 5,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pdm",
+      "label": "Padding (mobile)",
+      "default": 5,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+          {
+              "type": "range",
+              "id": "mb",
+              "label": "Bottom margin",
+              "default":0,
+              "min":0,
+              "max": 50,
+              "step":5,
+              "unit": "px"
+          },
+          {
+              "type": "range",
+              "id": "mbm",
+              "label": "Bottom margin (mobile)",
+              "default":0,
+              "min":0,
+              "max":50,
+              "step":5,
+              "unit": "px"
+          }
+    ],
+    "presets": [
+        {
+            "name": "Video",
+            "category": "Basic",
+        }
+    ]
+}
+{% endschema %}

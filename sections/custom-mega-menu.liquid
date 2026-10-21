@@ -1,0 +1,119 @@
+{{ 'custom-mega-menu.css' | asset_url | stylesheet_tag }}
+{{ 'custom-mega-menu.js' | asset_url | script_tag }}
+
+<header class="custom-header">
+
+  <div class="header-container">
+
+    <!-- Logo -->
+    <div class="header-logo">
+      <a href="/">
+        {{ shop.name }}
+      </a>
+    </div>
+
+    <!-- Main Menu -->
+    <nav class="main-nav">
+
+      <ul>
+
+        <li class="mega-parent">
+
+          <a href="#">SHOP</a>
+
+          <div class="mega-menu">
+
+            <div class="mega-column">
+
+              <h4>MEN</h4>
+
+              <a href="#">Boots</a>
+              <a href="#">Sneakers</a>
+              <a href="#">Loafers</a>
+              <a href="#">Sandals</a>
+
+            </div>
+
+            <div class="mega-column">
+
+              <h4>WOMEN</h4>
+
+              <a href="#">Boots</a>
+              <a href="#">Heels</a>
+              <a href="#">Sneakers</a>
+              <a href="#">Sandals</a>
+
+            </div>
+
+            <div class="mega-column">
+
+              <h4>BOYS</h4>
+
+              <a href="#">School Shoes</a>
+              <a href="#">Sneakers</a>
+              <a href="#">Boots</a>
+              <a href="#">Sandals</a>
+
+            </div>
+
+            <div class="mega-column">
+
+              <h4>GIRLS</h4>
+
+              <a href="#">School Shoes</a>
+              <a href="#">Sneakers</a>
+              <a href="#">Boots</a>
+              <a href="#">Sandals</a>
+
+            </div>
+
+            <!-- Banner -->
+
+            <div class="mega-banner">
+
+              <img
+                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900"
+                alt="">
+
+              <div class="banner-content">
+
+                <span>NEW ARRIVAL</span>
+
+                <h3>AUTUMN COLLECTION</h3>
+
+                <a href="#">
+                  SHOP NOW →
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </li>
+
+        <li><a href="#">NEW ARRIVALS</a></li>
+        <li><a href="#">BEST SELLERS</a></li>
+        <li><a href="#">LOOKBOOK</a></li>
+        <li><a href="#">SALE</a></li>
+
+      </ul>
+
+    </nav>
+
+  </div>
+
+</header>
+
+{% schema %}
+{
+  "name": "Custom Mega Menu",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Custom Mega Menu"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,157 @@
+{%- liquid
+   assign block_st = block.settings
+   assign block_index = section.blocks | find_index: 'id', block.id
+%}
+<div class="swiper-slide sslide2 fl f-wrap w-100 of-hidden" data-slide="{{ block_index }}" id="{{ block.id }}" {{ block.shopify_attributes }}>
+    {%- liquid
+        if block_st.txtpos == '0'
+            assign img_col_1 = 'order1'
+            assign img_col_2 = 'order2'
+        elsif block_st.txtpos == '1'
+            assign img_col_1 = 'order0'
+            assign img_col_2 = 'order2'
+        endif
+        if section.index < 2
+            assign lazy_img = 'eager'
+            assign fetch_priority = 'high'
+        endif
+    -%}
+    <div class="wd50 wd30-md of-hidden {{ img_col_1 }}">
+        {%- if block_st.ilink != blank -%}<a href="{{ block_st.ilink }}">{%- endif -%}
+            {%- if block_st.image != blank -%}
+                {{ block_st.image | image_url: width: block_st.image.width | image_tag: loading: lazy_img, fetchpriority: fetch_priority, class:"img-auto", siezs:"100vw", widths:"200,400,600,800,1000,1200,1400,1600" }}
+            {%- else -%}
+                {% capture current %}{% cycle 1, 2 %}{% endcapture %}{{ 'hero-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+        {%- if block_st.ilink != blank -%}</a>{%- endif -%}
+    </div>
+    <div class="wd50 wd30-md of-hidden {{ img_col_2 }}">
+        {%- if block_st.ilink2 != blank -%}<a href="{{ block_st.ilink2 }}">{%- endif -%}
+            {%- if block_st.image2 != blank -%}
+                {{ block_st.image2 | image_url: width: block_st.image2.width | image_tag: loading: lazy_img, fetchpriority: fetch_priority, class:"img-auto", siezs:"100vw", widths:"200,400,600,800,1000,1200,1400,1600" }}
+            {%- else -%}
+                {% capture current %}{% cycle 1, 2 %}{% endcapture %}{{ 'hero-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+        {%- if block_st.ilink2 != blank -%}</a>{%- endif -%}
+    </div>
+    <div class="slide-content wd100 wd40-md fl f-col f-aic f-jcc t-{{ block_st.align }} order3 order{{ block_st.txtpos }}-md" style="--bg:{% if block_st.tbgg != blank %}{{ block_st.tbgg }}{% else %}{{ block_st.tbg }}{% endif %};--pd:50px;--pdm:25px;">
+        <div class="slide-split group-bk fl f-col gap t-{{ block_st.align }}{% if block_st.align == 'left' %} f-ais {% elsif block_st.align == 'center' %} f-aic {% else %} f-aie{% endif %}" style="{% render 'group-settings', section_st:block_st, styles:true %}--bg:transparent;">
+            {%- content_for 'blocks' -%}
+        </div>
+    </div>
+</div>
+{% schema %}
+  {
+    "name": "Slide",
+    "tag": null,
+    "blocks": [
+        {
+          "type": "@theme"
+        },
+    ],
+    "settings": [
+        {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image 1",
+            "info": "Recommended Image size 700x900 px"
+        },
+        {
+            "type": "url",
+            "id": "ilink",
+            "label": "Image 1 link"
+        },
+        {
+            "type": "image_picker",
+            "id": "image2",
+            "label": "Image 2",
+            "info": "Recommended Image size 700x900 px"
+        },
+        {
+            "type": "url",
+            "id": "ilink2",
+            "label": "Image 2 link"
+        },
+        {
+            "type": "header",        
+            "content": "Content"
+        },  
+        {
+            "type": "select",
+            "id": "txtpos",
+            "label": "Position",
+            "default": "1",
+            "options": [ 			
+                { "label": "Left", "value": "0" },
+                { "label": "Center", "value": "1" },
+                { "label": "Right", "value": "2" }
+            ]
+        },           
+        {
+            "type": "text_alignment",
+            "id": "align",
+            "label": "Alignment",
+            "default": "center"
+        },
+        {
+            "type": "color",
+            "id": "tbg",
+            "label": "Background",
+            "default": "#eee"
+        },
+        {
+            "type": "color_background",
+            "id": "tbgg",
+            "label": "Background gradient"
+        }, 
+         {
+            "type": "range",
+            "id": "gap",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "label": "Gap",
+            "default": 20
+        },
+        {
+            "type": "range",
+            "id": "gapm",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "label": "Gap (mobile)",
+            "default": 10
+        }        
+    ],
+	 "presets": [
+      {
+        "name": "Slide",
+          "blocks": {
+            "heading": {
+              "type": "heading",
+              "settings": {
+                "text": "BEST SELLING <br>SHOPIFY THEME"
+              }
+            },
+            "text": {
+              "type": "text",
+              "settings": {
+                "text": "<p>We at Adornthemes make beautiful conversion-focused,<br> high-quality Shopify themes.</p>"
+              }
+            },
+            "button": {
+              "type": "button",
+              "settings": {
+                "text": "Shop now",
+                "url": "shopify://collections/all"
+              }
+            }
+          },
+          "block_order": ["heading", "text", "button"]
+      }
+    ]
+  }
+{% endschema %}
+

@@ -1,0 +1,316 @@
+{%- assign section_st = section.settings -%}
+
+{%- capture styles -%}
+  {%- if section_st.addbg and section.settings.headings_cl != 'rgba(0,0,0,0)' and section.settings.headings_cl != blank -%}
+      --cl:{{ section_st.headings_cl }};--headings_cl:{{ section.settings.headings_cl }};
+  {%- endif -%}
+{%- endcapture -%}
+
+<div class="contact-page section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}{{ styles }}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+  <div class="page-width" style="--page-width:{{ section_st.page_width }}px;">                 
+      {%- render 'sec-title' -%}
+      
+       {% liquid
+          assign grid_class = 'f-jcc'
+          assign form_class = 'w-100'
+          if section_st.dt
+            assign grid_class = 'f-row-md'
+            assign form_class = 'w-100 fl1'
+            if section_st.form_align == 'right'
+              assign form_class = 'w-100 fl1 order2-md'
+            endif
+          endif %}
+         
+         <div class="fl gap f-col {{ grid_class }}" style="--gap:35px;--gapm:20px">  
+          <div class="contact-form form-vertical {{form_class}} {% render 'animate-data', css:true %}">
+            
+            {%  if section_st.form_title != blank or section_st.form_text != blank %} 
+              <div class="mb20 mb30-md">
+                {%  if section_st.form_title != blank %}<div class="section-header__title">{{ section_st.form_title }}</div>{% endif %}
+                {%- if section_st.form_text != blank -%}<div class="mb0">{{ section_st.form_text }}</div>{%- endif -%}
+              </div>
+            {% endif %}
+
+            {%- form 'contact' -%}
+              {%- if form.posted_successfully? -%}<p class="border form-success">{{ 'contact.form.post_success' | t }}</p>{%- endif -%}
+              {{ form.errors | default_errors }}
+              {%- # theme-check-disable UndefinedObject -%}
+              <div class="fl f-col f-row-md col-gap" style="--gap:15px;">
+                <div class="fl1 f-col f-row-md">
+                  <input type="text" id="ContactFormName" name="contact[name]" placeholder="{{ 'contact.form.name' | t }}" value="{% if form[name] %}{{ form[name] }}{% elsif customer %}{{ customer.name }}{% endif %}">
+                </div>
+                <div class="fl1">
+                  <input type="email" id="ContactFormEmail" name="contact[email]" placeholder="{{ 'contact.form.email' | t }}" autocorrect="off" autocapitalize="off" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" class="{% if form.errors contains 'email' %}input--error{% endif %}">
+                </div>
+              </div>
+              {%- unless section_st.show_phone -%}
+                <input type="tel" id="ContactFormPhone" name="contact[phone]" pattern="[0-9\-]*" placeholder="{{ 'contact.form.phone' | t }}" value="{% if form[phone] %}{{ form[phone] }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+              {%- endunless -%}
+              {%- unless section_st.show_subject -%}
+                <input type="text" id="ContactFormSubject" name="contact[email subject]" placeholder="{{ 'contact.form.subject' | t }}" value="{% if form[subject] %}{{ form[subject] }}{% endif %}">
+              {%- endunless -%}
+              <textarea rows="10" id="ContactFormMessage" name="contact[body]" placeholder="{{ 'contact.form.message' | t }}">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+              <input type="submit" class="btn {{ section_st.btn-style }}" value="{{ 'contact.form.submit' | t }}">
+              {%- # theme-check-enable UndefinedObject -%}
+            {%- endform -%}    
+        </div>   
+    
+    {% if section.blocks.size > 0 %}        
+        <div class="group-bk hero_cap fl f-col wd-custom-md pd-custom{% if section_st.dt %} fl1{% endif %} {% render 'animate-data', css:true %}" style="--wd:{{ section_st.cwd }}px;">
+            {%- content_for 'blocks' -%}
+        </div>
+    {% endif %}
+   </div> 
+   
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "class": "contact-form",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "blocks": [
+        {
+          "type": "@theme"
+        },
+        {
+            "type": "@app"
+        },
+    ],
+  "settings": [   
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "NEED HELP"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"      
+    }, 
+     {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description"      
+    }, 
+     {
+      "type": "range",
+      "id": "page_width",
+      "label": "Container width",
+      "default": 700,
+      "min": 700,
+      "max": 1800,
+      "step": 100,
+      "unit": "px"
+    },   
+    {
+      "type": "header",
+      "content": "Form"
+    }, 
+    {
+      "type": "text",
+      "id": "form_title",
+      "label": "Heading",
+      "default": "Drop Us A Line"
+    }, 
+    {
+      "type": "richtext",
+      "id": "form_text",
+      "label": "Text",
+      "default": "<p>Have a question? We’re here to help</p> "
+    },    
+    {
+      "type": "checkbox",
+      "id": "show_phone",
+      "label": "Hide phone",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subject",
+      "label": "Hide subject",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+         {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+            "type":"header",
+            "content": "Details"
+        },  
+        {
+            "type":"paragraph",
+            "content": "Add blocks to show details."           
+        }, 
+       {
+            "type":"checkbox",
+            "id":"dt",
+            "label":"Show details on sides",
+            "default": false
+        },             
+        {
+            "type": "select",
+            "id": "form_align",
+            "label":"Form align",
+            "default": "left",
+            "options": [
+                { "value":"left","label":"Left"},
+                { "value":"right","label":"Right"}
+            ],
+            "visible_if": "{{ section.settings.dt }}"
+        },          
+        {
+            "type": "range",
+            "id": "cwd",
+            "min": 300,
+            "max": 1000,
+            "step": 20,
+            "label": "Content width",
+            "unit": "px",
+            "default": 440,
+            "visible_if": "{{ section.settings.dt }}"
+        },
+    {
+      "type": "header",
+      "content": "Layout"
+    },   
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ], 
+  "presets": [
+    {
+      "name": "Contact form",
+      "category": "Contact"
+    }
+  ]
+}
+{% endschema %}

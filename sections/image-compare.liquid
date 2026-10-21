@@ -1,0 +1,523 @@
+{%- liquid
+    assign is_rtl = false
+    assign list_rtl = 'ar,dv,ha,he,ku,fa,ur,ug' | split: ','
+    if list_rtl contains request.locale.iso_code or settings.rtl
+        assign is_rtl = true
+    endif
+
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+-%}
+{%- capture before_after -%}
+<link rel="stylesheet" href="{{ 'image-comparison.css' | asset_url }}" type="text/css" media="all">
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" data-section-id="{{ section.id }}">   	
+        {%- render 'sec-title' -%}
+        {% liquid
+          assign ba_class = 'f-jcc'
+          assign img_class = 'w-100'
+          if section_st.dt
+            assign ba_class = 'f-row-md'
+            assign img_class = 'w-100 fl1'
+            if section_st.img_align == 'right'
+              assign img_class = 'w-100 fl1 order2-md'
+            endif
+          endif
+
+          assign padding = 1 | divided_by: section_st.imagea.aspect_ratio | times: 100
+          assign paddingm = padding
+          if section_st.imageam != blank
+              assign paddingm = 1 | divided_by: section_st.imageam.aspect_ratio | times: 100
+          endif
+        %}
+
+        <div class="fl gap f-aic f-col {{ ba_class }}" style="--gap:35px;--gapm:20px">
+            <before-after class="db image-comparison pr of-hidden {{ img_class }} {{ section_st.rounded }} {% render 'animate-data', css:true %}" id="ba-{{ section.id }}" data-component="image-comparison-slider" style="--cl:{{section_st.cl}};--lbg:{{ section_st.lbg}};--fs:{{section_st.fs}}px;--fsm:{{section_st.fsm}}px;--fw:{{section_st.fw}};--pd:{{ padding | default: 50 }}%;--pdm:{{ paddingm | default: 66.666666667 }}%;--img-pos:{% if is_rtl %}100%{% else %}0 50%{% endif %};">
+                <label for="image-comparison-range" class="v-hidden">Move image comparison slider</label>
+                <input type="range" min="0" max="100" value="50" class="rangeSlider pa w-100 h-100 m0 pd0" id="rs-{{ section.id }}" data-image-comparison-range="">
+    
+                <figure class="comparison-image__wrapper pa top-0 left-0 before m0 h-100 of-hidden" data-image-comparison-overlay="">
+                    {%- liquid
+                        assign banner_img = section_st.image
+                        assign banner_imgm = section_st.imagem
+                        assign banner_imgm_srcset = banner_imgm | image_url: width: banner_imgm.width | image_tag: widths: '180,360,480,760' | split: 'srcset="' | last | split: '"' | first
+                    -%}
+                    <picture class="comparison-image">
+                        {% if section_st.imagem != blank %}
+                            <source media="(max-width: 767px)" srcset="{{ banner_imgm_srcset }}" width="{{ banner_imgm.width }}" height="{{ banner_imgm.height }}">
+                        {% endif %}
+                        {% if banner_img != blank %}
+                            {{ banner_img | image_url: width:banner_img.width | image_tag: class:'img-fit ba-img zi1', sizes:page_width, widths:"400,600,800,1000,1200,1400,1600,2000,2400,3000" }}
+                        {% else %}
+                            {% # theme-check-disable RemoteAsset %}
+                            <img class="img-fit ba-img zi1" src="https://dummyimage.com/2000x1000/ddd/ffffff.png&text=Before" width="2000" height="1000" alt="Before">
+                            {% # theme-check-enable RemoteAsset %}
+                        {% endif %}
+                    </picture>
+                    {% if section_st.blbl != blank %}<figcaption class="image-caption reg-text pa before {{section_st.ff }}">{{ section_st.blbl }}</figcaption>{% endif %}
+                </figure>
+                <div class="comparison-slider pa h-100" data-image-comparison-slider="" style="--cl:{{ section_st.scl }};--bg:{{ section_st.sbg }};--sd:{{ section_st.sd }}5;">
+                    <span class="slider-thumb pa fl f-aic f-jcc" data-image-comparison-thumb="">
+                        <svg class="image-comparison__thumb-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="10" viewBox="0 0 18 10" fill="currentColor">
+                            <path class="image-comparison__thumb-icon--left" d="M12.121 4.703V.488c0-.302.384-.454.609-.24l4.42 4.214a.33.33 0 0 1 0 .481l-4.42 4.214c-.225.215-.609.063-.609-.24V4.703z"></path>
+                            <path class="image-comparison__thumb-icon--right" d="M5.879 4.703V.488c0-.302-.384-.454-.609-.24L.85 4.462a.33.33 0 0 0 0 .481l4.42 4.214c.225.215.609.063.609-.24V4.703z"></path>
+                        </svg>
+                    </span>
+                </div>
+                {%- liquid
+                    assign banner_imga = section_st.imagea
+                    assign banner_imgam = section_st.imageam
+                    assign banner_imgam_srcset = banner_imgam | image_url: width: banner_imgam.width | image_tag: widths: '180,360,480,760' | split: 'srcset="' | last | split: '"' | first
+                -%}
+                <figure class="comparison-image__wrapper top-0 left-0 after m0">
+                    <picture class="comparison-image">
+                        {% if banner_imgam != blank %}
+                            <source media="(max-width: 767px)" srcset="{{ banner_imgam_srcset }}" width="{{ banner_imgam.width }}" height="{{ banner_imgam.height }}">
+                        {% endif %}
+                        {% if banner_imga != blank %}
+                            {{ banner_imga | image_url: width:banner_imga.width | image_tag: class:'img-fit ba-img', sizes:page_width, widths:"400,600,800,1000,1200,1400,1600,2000,2400,3000" }}
+                        {% else %}
+                            {% # theme-check-disable RemoteAsset %}
+                            <img class="img-fit ba-img" src="https://dummyimage.com/2000x1000/f4f4f4/cccccc.png&text=After" width="2000" height="1000" alt="Before">
+                            {% # theme-check-enable RemoteAsset %}
+                        {% endif %}
+                    </picture>
+                    {% if section_st.albl != blank %}<figcaption class="image-caption reg-text pa after {{section_st.ff }}">{{ section_st.albl }}</figcaption>{% endif %}
+                </figure>
+            </before-after>
+            
+            {% if section.blocks.size > 0 %}
+                {% liquid
+                  assign align = 'f-aic'
+                  if section_st.dt_align == 'left'
+                    assign align = 'f-ais'
+                  elsif section_st.dt_align == 'right'
+                    assign align = 'f-aie'
+                  endif
+                %}
+                <div class="group-bk hero_cap fl f-col wd-custom-md pd-custom t-{{ section_st.dt_align }} {{ align }}{% if section_st.dt %} fl1{% endif %} {% render 'animate-data', css:true %}" style="--wd:{{ section_st.cwd }}px;--gr_pd:0 30px;--gr_pdm:0;">
+                    {%- content_for 'blocks' -%}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{%- endcapture -%}
+{{- before_after | strip_newlines | remove: "  " | remove: "	" -}}
+<script>
+if(!customElements.get('before-after')){
+    customElements.define('before-after', class BeforeAfter extends HTMLElement {
+        constructor(){
+            super();
+            const imageComparisonSlider = this
+            this.init(imageComparisonSlider);
+        }
+   
+        setSliderstate(e, element) {
+          const sliderRange = document.querySelector('[data-image-comparison-range]');
+          if (e.type === 'input') {
+            sliderRange.classList.add('comparison-active');
+            return;
+          }
+          sliderRange.classList.remove('comparison-active');
+          element.removeEventListener('mousemove', this.moveSliderThumb);
+        }
+
+        moveSliderThumb(e) {
+          const sliderRange = document.querySelector('[data-image-comparison-range]');
+          const thumb = document.querySelector('[data-image-comparison-thumb]');
+          let position = e.layerY - 20;
+
+          if (e.layerY <= sliderRange.offsetTop) {
+            position = -20;
+          }
+          if (e.layerY >= sliderRange.offsetHeight) {
+            position = sliderRange.offsetHeight - 20;
+          }
+          thumb.style.top = `${position}px`;
+        }
+
+        moveSliderRange(e, element) {
+          const value = e.target.value;
+          const slider = element.querySelector('[data-image-comparison-slider]');
+          const imageWrapperOverlay = element.querySelector('[data-image-comparison-overlay]');
+
+          slider.style.insetInlineStart = `${value}%`;
+          imageWrapperOverlay.style.width = `${value}%`;
+
+          element.addEventListener('mousemove', this.moveSliderThumb);
+          this.setSliderstate(e, element);
+        }
+
+        init(element){
+          const sliderRange = element.querySelector('[data-image-comparison-range]');
+          if ('ontouchstart' in window === false) {
+            sliderRange.addEventListener('mouseup', e => this.setSliderstate(e, element));
+            sliderRange.addEventListener('mousedown', this.moveSliderThumb);
+          }
+
+          sliderRange.addEventListener('input', e => this.moveSliderRange(e, element));
+          sliderRange.addEventListener('change', e => this.moveSliderRange(e, element));
+        }
+    });
+}
+</script>
+{% schema %}
+  {
+    "name": "Image comparison",
+    "class": "before-after",
+    "disabled_on": {
+    "groups": ["header","footer","custom.overlay"]
+    },
+    "blocks": [
+        {
+          "type": "@theme"
+        },
+        {
+            "type": "@app"
+        },
+    ],
+    "settings": [
+        {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+    {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Image before and after"		
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>A visual comparison that highlights the transformation</p>"
+    },   
+    {
+		"type":"header",
+		"content": "Before"
+	},  
+     {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image",
+        "info": "Use same size images for before & after"
+      },
+	  {
+        "type": "image_picker",
+        "id": "imagem",
+        "label": "Mobile Image"
+      },
+      {
+        "type": "text",
+        "id": "blbl",
+        "label": "Text",
+        "default": "Before"
+      },
+	  {
+        "type": "header",
+        "content": "After"
+      },  
+      {
+        "type": "image_picker",
+        "id": "imagea",
+        "label": "Image",
+        "info": "Use same size images for before & after"
+      },
+	  {
+        "type": "image_picker",
+        "id": "imageam",
+        "label": "Mobile image"
+      },
+      {
+        "type": "text",
+        "id": "albl",
+        "label": "Text",
+        "default": "After"
+      }, 
+	  {
+        "type": "color",
+        "id": "cl",
+        "label": "Text color",
+        "default": "#fff"
+      }, 
+	  {
+        "type": "color",
+        "id": "lbg",
+        "label": "Background",
+        "default": "#000"
+      },
+      {
+            "type": "select",
+            "id": "ff",
+            "label": "Font",
+            "default": "ft2",
+            "options": [
+                {
+                    "value": "ft1",
+                    "label": "Body font"
+                },
+                {
+                    "value": "ft2",
+                    "label": "Heading font"
+                },
+                {
+                    "value": "ft3",
+                    "label": "Accent font"
+                }
+            ]
+        },
+      {
+            "type": "range",
+            "id": "fs",
+            "label": "Font size",
+            "default": 14,
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "unit": "px"
+        },
+        {
+            "type": "range",
+            "id": "fsm",
+            "label": "Font size (mobile)",
+            "default": 14,
+            "min": 10,
+            "max": 60,
+            "step": 1,
+            "unit": "px"
+        },        
+        {
+            "type": "select",
+            "id": "fw",
+            "label": "Font weight",
+            "default": "500",
+            "options": [
+                {
+                    "value": "300",
+                    "label": "Light"
+                },
+                {
+                    "value": "400",
+                    "label": "Regular"
+                },
+                {
+                    "value": "500",
+                    "label": "Medium"
+                },
+                {
+                    "value": "600",
+                    "label": "Semi bold"
+                },
+                {
+                    "value": "700",
+                    "label": "Bold"
+                }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "rounded",
+            "label": "Corner radius",
+            "default": "none",
+            "options": [
+                {
+                    "value": "none",
+                    "label": "None"
+                },
+                {
+                    "value": "round-xs",
+                    "label": "Extra small"
+                },
+                {
+                    "value": "round-sm",
+                    "label": "Small"
+                },
+                {
+                    "value": "round-md",
+                    "label": "Medium"
+                },
+                {
+                    "value": "round-lg",
+                    "label": "Large"
+                },
+                {
+                    "value": "round-full",
+                    "label": "Full"
+                }
+            ]
+        },
+        {
+            "type":"header",
+            "content": "Slider option"
+        }, 
+          {
+            "type": "color",
+            "id": "scl",
+            "label": "Arrow color",
+            "default": "#000"
+          }, 
+          {
+            "type": "color",
+            "id": "sbg",
+            "label": "Background color",
+            "default": "#fff"
+          },
+        {
+            "type":"header",
+            "content": "Details"
+        },  
+        {
+            "type":"paragraph",
+            "content": "Add blocks to this section for details."           
+        }, 
+       {
+            "type":"checkbox",
+            "id":"dt",
+            "label":"Show details on sides",
+            "default": false
+        },             
+        {
+            "type": "select",
+            "id": "img_align",
+            "label":"Image alignment",
+            "default": "left",
+            "options": [
+                { "value":"left","label":"Left"},
+                { "value":"right","label":"Right"}
+            ]
+        },  
+        {
+            "type": "text_alignment",
+            "id": "dt_align",
+            "label":"Text alignment",
+            "default": "center"
+        },
+        {
+            "type": "range",
+            "id": "cwd",
+            "min": 300,
+            "max": 1400,
+            "step": 20,
+            "label": "Content width (desktop)",
+            "unit": "px",
+            "default": 500
+        },
+		{
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"            
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },      
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+    ],
+    "presets": [
+      {
+        "name": "Image comparison",
+        "category": "Image"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,1373 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign current_variant = product.selected_or_first_available_variant
+    assign product_form_id = 'product-form-' | append: section.id
+    assign cart_qty = cart | item_count_for_variant: current_variant.id
+-%}
+
+{%- unless settings.catalog-mode -%}
+
+    <div class="mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" {{ block.shopify_attributes }}>
+
+        {%- liquid
+            assign gift_card_recipient_feature_active = false
+
+            if block.settings.gift_recipient and product.gift_card?
+                assign gift_card_recipient_feature_active = true
+            endif
+
+          
+            assign show_dynamic_checkout = true
+        -%}
+
+        <product-form
+            class="db product-form"
+            data-hide-errors="{{ gift_card_recipient_feature_active }}"
+            data-section-id="{{ section.id }}"
+        >
+
+            <div class="product-form__error-message-wrapper ermsg mb15" role="alert" hidden>
+                {{ 'icon-error.svg' | inline_asset_content }}
+                <span class="product-form__error-message"></span>
+            </div>
+
+            {%- if product != blank -%}
+
+                {%- form 'product',
+                    product,
+                    id: product_form_id,
+                    class: 'form',
+                    novalidate: 'validate',
+                    data-product-id: product.id,
+                    data-type: 'add-to-cart-form'
+                -%}
+
+                    {%- liquid
+                        assign check_against_inventory = true
+
+                        if current_variant.inventory_management != 'shopify' or current_variant.inventory_policy == 'continue'
+                            assign check_against_inventory = false
+                        endif
+
+                        if current_variant.quantity_rule.min > current_variant.inventory_quantity and check_against_inventory
+                            assign quantity_rule_soldout = true
+                        endif
+                    -%}
+
+                    <!-- Selected Variant -->
+                    <input
+                        type="hidden"
+                        name="id"
+                        value="{{ current_variant.id }}"
+                        {% if current_variant.available == false
+                            or quantity_rule_soldout
+                            or current_variant == null
+                        %}
+                            disabled
+                        {% endif %}
+                        class="product-variant-id"
+                    >
+
+                    {%- if gift_card_recipient_feature_active -%}
+                        {%- render 'gift-card-recipient-form',
+                            product: product,
+                            form: form,
+                            section: section
+                        -%}
+                    {%- endif -%}
+
+                    <!-- External Product -->
+                    {% if product.metafields.custom.external_link_text != blank
+                        and product.metafields.custom.external_link != blank
+                    %}
+
+                        <a
+                            href="{{ product.metafields.custom.external_link }}"
+                            class="exlink btn product-buttons {{ block.settings.ext-btn }}"
+                            target="_blank"
+                        >
+                            {{ product.metafields.custom.external_link_text }}
+                        </a>
+
+                    {% else %}
+
+                        <div class="product-form__buttons">
+
+                            <!-- QUANTITY + ADD TO CART -->
+                            <div class="fl gap mb10" style="--gap:10px;">
+
+                                {%- if block_st.qty_sel -%}
+
+                                    <quantity-input
+                                        class="qty-field quantity"
+                                        data-url="{{ product.url }}"
+                                        data-section="{{ section.id }}"
+                                    >
+
+                                        <label
+                                            class="hide"
+                                            for="Quantity-{{ section.id }}"
+                                        >
+                                            {{ 'products.product.quantity.label' | t }}
+
+                                            <span class="quantity__rules-cart no-js-hidden{% if cart_qty == 0 %} hidden{% endif %}">
+                                                <span class="loading__spinner hidden">
+                                                    <svg class="at-icon at-spin">
+                                                        <use xlink:href="#icon-loading"></use>
+                                                    </svg>
+                                                </span>
+
+                                                <span>
+                                                    (
+                                                    {{-
+                                                        'products.product.quantity.in_cart_html'
+                                                        | t: quantity: cart_qty
+                                                    -}}
+                                                    )
+                                                </span>
+                                            </span>
+                                        </label>
+
+                                        <!-- Minus -->
+                                        <button
+                                            type="button"
+                                            class="qty-btn linkQty minus"
+                                            name="minus"
+                                            aria-label="{{ 'products.product.quantity.decrease' | t: product: product.title }}"
+                                        >
+                                            <svg class="at-icon">
+                                                <use xlink:href="#icon-minus"></use>
+                                            </svg>
+                                        </button>
+
+                                        <!-- Quantity -->
+                                        <input
+                                            class="pr_input qty linkInput mianQty"
+                                            type="number"
+                                            name="quantity"
+                                            id="Quantity-{{ section.id }}"
+                                            data-cart-quantity="{{ cart_qty }}"
+                                            data-min="{{ current_variant.quantity_rule.min }}"
+                                            min="{{ current_variant.quantity_rule.min }}"
+                                            {% if current_variant.quantity_rule.max != null %}
+                                                data-max="{{ current_variant.quantity_rule.max }}"
+                                                max="{{ current_variant.quantity_rule.max }}"
+                                            {% endif %}
+                                            step="{{ current_variant.quantity_rule.increment }}"
+                                            value="{{ current_variant.quantity_rule.min }}"
+                                            form="{{ product_form_id }}"
+                                        >
+
+                                        <!-- Plus -->
+                                        <button
+                                            type="button"
+                                            class="qty-btn linkQty plus"
+                                            name="plus"
+                                            aria-label="{{ 'products.product.quantity.increase' | t: product: product.title }}"
+                                        >
+                                            <svg class="at-icon">
+                                                <use xlink:href="#icon-plus"></use>
+                                            </svg>
+                                        </button>
+
+                                    </quantity-input>
+
+                                {%- endif -%}
+
+
+                                <!-- ADD TO CART -->
+                                <button
+                                    id="ProductSubmitButton-{{ section.id }}"
+                                    type="submit"
+                                    name="add"
+                                    class="btn {{ block.settings.atc-style }} fl1 product-buttons product-form__submit{% if block_st.btn_zoom %} btnzoom{% endif %}"
+                                    {% if current_variant.available == false or quantity_rule_soldout %}
+                                        disabled
+                                    {% endif %}
+                                >
+
+                                    <span class="txt">
+
+                                        {%- if current_variant.available == false or quantity_rule_soldout -%}
+
+                                            {{ 'products.product.sold_out' | t }}
+
+                                        {%- elsif current_variant.available
+                                            and current_variant.inventory_quantity < 1
+                                            and current_variant.inventory_management == 'shopify'
+                                        -%}
+
+                                            {{ 'products.product.pre_order' | t }}
+
+                                        {%- else -%}
+
+                                            {{ 'products.product.add_to_cart' | t }}
+
+                                        {%- endif -%}
+
+                                    </span>
+
+                                    <div class="loading__spinner">
+                                        <svg class="at-icon at-spin">
+                                            <use xlink:href="#icon-loading"></use>
+                                        </svg>
+                                    </div>
+
+                                </button>
+
+                            </div>
+
+
+                            <!-- =========================
+                                 BUY NOW BUTTON
+                                 ========================= -->
+
+                            {%- if show_dynamic_checkout -%}
+
+                                {% comment %} {%- if settings.terms_checkbox -%}
+
+                                    <label
+                                        for="prTerms"
+                                        class="cart-term fl mt15 mb15 f-aic"
+                                    >
+
+                                        <input
+                                            type="checkbox"
+                                            name="tearm"
+                                            id="prTerms"
+                                            class="checkbox custCheck tearmCheck"
+                                            value="tearm"
+                                        />
+
+                                        <span class="checkbox"></span>
+
+                                        {{ settings.terms_text }}
+
+                                    </label>
+
+                                {%- endif -%} {% endcomment %}
+
+
+                                <button
+                                    type="button"
+                                    class="btn product-buttons buy-now-button"
+                                    data-buy-now
+                                    data-section="{{ section.id }}"
+                                    data-variants='{{ product.variants | json | escape }}'
+                                    {% if current_variant.available == false or quantity_rule_soldout %}
+                                        disabled
+                                    {% endif %}
+                                >
+
+                                    <span class="txt">
+                                        BUY NOW
+                                    </span>
+
+                                    <div class="loading__spinner">
+                                        <svg class="at-icon at-spin">
+                                            <use xlink:href="#icon-loading"></use>
+                                        </svg>
+                                    </div>
+
+                                </button>
+
+                            {%- endif -%}
+<!-- PAYMENT METHODS -->
+{%- if shop.enabled_payment_types != blank -%}
+    <div class="product-payment-icons">
+        {%- for type in shop.enabled_payment_types -%}
+
+            {%- if type == 'apple_pay' and block_st.payment_apple_pay -%}
+                <span class="product-payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+                </span>
+            {%- endif -%}
+
+            {%- if type == 'google_pay' and block_st.payment_google_pay -%}
+                <span class="product-payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+                </span>
+            {%- endif -%}
+
+            {%- if type == 'visa' and block_st.payment_visa -%}
+                <span class="product-payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+                </span>
+            {%- endif -%}
+
+            {%- if type == 'master' and block_st.payment_mastercard -%}
+                <span class="product-payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+                </span>
+            {%- endif -%}
+
+            {%- if type == 'american_express' and block_st.payment_amex -%}
+                <span class="product-payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+                </span>
+            {%- endif -%}
+
+            {%- if type == 'paypal' and block_st.payment_paypal -%}
+                <span class="product-payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+                </span>
+            {%- endif -%}
+
+            {%- if type == 'discover' and block_st.payment_discover -%}
+                <span class="product-payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+                </span>
+            {%- endif -%}
+
+            {%- if type == 'diners_club' and block_st.payment_diners -%}
+                <span class="product-payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+                </span>
+            {%- endif -%}
+
+        {%- endfor -%}
+    </div>
+{%- endif -%}
+                        </div>
+
+                    {% endif %}
+
+                {%- endform -%}
+
+            {%- else -%}
+
+                <div class="fl gap mb15" style="--gap:10px;">
+
+                    <button
+                        id="ProductSubmitButton-{{ section.id }}"
+                        type="submit"
+                        name="add"
+                        class="btn {{ block.settings.atc-style }} product-buttons product-form__submit"
+                        disabled
+                    >
+
+                        <span class="txt">
+                            {{ 'products.product.sold_out' | t }}
+                        </span>
+
+                        <div class="loading__spinner">
+                            <svg class="at-icon at-spin">
+                                <use xlink:href="#icon-loading"></use>
+                            </svg>
+                        </div>
+
+                    </button>
+
+                </div>
+
+            {%- endif -%}
+
+        </product-form>
+
+    </div>
+
+{%- else -%}
+
+    <!-- Catalog Mode -->
+
+    <button
+        type="button"
+        class="btn product-buttons btn-enquire fl f-aic f-jcc popup-link mb{{ block_st.bm }}"
+        data-popup="productinquiry"
+        aria-haspopup="dialog"
+    >
+
+        <svg
+            class="at-icon mr5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 512 512"
+        >
+            <path d="M256 340c-15.464 0-28 12.536-28 28s12.536 28 28 28 28-12.536 28-28-12.536-28-28-28zm7.67-24h-16c-6.627 0-12-5.373-12-12v-.381c0-70.343 77.44-63.619 77.44-107.408 0-20.016-17.761-40.211-57.44-40.211-29.144 0-44.265 9.649-59.211 28.692-3.908 4.98-11.054 5.995-16.248 2.376l-13.134-9.15c-5.625-3.919-6.86-11.771-2.645-17.177C185.658 133.514 210.842 116 255.67 116c52.32 0 97.44 29.751 97.44 80.211 0 67.414-77.44 63.849-77.44 107.408V304c0 6.627-5.373 12-12 12zM256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8z"/>
+        </svg>
+
+        {{ 'products.enquiry.link' | t }}
+
+    </button>
+
+{%- endunless -%}
+
+
+<!-- Back In Stock
+     Removed here intentionally.
+     The product page keeps the single NOTIFY ME button instead.
+-->
+
+<!-- =========================================================
+     BUY NOW JAVASCRIPT
+     ========================================================= -->
+
+<script>
+(function () {
+    function initBuyNow() {
+        var initializedButtons = [];
+
+        function getForm(button) {
+            var sectionId = button.getAttribute('data-section');
+            return document.getElementById('product-form-' + sectionId);
+        }
+
+        function getVariantInput(form) {
+            return form ? form.querySelector('input.product-variant-id') : null;
+        }
+
+        function getQuantity(form) {
+            var input = form ? form.querySelector('input[name="quantity"]') : null;
+            var quantity = input && input.value ? parseInt(input.value, 10) : 1;
+            return isNaN(quantity) || quantity < 1 ? 1 : quantity;
+        }
+
+        function updateButton(button) {
+            if (!button) return;
+
+            var form = getForm(button);
+            var variantInput = getVariantInput(form);
+
+            if (!form || !variantInput || !variantInput.value) {
+                button.disabled = true;
+                return;
+            }
+
+            /*
+             * Avone updates this hidden input whenever the selected
+             * variant changes. We deliberately use its VALUE only.
+             * Do not rely on whether the input itself is disabled.
+             */
+            var variantId = String(variantInput.value);
+
+            var variantsJson = button.getAttribute('data-variants') || '[]';
+            var variants = [];
+
+            try {
+                variants = JSON.parse(variantsJson);
+            } catch (e) {
+                console.error('Buy Now: Could not read variant data.', e);
+            }
+
+            var variant = variants.find(function (item) {
+                return String(item.id) === variantId;
+            });
+
+            if (!variant) {
+                button.disabled = true;
+                return;
+            }
+
+            var available = variant.available === true;
+            var quantity = getQuantity(form);
+
+            if (available && variant.inventory_management === 'shopify' && variant.inventory_policy !== 'continue') {
+                var inventory = parseInt(variant.inventory_quantity, 10);
+                if (!isNaN(inventory) && quantity > inventory) {
+                    available = false;
+                }
+            }
+
+            if (variant.quantity_rule && variant.quantity_rule.min) {
+                var min = parseInt(variant.quantity_rule.min, 10);
+                if (!isNaN(min) && quantity < min) {
+                    available = false;
+                }
+            }
+
+            button.disabled = !available;
+        }
+
+        function updateAllButtons() {
+            document.querySelectorAll('[data-buy-now]').forEach(function (button) {
+                updateButton(button);
+            });
+        }
+
+        /* Initial state */
+        updateAllButtons();
+
+        /*
+         * IMPORTANT:
+         * Browsers can restore the product page from the back-forward cache
+         * (bfcache) after checkout. In that case the button DOM can be restored
+         * exactly as it was during checkout navigation, including the
+         * .loading class and disabled state. Reset it when the page is shown
+         * again.
+         */
+        window.addEventListener('pageshow', function () {
+            document.querySelectorAll('[data-buy-now]').forEach(function (button) {
+                button.classList.remove('loading');
+            });
+
+            /*
+             * Give Shopify/Avone a moment to restore the selected variant,
+             * then calculate the correct Buy Now state.
+             */
+            updateAllButtons();
+            window.setTimeout(updateAllButtons, 100);
+            window.setTimeout(updateAllButtons, 300);
+        });
+
+        /*
+         * If the browser restores the page from bfcache, pageshow handles it.
+         * This also makes sure the spinner is never left visible when the
+         * document becomes active again.
+         */
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') {
+                document.querySelectorAll('[data-buy-now]').forEach(function (button) {
+                    button.classList.remove('loading');
+                });
+                updateAllButtons();
+            }
+        });
+
+        /*
+         * Variant pickers in Avone use normal input/select changes.
+         * A small delayed update lets Avone finish updating the hidden
+         * variant ID before we check the Buy Now button.
+         */
+        document.addEventListener('change', function (event) {
+            var target = event.target;
+
+            if (
+                target.matches('input[name^="options["]') ||
+                target.matches('select[name^="options["]') ||
+                target.matches('input.product-variant-id')
+            ) {
+                window.setTimeout(updateAllButtons, 50);
+                window.setTimeout(updateAllButtons, 250);
+            }
+        });
+
+        document.addEventListener('variant:change', function () {
+            window.setTimeout(updateAllButtons, 50);
+            window.setTimeout(updateAllButtons, 250);
+        });
+
+        /* Quantity changes can also affect whether Buy Now is possible. */
+        document.addEventListener('input', function (event) {
+            if (event.target.matches('input[name="quantity"]')) {
+                updateAllButtons();
+            }
+        });
+
+        /* Buy Now */
+        document.addEventListener('click', function (event) {
+            var button = event.target.closest('[data-buy-now]');
+            if (!button) return;
+
+            event.preventDefault();
+
+            var form = getForm(button);
+            var variantInput = getVariantInput(form);
+
+            if (!form || !variantInput || !variantInput.value) {
+                console.error('Buy Now: Selected variant ID is missing.');
+                updateButton(button);
+                return;
+            }
+
+            /* Always read the CURRENT variant at click time. */
+            var variantId = String(variantInput.value);
+            var variants = [];
+
+            try {
+                variants = JSON.parse(button.getAttribute('data-variants') || '[]');
+            } catch (e) {
+                console.error('Buy Now: Could not read variant data.', e);
+                return;
+            }
+
+            var variant = variants.find(function (item) {
+                return String(item.id) === variantId;
+            });
+
+            if (!variant || variant.available !== true) {
+                updateButton(button);
+                return;
+            }
+
+            var quantity = getQuantity(form);
+
+            if (variant.inventory_management === 'shopify' && variant.inventory_policy !== 'continue') {
+                var inventory = parseInt(variant.inventory_quantity, 10);
+                if (!isNaN(inventory) && quantity > inventory) {
+                    updateButton(button);
+                    return;
+                }
+            }
+
+            button.disabled = true;
+            button.classList.add('loading');
+
+            var formData = new FormData();
+            formData.append('id', variantId);
+            formData.append('quantity', String(quantity));
+
+            var sellingPlan = form.querySelector('input[name="selling_plan"]:checked, select[name="selling_plan"]');
+            if (sellingPlan && sellingPlan.value) {
+                formData.append('selling_plan', sellingPlan.value);
+            }
+
+            var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root)
+                ? window.Shopify.routes.root
+                : '/';
+
+            fetch(root + 'cart/add.js', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(function (response) {
+                return response.json().then(function (data) {
+                    if (!response.ok) {
+                        throw new Error(data && (data.description || data.message) || 'Unable to add product.');
+                    }
+                    return data;
+                });
+            })
+            .then(function () {
+                window.location.assign(root + 'checkout');
+            })
+            .catch(function (error) {
+                console.error('Buy Now Error:', error);
+                button.classList.remove('loading');
+                updateButton(button);
+            });
+        });
+    }
+
+    if (!window.buyNowInitialized) {
+        window.buyNowInitialized = true;
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initBuyNow);
+        } else {
+            initBuyNow();
+        }
+    }
+})();
+</script>
+
+
+<style>
+
+.product-form .buy-now-button {
+    display: flex !important;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 10px;
+    align-items: center;
+    justify-content: center;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    background: {{ block_st.btnbg | default: '#CA192C' }} !important;
+    color: {{ block_st.btntext | default: '#ffffff' }} !important;
+    border: 1px solid {{ block_st.btnbdr | default: '#CA192C' }} !important;
+
+    cursor: pointer;
+}
+
+.product-form .buy-now-button:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed;
+}
+
+.product-form .buy-now-button.loading {
+    pointer-events: none;
+}
+
+.product-form .buy-now-button.loading .txt {
+    display: none;
+}
+
+.product-form .buy-now-button .loading__spinner {
+    display: none;
+}
+
+.product-form .buy-now-button.loading .loading__spinner {
+    display: block;
+}
+
+
+/* =========================================
+   PRODUCT PAGE PAYMENT METHODS
+   ========================================= */
+
+.product-payment-icons {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 4px;
+}
+
+.product-payment-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+}
+
+.product-payment-icon .payment-icon {
+    width: auto;
+    height: 26px;
+    display: block;
+}
+
+
+/* =========================================================
+   PRODUCT BUTTON ROW - FINAL CLEAN LAYOUT
+   In stock: Quantity + Add to Cart
+   Buy Now stays full width underneath.
+   ========================================================= */
+
+.product-form .product-form__buttons > .fl.gap.mb10 {
+    display: grid !important;
+    grid-template-columns: 1fr 2fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+    align-items: stretch !important;
+    margin-bottom: 10px !important;
+}
+
+/* Quantity */
+.product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    display: flex !important;
+    align-items: stretch !important;
+    box-sizing: border-box !important;
+}
+
+/* Add to Cart / Sold Out */
+.product-form .product-form__buttons > .fl.gap.mb10 > .product-form__submit {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    margin: 0 !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+/* Quantity controls */
+.product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity .qty-btn,
+.product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity .qty-input,
+.product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity input {
+    height: 68px !important;
+    box-sizing: border-box !important;
+}
+
+/* Buy Now is always a separate full-width row */
+.product-form .buy-now-button {
+    display: flex !important;
+    width: 100% !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    margin-top: 10px !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Payment icons stay underneath and centered */
+.product-form .product-payment-icons {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+    clear: both !important;
+}
+
+/* Keep the first row stable on mobile */
+@media (max-width: 749px) {
+    .product-form .product-form__buttons > .fl.gap.mb10 {
+        grid-template-columns: 1fr 2fr !important;
+        gap: 8px !important;
+    }
+
+    .product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity,
+    .product-form .product-form__buttons > .fl.gap.mb10 > .product-form__submit {
+        height: 60px !important;
+        min-height: 60px !important;
+    }
+
+    .product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity .qty-btn,
+    .product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity .qty-input,
+    .product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity input {
+        height: 60px !important;
+    }
+
+    .product-form .buy-now-button {
+        height: 60px !important;
+        min-height: 60px !important;
+    }
+}
+</style>
+
+
+{% schema %}
+{
+    "name": "Quantity & Buy buttons",
+    "tag": null,
+
+    "settings": [
+
+        {
+            "type": "header",
+            "content": "Quantity"
+        },
+
+        {
+            "type": "checkbox",
+            "id": "qty_sel",
+            "label": "Show quantity selector",
+            "default": true
+        },
+
+        {
+            "type": "checkbox",
+            "id": "qlbl",
+            "label": "Hide quantity label",
+            "default": true,
+            "visible_if": "{{ block.settings.qty_sel }}"
+        },
+
+        {
+            "type": "header",
+            "content": "Gift cards recipient"
+        },
+
+        {
+            "type": "checkbox",
+            "id": "gift_recipient",
+            "label": "Show form",
+            "default": false,
+            "info": "Allows buyers to send gift cards on a scheduled date along with a personal message. [Learn more](https://help.shopify.com/manual/online-store/themes/customizing-themes/add-gift-card-recipient-fields)"
+        },
+
+        {
+            "type": "header",
+            "content": "Buttons style"
+        },
+
+        {
+            "type": "select",
+            "id": "atc-style",
+            "label": "Add to cart",
+            "default": "btn1",
+            "options": [
+                {
+                    "label": "Button 1",
+                    "value": "btn1"
+                },
+                {
+                    "label": "Button 2",
+                    "value": "btn2"
+                },
+                {
+                    "label": "Button 3",
+                    "value": "btn3"
+                },
+                {
+                    "label": "Outline Button 1",
+                    "value": "btn4"
+                },
+                {
+                    "label": "Outline Button 2",
+                    "value": "btn5"
+                },
+                {
+                    "label": "Link",
+                    "value": "btn-link"
+                }
+            ]
+        },
+
+        {
+            "type": "checkbox",
+            "id": "btn_zoom",
+            "label": "Zoom animation (add to cart)",
+            "default": true
+        },
+
+        {
+            "type": "select",
+            "id": "ext-btn",
+            "label": "External button",
+            "default": "btn4",
+            "info": "[how to add external product link?](https://www.adornthemes.com/knowledge-base/how-to-add-external-product-link/)",
+            "options": [
+                {
+                    "label": "Button 1",
+                    "value": "btn1"
+                },
+                {
+                    "label": "Button 2",
+                    "value": "btn2"
+                },
+                {
+                    "label": "Button 3",
+                    "value": "btn3"
+                },
+                {
+                    "label": "Outline Button 1",
+                    "value": "btn4"
+                },
+                {
+                    "label": "Outline Button 2",
+                    "value": "btn5"
+                },
+                {
+                    "label": "Link",
+                    "value": "btn-link"
+                }
+            ]
+        },
+
+        {
+            "type": "paragraph",
+            "content": "----------------------------------------------"
+        },
+
+        {
+            "type": "checkbox",
+            "id": "dynamic_btn",
+            "label": "Show Buy Now button",
+            "info": "Show a Buy Now button that takes the customer directly to checkout.",
+            "default": true
+        },
+
+        {
+            "type": "color",
+            "id": "btnbg",
+            "label": "Button background",
+            "default": "#CA192C",
+            "visible_if": "{{ block.settings.dynamic_btn }}"
+        },
+
+        {
+            "type": "color",
+            "id": "btntext",
+            "label": "Button label",
+            "default": "#fff",
+            "visible_if": "{{ block.settings.dynamic_btn }}"
+        },
+
+        {
+            "type": "color",
+            "id": "btnbdr",
+            "label": "Button border",
+            "default": "#CA192C",
+            "visible_if": "{{ block.settings.dynamic_btn }}"
+        },
+
+        {
+            "type": "header",
+            "content": "Back in stock notify"
+        },
+
+        {
+            "type": "checkbox",
+            "id": "bis",
+            "default": false,
+            "label": "Show"
+        },
+
+        {
+            "type": "color",
+            "id": "bis_cl",
+            "label": "Text color",
+            "default": "#444444",
+            "visible_if": "{{ block.settings.bis }}"
+        },
+
+        {
+            "type": "color",
+            "id": "bg",
+            "label": "Background",
+            "default": "#fafafa",
+            "visible_if": "{{ block.settings.bis }}"
+        },
+
+        {
+            "type": "color",
+            "id": "bd",
+            "label": "Border color",
+            "default": "#eee",
+            "visible_if": "{{ block.settings.bis }}"
+        },
+
+        {
+            "type": "select",
+            "id": "rounded",
+            "label": "Corner radius",
+            "default": "none",
+            "options": [
+                {
+                    "value": "none",
+                    "label": "None"
+                },
+                {
+                    "value": "round-xs",
+                    "label": "Extra small"
+                },
+                {
+                    "value": "round-sm",
+                    "label": "Small"
+                },
+                {
+                    "value": "round-md",
+                    "label": "Medium"
+                },
+                {
+                    "value": "round-lg",
+                    "label": "Large"
+                },
+                {
+                    "value": "round-full",
+                    "label": "Full"
+                }
+            ],
+            "visible_if": "{{ block.settings.bis }}"
+        },
+
+        {
+            "type": "paragraph",
+            "content": "-----------------------------------------------"
+        },
+
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Bottom margin",
+            "default": 20,
+            "min": 0,
+            "max": 50,
+            "step": 5,
+            "unit": "px"
+        },
+
+        {
+            "type": "range",
+            "id": "mbm",
+            "label": "Bottom margin (mobile)",
+            "default": 15,
+            "min": 0,
+            "max": 50,
+            "step": 5,
+            "unit": "px"
+        },
+{
+    "type": "header",
+    "content": "Payment Methods"
+},
+
+{
+    "type": "checkbox",
+    "id": "payment_apple_pay",
+    "label": "Apple Pay",
+    "default": true
+},
+
+{
+    "type": "checkbox",
+    "id": "payment_google_pay",
+    "label": "Google Pay",
+    "default": true
+},
+
+{
+    "type": "checkbox",
+    "id": "payment_visa",
+    "label": "Visa",
+    "default": true
+},
+
+{
+    "type": "checkbox",
+    "id": "payment_mastercard",
+    "label": "Mastercard",
+    "default": true
+},
+
+{
+    "type": "checkbox",
+    "id": "payment_amex",
+    "label": "American Express",
+    "default": false
+},
+
+{
+    "type": "checkbox",
+    "id": "payment_paypal",
+    "label": "PayPal",
+    "default": false
+},
+
+{
+    "type": "checkbox",
+    "id": "payment_discover",
+    "label": "Discover",
+    "default": false
+},
+
+{
+    "type": "checkbox",
+    "id": "payment_diners",
+    "label": "Diners Club",
+    "default": false
+},
+        
+
+    ],
+    
+
+    "presets": [
+        {
+            "name": "Quantity & Buy buttons",
+            "category": "Product"
+        }
+    ]
+}
+{% endschema %}
+
+
+
+<style>
+/* =========================================================
+   OUT OF STOCK - NOTIFY ME ALIGNMENT
+   Move the existing Notify Me action into the same action row
+   as Quantity + Sold Out. No duplicate notify form is created.
+   ========================================================= */
+
+/* When Notify Me is present, use three equal action columns. */
+.product-form .product-form__buttons > .fl.gap.mb10.has-notify-me {
+    display: grid !important;
+    grid-template-columns: 1fr 1.35fr 1.35fr !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+}
+
+/* All three controls share the same height. */
+.product-form .product-form__buttons > .fl.gap.mb10.has-notify-me > quantity-input.quantity,
+.product-form .product-form__buttons > .fl.gap.mb10.has-notify-me > .product-form__submit,
+.product-form .product-form__buttons > .fl.gap.mb10.has-notify-me > .ot-custom-notify-me {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Notify Me keeps the same professional button treatment. */
+.product-form .product-form__buttons .ot-custom-notify-me {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 15px !important;
+    background: #111 !important;
+    color: #fff !important;
+    border: 0 !important;
+    font-weight: 600 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+}
+
+/* Do not let the original wrapper retain its old spacing. */
+.product-form .product-form__buttons .ot-notify-original-wrapper {
+    display: contents !important;
+}
+
+/* Buy Now remains a separate full-width row. */
+.product-form .product-form__buttons .buy-now-button {
+    width: 100% !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    margin-top: 10px !important;
+}
+
+@media (max-width: 749px) {
+    .product-form .product-form__buttons > .fl.gap.mb10.has-notify-me {
+        grid-template-columns: 1fr 1.25fr 1.25fr !important;
+        gap: 8px !important;
+    }
+
+    .product-form .product-form__buttons > .fl.gap.mb10.has-notify-me > quantity-input.quantity,
+    .product-form .product-form__buttons > .fl.gap.mb10.has-notify-me > .product-form__submit,
+    .product-form .product-form__buttons > .fl.gap.mb10.has-notify-me > .ot-custom-notify-me {
+        height: 60px !important;
+        min-height: 60px !important;
+    }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  var updateTimer = null;
+  var observer = null;
+
+  function normalizeText(element) {
+    return (element && element.textContent || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toUpperCase();
+  }
+
+  function findNotifyButton() {
+    var candidates = document.querySelectorAll(
+      '.product-form button, .product-form a, .product-form [role="button"], ' +
+      'product-form button, product-form a, button, a, [role="button"]'
+    );
+
+    for (var i = 0; i < candidates.length; i++) {
+      if (normalizeText(candidates[i]) === 'NOTIFY ME') {
+        return candidates[i];
+      }
+    }
+
+    return null;
+  }
+
+  function findProductRoot(notify, formButtons) {
+    return (notify && notify.closest('product-form')) ||
+      (formButtons && formButtons.closest('product-form')) ||
+      (notify && notify.closest('.product-form')) ||
+      (formButtons && formButtons.closest('.product-form')) ||
+      null;
+  }
+
+  function getSelectedVariant(productRoot) {
+    if (!productRoot) return null;
+
+    var variantInput = productRoot.querySelector(
+      'input.product-variant-id[name="id"], input[name="id"]'
+    );
+    var buyNowButton = productRoot.querySelector('[data-buy-now]');
+
+    if (!variantInput || !variantInput.value || !buyNowButton) {
+      return null;
+    }
+
+    var variants;
+    try {
+      variants = JSON.parse(buyNowButton.getAttribute('data-variants') || '[]');
+    } catch (error) {
+      console.error('Notify Me: Could not read product variants.', error);
+      return null;
+    }
+
+    for (var i = 0; i < variants.length; i++) {
+      if (String(variants[i].id) === String(variantInput.value)) {
+        return variants[i];
+      }
+    }
+
+    return null;
+  }
+
+  function updateNotifyMe() {
+    var notify = findNotifyButton();
+    if (!notify) return;
+
+    var formButtons = notify.closest('.product-form__buttons');
+    if (!formButtons) {
+      var form = notify.closest('form');
+      formButtons = form && form.querySelector('.product-form__buttons');
+    }
+    if (!formButtons) {
+      var nearestProductRoot = notify.closest('product-form');
+      formButtons = nearestProductRoot && nearestProductRoot.querySelector('.product-form__buttons');
+    }
+    if (!formButtons) return;
+
+    var actionRow = formButtons.querySelector('.fl.gap.mb10');
+    if (!actionRow) return;
+
+    /* Move the existing app button; do not clone or recreate it. */
+    if (notify.parentElement !== actionRow) {
+      var wrapper = notify.parentElement;
+      if (wrapper && wrapper !== actionRow && wrapper.children.length === 1) {
+        wrapper.classList.add('ot-notify-original-wrapper');
+      }
+
+      notify.classList.add('ot-custom-notify-me');
+      actionRow.appendChild(notify);
+    } else {
+      notify.classList.add('ot-custom-notify-me');
+    }
+
+    var productRoot = findProductRoot(notify, formButtons);
+    var selectedVariant = getSelectedVariant(productRoot);
+
+    /*
+     * Hide only when we positively confirm that the selected variant is
+     * available. If variant data is not ready, leave Notify Me visible.
+     */
+    if (selectedVariant && selectedVariant.available === true) {
+      notify.style.setProperty('display', 'none', 'important');
+      actionRow.classList.remove('has-notify-me');
+    } else {
+      notify.style.removeProperty('display');
+      actionRow.classList.add('has-notify-me');
+    }
+  }
+
+  function scheduleUpdate() {
+    window.clearTimeout(updateTimer);
+    updateTimer = window.setTimeout(updateNotifyMe, 150);
+  }
+
+  function init() {
+    updateNotifyMe();
+
+    /* Avone updates the selected variant after picker events. */
+    document.addEventListener('variant:change', scheduleUpdate);
+    document.addEventListener('change', function (event) {
+      if (event.target && event.target.closest && event.target.closest('.product-form')) {
+        scheduleUpdate();
+        window.setTimeout(updateNotifyMe, 350);
+      }
+    });
+
+    /* Re-check if the theme or back-in-stock app rerenders its button. */
+    if (!observer && document.body) {
+      observer = new MutationObserver(scheduleUpdate);
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+})();
+</script>

@@ -1,0 +1,149 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+{{ 'premium-product-slider.css' | asset_url | stylesheet_tag }}
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+{{ 'premium-product-slider.js' | asset_url | script_tag }}
+
+
+<div class="premium-slider">
+
+  <div class="section-heading">
+
+    <h2>{{ section.settings.heading }}</h2>
+
+    {% if section.settings.subheading != blank %}
+      <p>{{ section.settings.subheading }}</p>
+    {% endif %}
+
+    <span class="heading-line"></span>
+
+  </div>
+
+
+  {% if section.settings.collection != blank %}
+
+    <div class="swiper premiumSwiper">
+
+      <div class="swiper-wrapper">
+
+        {% assign visible_products = 0 %}
+
+        {% for product in section.settings.collection.products %}
+
+          {% if product.available and visible_products < 8 %}
+
+            <div class="swiper-slide">
+
+              <div class="premium-card">
+
+                <!-- PRODUCT IMAGE -->
+                <a href="{{ product.url }}" class="premium-image">
+
+                  {% if product.featured_image %}
+
+                    <img
+                      src="{{ product.featured_image | image_url: width: 1200 }}"
+                      alt="{{ product.title | escape }}"
+                      class="image-one"
+                      loading="lazy"
+                      width="{{ product.featured_image.width }}"
+                      height="{{ product.featured_image.height }}"
+                    >
+
+                  {% endif %}
+
+
+                  {% if product.images.size > 1 %}
+
+                    <img
+                      src="{{ product.images[1] | image_url: width: 1200 }}"
+                      alt="{{ product.title | escape }}"
+                      class="image-two"
+                      loading="lazy"
+                      width="{{ product.images[1].width }}"
+                      height="{{ product.images[1].height }}"
+                    >
+
+                  {% endif %}
+
+                </a>
+
+
+                <!-- PRODUCT INFORMATION -->
+                <div class="premium-info">
+
+                  <h3>
+                    <a href="{{ product.url }}">
+                      {{ product.title }}
+                    </a>
+                  </h3>
+
+
+                  <span class="premium-price">
+                    {{ product.price | money }}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {% assign visible_products = visible_products | plus: 1 %}
+
+          {% endif %}
+
+        {% endfor %}
+
+      </div>
+
+
+      <!-- SLIDER ARROWS -->
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+
+    </div>
+
+  {% endif %}
+
+</div>
+
+
+{% schema %}
+
+{
+  "name": "Premium Product Slider",
+
+  "settings": [
+
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Handpicked Items"
+    },
+
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Made from lightweight material that'll keep you toasty warm"
+    }
+
+  ],
+
+  "presets": [
+    {
+      "name": "Premium Product Slider"
+    }
+  ]
+}
+
+{% endschema %}

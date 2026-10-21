@@ -1,0 +1,532 @@
+/* =========================================================
+   OFF THE HOOK
+   CATEGORY CARDS
+   ========================================================= */
+
+.category-cards-section {
+    width: 100%;
+    padding: 40px 0 60px;
+}
+
+
+/* =========================================================
+   CONTAINER
+   ========================================================= */
+
+.category-cards-container {
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+
+/* =========================================================
+   SECTION HEADING
+   ========================================================= */
+
+.category-cards-eyebrow {
+    margin: 0 0 8px;
+
+    text-align: center;
+
+    font-family: inherit !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 18px !important;
+    letter-spacing: 1.8px !important;
+
+    color: #8c7770;
+
+    text-transform: uppercase;
+}
+
+
+.category-cards-heading {
+    margin: 0;
+
+    text-align: center;
+
+    font-family: inherit !important;
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    line-height: 36px !important;
+    letter-spacing: 0 !important;
+
+    color: #111 !important;
+}
+
+
+.category-cards-description {
+    max-width: 650px;
+
+    margin: 16px auto 10px;
+
+    text-align: center;
+
+    font-family: inherit !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 26px !important;
+    letter-spacing: 0 !important;
+
+    color: #555 !important;
+}
+
+/* =========================================================
+   SECTION DIVIDER
+   ========================================================= */
+
+.category-cards-divider {
+    width: 63px;
+    height: 2px;
+
+    margin: 0 auto 55px;
+
+    background: #333;
+}
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.category-cards-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 12px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.category-card {
+    min-width: 0;
+}
+
+
+.category-card-link {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    height: 355px;
+
+    overflow: hidden;
+
+    border-radius: 8px;
+
+    background: #ddd;
+
+    text-decoration: none;
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   IMAGE
+   ========================================================= */
+
+.category-card-image {
+    position: absolute;
+    inset: 0;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    transition: transform 0.6s cubic-bezier(.2, .65, .3, 1);
+}
+
+
+.category-card-link:hover .category-card-image {
+    transform: scale(1.045);
+}
+
+
+.category-card-image.placeholder {
+    background: #ddd;
+}
+
+
+/* =========================================================
+   OVERLAY
+   ========================================================= */
+
+.category-card-overlay {
+    position: absolute;
+    inset: 0;
+
+    z-index: 1;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0) 40%,
+            rgba(0, 0, 0, 0.08) 50%,
+            rgba(0, 0, 0, 0.72) 100%
+        );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   TOP AREA
+   ========================================================= */
+
+.category-card-top {
+    position: absolute;
+
+    top: 14px;
+    left: 14px;
+    right: 14px;
+
+    z-index: 3;
+
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+
+/* =========================================================
+   ICON
+   ========================================================= */
+
+.category-card-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border-radius: 50%;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    color: #111;
+}
+
+
+.category-card-icon svg {
+    display: block;
+
+    width: 22px;
+    height: 22px;
+
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 1.5;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* =========================================================
+   BADGE
+   ========================================================= */
+
+.category-card-badge {
+    min-width: 42px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 11px;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border-radius: 50%;
+
+    font-family: inherit !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+
+    color: #111;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   CARD CONTENT
+   ========================================================= */
+
+.category-card-content {
+    position: absolute;
+
+    left: 15px;
+    right: 15px;
+    bottom: 18px;
+
+    z-index: 3;
+}
+
+
+/* =========================================================
+   CARD TITLE
+   ========================================================= */
+
+.category-card-title {
+    margin: 0 0 10px;
+
+    font-family: inherit !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    line-height: 20px !important;
+    letter-spacing: 1.5px !important;
+
+    color: #fff !important;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   SHOP NOW
+   ========================================================= */
+
+.category-card-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-family: inherit !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    line-height: 16px !important;
+    letter-spacing: 1.4px !important;
+
+    color: #fff !important;
+
+    text-transform: uppercase;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+
+    padding-bottom: 4px;
+
+    transition:
+        gap 0.25s ease,
+        border-color 0.25s ease;
+}
+
+
+.category-card-arrow {
+    font-family: inherit !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    line-height: 10px !important;
+}
+
+
+.category-card-link:hover .category-card-button {
+    gap: 11px;
+
+    border-color: #fff;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media screen and (max-width: 991px) {
+
+    .category-cards-section {
+        padding: 45px 0 50px;
+    }
+
+
+    .category-cards-container {
+        padding: 0 15px;
+    }
+
+
+    .category-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 12px;
+    }
+
+
+    .category-card-link {
+        height: 420px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 767px) {
+
+    .category-cards-section {
+        padding: 40px 0 45px;
+    }
+
+
+    .category-cards-container {
+        padding: 0 10px;
+    }
+
+
+    .category-cards-eyebrow {
+        margin-bottom: 6px;
+
+        font-size: 11px !important;
+        line-height: 17px !important;
+        letter-spacing: 1.5px !important;
+    }
+
+
+    .category-cards-heading {
+        font-size: 26px !important;
+        line-height: 31px !important;
+        letter-spacing: 0 !important;
+    }
+
+
+    .category-cards-description {
+        max-width: 350px;
+
+        margin: 12px auto 25px;
+
+        font-size: 14px !important;
+        line-height: 23px !important;
+    }
+
+
+    .category-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 8px;
+    }
+
+
+    .category-card-link {
+        height: 310px;
+
+        border-radius: 7px;
+    }
+
+
+    .category-card-top {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+    }
+
+
+    .category-card-icon {
+        width: 34px;
+        height: 34px;
+    }
+
+
+    .category-card-icon svg {
+        width: 19px;
+        height: 19px;
+    }
+
+
+    .category-card-badge {
+        min-width: 34px;
+        height: 34px;
+
+        padding: 0 8px;
+
+        font-size: 9px !important;
+    }
+
+
+    .category-card-content {
+        left: 11px;
+        right: 11px;
+        bottom: 14px;
+    }
+
+
+    .category-card-title {
+        margin-bottom: 8px;
+
+        font-size: 12px !important;
+        line-height: 17px !important;
+        letter-spacing: 1.2px !important;
+    }
+
+
+    .category-card-button {
+        font-size: 9px !important;
+        line-height: 14px !important;
+        letter-spacing: 1.1px !important;
+
+        padding-bottom: 3px;
+    }
+
+
+    .category-card-arrow {
+        font-size: 13px !important;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 420px) {
+
+    .category-card-link {
+        height: 280px;
+    }
+
+
+    .category-cards-heading {
+        font-size: 24px !important;
+        line-height: 29px !important;
+    }
+
+
+    .category-cards-description {
+        font-size: 14px !important;
+        line-height: 22px !important;
+
+        padding: 0 10px;
+    }
+
+}

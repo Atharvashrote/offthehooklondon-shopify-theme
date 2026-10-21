@@ -1,0 +1,77 @@
+{%- liquid
+  assign block_st = block.settings
+-%}
+<div class="gitem adth-footer__block adth-footer__links wd50-md {{ block_st.width }}-lg{% if block_st.hidem %} hide-sm{% endif %}{% if block_st.hide_desk %} hide-md hide-lg{% endif %}{% if block_st.center %} tc{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+  {%- if block_st.title != blank -%}<p class="head {{ section.settings.tpreset }}{% if section.settings.m_accordion  %} js-toggle{% endif %} fl f-aic f-jcsb" style="--icns:16px;">{{ block_st.title }}{% if section.settings.m_accordion  %}<svg class="hide-md hide-lg at-icon arw ml-auto"><use xlink:href="#icon-arrow"></use></svg>{% endif %}</p>{%- endif -%}
+  <ul class="{{ block_st.direction }}">
+    {%- for link in linklists[block_st.menu].links -%}
+        <li><a href="{{ link.url }}" {% if link.title contains '[new]' %}target="_blank"{% endif %}>{{ link.title | split: '[' | first }}</a></li>
+    {%- endfor -%}
+</ul>
+</div>
+{% schema %}
+{
+  "name": "Menu",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Menu Title"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "footer"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "default": "vl-links",
+      "options": [
+          { "label": "Horizontal", "value": "hl-links" },
+          { "label": "Vertical", "value": "vl-links" }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "width",
+      "label": "Block width",
+      "default": "wd25",    
+      "options": [
+        { "value": "wd20", "label": "20%" },
+        { "value": "wd25", "label": "25%" },
+        { "value": "wd30", "label": "30%" },
+        { "value": "wd33", "label": "33%" },
+        { "value": "wd40", "label": "40%" },
+        { "value": "wd50", "label": "50%" },
+        { "value": "wd60", "label": "60%" },
+        { "value": "wd66", "label": "66%" },
+        { "value": "wd75", "label": "75%" },
+        { "value": "wd100", "label": "100%" }
+      ]
+    },   
+     {
+      "type": "checkbox",
+      "id": "hide_desk",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    } 
+  ],
+  "presets": [
+    {
+      "name": "Menu",
+      "category": "Footer"
+    }
+  ]
+}
+{% endschema %}

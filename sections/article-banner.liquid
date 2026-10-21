@@ -1,0 +1,185 @@
+{%- capture page_banner -%}
+{% assign section_st = section.settings %}
+<div class="section-cover npd" style="--page-width:{{ section_st.contwd }}px;--mht:{{ section_st.height_desk }}px;--mhtt:{{ section_st.height_tab }}px;--mhtm:{{ section_st.height_mob }}px;--sbg:{% if section_st.bgg != blank %}{{ section_st.bgg }}{% else %}{{ section_st.bg }}{% endif %};">
+    {%- if article.image != blank -%}
+       <picture class="overlay" style="--overlay:{{ section_st.ovr }};">
+        {{ article.image | image_url: width:article.image.width | image_tag: width:article.image.width, height:article.image.height, class:'img-fit heroImg' , widths:"400,600,800,1000,1200,1400,1600,2000,2400,3000" }}
+      </picture>
+    {%- endif -%}
+    <div class="hero-wrapper wd100 fl m-auto pr zi2 {{ section_st.txtpos }} {{ section_st.txtposm }}">
+      <div class="fl f-col gap t-{{ section_st.alignm }} t-{{ section_st.align }}-md {% render 'group-settings', section_st:section_st, class: true %}" style="{% render 'group-settings', section_st:section_st, styles:true %}">
+        {%- content_for 'blocks' -%}
+      </div>
+    </div>
+</div>
+{%- endcapture -%}
+{{ page_banner | strip_newlines | remove: '  ' | remove: '	' }}
+{% schema %}
+{
+  "name": "Article banner",
+  "enabled_on": {
+    "templates": ["article"]
+  },
+  "blocks": [
+    { "type": "heading" },
+    { "type": "text" },
+    { "type": "countdown" },
+    { "type": "_article-publish-detail"},
+    { "type": "_breadcrumb" }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner height"
+    },
+    {
+      "type": "range",
+      "id": "height_desk",
+      "label": "Desktop",
+      "default": 200,
+      "min": 80,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "type": "range",
+      "id": "height_tab",
+      "label": "Tablet",
+      "default": 150,
+      "min": 80,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "type": "range",
+      "id": "height_mob",
+      "label": "Mobile",
+      "default": 80,
+      "min": 30,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient"
+    },   
+    {
+      "type": "color",
+      "id": "ovr",
+      "label": "Image overlay",
+      "alpha": true,
+      "default": "#00000060"     
+    },
+    {
+      "type": "header",
+      "content": "Banner caption"
+    },   
+    {
+      "type": "range",
+      "id": "contwd",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "label": "Container width",
+      "unit": "px",
+      "default": 1400,
+      "info": "Apply for desktop only"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap",
+      "default": 10
+    },
+     {
+      "type": "range",
+      "id": "gapm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap (mobile)",
+      "default": 10
+    },   
+     {
+      "type": "select",
+      "id": "txtpos",
+      "label": "Position",
+      "default": "f-aic-md f-jcc-md",
+      "options": [
+        { "label": "Top left", "value": "f-ais-md f-jcs-md" },
+        { "label": "Top center", "value": "f-ais-md f-jcc-md" },
+        { "label": "Top right", "value": "f-ais-md f-jce-md" },
+        { "label": "Left", "value": "f-aic-md f-jcs-md" },
+        { "label": "Center", "value": "f-aic-md f-jcc-md" },
+        { "label": "Right", "value": "f-aic-md f-jce-md" },
+        { "label": "Bottom left", "value": "f-aie-md f-jcs-md" },
+        { "label": "Bottom center", "value": "f-aie-md f-jcc-md" },
+        { "label": "Bottom right", "value": "f-aie-md f-jce-md" }
+      ]
+    },  
+    {
+      "type": "select",
+      "id": "txtposm",
+      "label": "Position (mobile)",
+      "default": "f-aic f-jcc",      
+      "options": [
+        { "label": "Top left", "value": "f-ais f-jcs" },
+        { "label": "Top center", "value": "f-ais f-jcc" },
+        { "label": "Top right", "value": "f-ais f-jce" },
+        { "label": "Left", "value": "f-aic f-jcs" },
+        { "label": "Center", "value": "f-aic f-jcc" },
+        { "label": "Right", "value": "f-aic f-jce" },
+        { "label": "Bottom left", "value": "f-aie f-jcs" },
+        { "label": "Bottom center", "value": "f-aie f-jcc" },
+        { "label": "Bottom right", "value": "f-aie f-jce" }
+      ]
+    },    
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Alignment",
+      "default": "center"
+    }, 
+    {
+      "type": "text_alignment",
+      "id": "alignm",
+      "label": "Alignment (mobile)",
+      "default": "center"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article banner",
+      "category": "Banner",
+      "blocks": {
+        "breadcrumb": {
+          "type": "_breadcrumb"
+        },
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "{{ article.title }}"
+          }
+        },
+        "details": {
+          "type": "_article-publish-detail"
+        }
+      },
+      "block_order": ["breadcrumb", "heading", "details"]
+    }
+  ]
+}
+{% endschema %}
+

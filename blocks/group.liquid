@@ -1,0 +1,429 @@
+{% liquid
+    assign block_st = block.settings
+
+    capture classes
+        if block_st.direction == 'f-row-md' and block_st.wrap
+            echo "f-wrap "
+        endif
+        echo "wd-" | append: block_st.width | append: "-md "
+        echo "wd-" | append: block_st.width | append: " "
+        if block_st.isbg
+          echo "bg-custom "
+        endif
+        if block_st.ispd
+          echo "pd-custom "
+        endif
+
+        if block_st.direction_mobile == 'f-row'
+            echo block_st.horizontal_align_mobile | append: " " | append: block_st.horizontal_position_mobile | append: " "
+        endif
+        if block_st.direction_mobile == 'f-col'
+            echo block_st.vertical_align_mobile | append: " "
+        endif
+        if block_st.direction == 'f-row-md'
+            echo block_st.horizontal_align | append: " " | append: block_st.horizontal_position | append: " "
+        endif
+        if block_st.direction == 'f-col-md'
+            echo block_st.vertical_align | append: " "
+        endif
+    endcapture
+-%}
+{%- capture styles -%}
+    --gap:{{ block_st.gap }}px;--gapm:{{ block_st.gapm }}px;
+    {%- if block_st.width == 'custom' -%}
+        --wd:{{ block_st.ct_width | default: '100%' }};
+    {%- endif -%}
+    {%- if block_st.widthm == 'custom' -%}
+        --wdm:{{ block_st.ct_widthm | default: '100%' }};
+    {%- endif -%}
+
+    {%- if block_st.isbg -%}
+      --gr_bg:{% if block_st.bgg != blank %}{{ block_st.bgg }}{% else %}{{ block_st.bg }}{% endif %};
+      --gr_bd:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+    {% endif %}
+    {%- if block_st.ispd -%}
+      --gr_pd:{{ block_st.pd-tb }}px {{ block_st.pd-lr }}px;--gr_pdm:{{ block_st.pd-tbm }}px {{ block_st.pd-lrm }}px;
+    {% endif %}
+{%- endcapture -%}
+
+<div id="{{ block.id }}" class="group-bk fl gap {{ block_st.direction_mobile }} {{ block_st.direction }} {{ block_st.rounded }} {{ classes }}{% if block_st.hide_group_mobile %} hide-sm{% endif %} " style="{{ styles | strip_newlines }}" {{ block.shopify_attributes }}>
+    {%- content_for 'blocks' -%}
+</div>
+{% schema %}
+  {
+    "name": "Group",
+    "tag": null,
+    "blocks": [
+        {
+          "type": "@theme"
+        },
+        {
+          "type": "@app"
+        }
+    ],
+    "settings": [
+      {
+        "type": "header",
+        "content": "Layout"
+      },        
+      {
+          "type": "select",
+          "id": "direction",
+          "label": "Direction",
+          "default": "f-col-md",
+          "options": [                                    
+              { "label": "Vertical", "value": "f-col-md" },
+              { "label": "Horizontal", "value": "f-row-md" }
+
+          ]
+      },
+      {
+          "type": "checkbox",
+          "id": "wrap",
+          "label": "Wrap items",
+          "default": false,
+          "visible_if": "{{ block.settings.direction == 'f-row-md' }}"
+      },     
+      {
+          "type": "select",
+          "id": "horizontal_position",
+          "label": "Position",
+          "default": "f-ais-md",
+          "options": [
+              { "label": "Top", "value": "f-ais-md" },
+              { "label": "Center", "value": "f-aic-md" },
+              { "label": "Bottom", "value": "f-aie-md" },
+              { "label": "Full height", "value": "f-aist-md" }
+          ],
+          "visible_if": "{{ block.settings.direction == 'f-row-md' }}"
+      },          
+       {
+          "type": "select",
+          "id": "horizontal_align",
+          "label": "Alignment",
+          "default": "f-jcs-md",
+          "options": [
+              { "label": "Left", "value": "f-jcs-md" },
+              { "label": "Center", "value": "f-jcc-md" },
+              { "label": "Right", "value": "f-jce-md" },
+              { "label": "Space between", "value": "f-jcsb-md" },
+              { "label": "Space around", "value": "f-jcsa-md" }            
+          ],
+          "visible_if": "{{ block.settings.direction == 'f-row-md' }}"
+      }, 
+       {
+          "type": "select",
+          "id": "vertical_align",
+          "label": "Alignment",
+          "default": "f-ais-md t-left-md",
+          "options": [
+              { "label": "Left", "value": "f-ais-md t-left-md" },
+              { "label": "Center", "value": "f-aic-md t-center-md" },
+              { "label": "Right", "value": "f-aie-md t-right-md" }              
+          ],
+          "visible_if": "{{ block.settings.direction == 'f-col-md' }}"
+      },                     
+       {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "fill",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "ct_width",
+      "label": "Custom width",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+      {
+        "type": "range",
+        "id": "gap",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Gap",
+        "default": 20
+      },
+       {
+        "type": "checkbox",
+        "id": "hide_group_mobile",
+        "label":"Hide on mobile",
+        "default":false
+      },   
+      {
+        "type": "header",
+        "content": "Mobile layout",
+        "visible_if": "{{ block.settings.hide_group_mobile  == false }}"
+      },  
+        
+      {
+          "type": "select",
+          "id": "direction_mobile",
+          "label": "Direction",
+          "default": "f-col",
+          "options": [             
+              { "label": "Vertical", "value": "f-col" },
+              { "label": "Horizontal", "value": "f-row" }
+          ],
+          "visible_if": "{{ block.settings.hide_group_mobile  == false }}"
+      },
+      {
+          "type": "checkbox",
+          "id": "wrapm",
+          "label": "Wrap Items",
+          "default": false,
+          "visible_if": "{{ block.settings.direction_mobile == 'f-row' and block.settings.hide_group_mobile  == false }}"
+      },      
+       {
+          "type": "select",
+          "id": "horizontal_position_mobile",
+          "label": "Position",
+          "default": "f-ais",
+          "options": [
+              { "label": "Top", "value": "f-ais" },
+              { "label": "Center", "value": "f-aic" },
+              { "label": "Bottom", "value": "f-aie" },
+              { "label": "Full height", "value": "f-aist" }
+          ],
+          "visible_if": "{{ block.settings.direction_mobile == 'f-row' and block.settings.hide_group_mobile  == false }}"
+      },     
+      {
+          "type": "select",
+          "id": "horizontal_align_mobile",
+          "label": "Alignment",
+          "default": "f-jcs",
+          "options": [
+              { "label": "Left", "value": "f-jcs" },
+              { "label": "Center", "value": "f-jcc" },
+              { "label": "Right", "value": "f-jce" },
+              { "label": "Space between", "value": "f-jcsb" },
+              { "label": "Space around", "value": "f-jcsa" }              
+          ],
+          "visible_if": "{{ block.settings.direction_mobile == 'f-row' and block.settings.hide_group_mobile  == false }}"
+      },      
+      {
+          "type": "select",
+          "id": "vertical_align_mobile",
+          "label": "Alignment",
+          "default": "f-ais t-left",
+          "options": [
+              { "label": "Left", "value": "f-ais t-left" },
+              { "label": "Center", "value": "f-aic t-center" },
+              { "label": "Right", "value": "f-aie t-right" }             
+          ],
+          "visible_if": "{{ block.settings.direction_mobile == 'f-col' and block.settings.hide_group_mobile  == false}}"
+      },                                     
+       {
+          "type": "select",
+          "id": "widthm",
+          "label": "Width",
+          "default": "fill",
+          "options": [
+            {
+              "value": "fit",
+              "label": "Fit"
+            },
+            {
+              "value": "fill",
+              "label": "Fill"
+            },
+            {
+              "value": "custom",
+              "label": "Custom"
+            }
+          ],
+          "visible_if": "{{ block.settings.hide_group_mobile  == false}}"
+        },
+        {
+          "type": "text",
+          "id": "ct_widthm",
+          "label": "Custom width",
+          "default": "500px",
+          "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+          "visible_if": "{{ block.settings.widthm == 'custom' and block.settings.hide_group_mobile  == false}}"
+        },
+      {
+        "type": "range",
+        "id": "gapm",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Gap",
+        "default": 10,
+        "visible_if": "{{ block.settings.hide_group_mobile  == false}}"
+      },
+      {
+        "type": "header",
+        "content": "Appearance"
+      },
+        {
+            "type": "checkbox",
+            "id": "isbg",
+            "label": "Add background",
+            "default": false
+        },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background color",
+        "alpha": true,
+        "default":"#f5f5f5",
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+          "type": "color_background",
+          "id": "bgg",
+          "label": "Background gradient",
+          "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+        "type": "select",
+        "id": "bdr",
+        "label": "Borders",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "solid",
+            "label": "Solid"
+          }
+        ],
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+            "type": "range",
+            "id": "brd_sz",
+            "label": "Border thickness",
+            "default":1,
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "color",
+        "id": "bdr-cl",
+        "label": "Border color",
+        "alpha": true,
+        "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "select",
+        "id": "rounded",
+        "label": "Corner radius",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "round-xs",
+            "label": "Extra small"
+          },
+          {
+            "value": "round-sm",
+            "label": "Small"
+          },
+          {
+            "value": "round-md",
+            "label": "Medium"
+          },
+          {
+            "value": "round-lg",
+            "label": "Large"
+          },
+          {
+            "value": "round-full",
+            "label": "Full"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Padding"
+      },
+      {
+          "type": "checkbox",
+          "id": "ispd",
+          "label": "Add padding",
+          "default": false
+      },    
+      {
+            "type": "range",
+            "id": "pd-lr",
+            "label": "Horizontal",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },           
+        {
+            "type": "range",
+            "id": "pd-tb",
+            "label": "Vertical",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },
+       {
+            "type": "range",
+            "id": "pd-lrm",
+            "label": "Horizontal (mobile)",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      },
+      {
+            "type": "range",
+            "id": "pd-tbm",
+            "label": "Vertical (mobile)",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.ispd }}"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Group",
+        "category": "Layout",
+        "blocks": [
+
+        ]
+      }
+    ]
+  }
+{% endschema %}

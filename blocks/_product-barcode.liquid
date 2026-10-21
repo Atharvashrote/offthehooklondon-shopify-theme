@@ -1,0 +1,28 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign current_variant = product.selected_or_first_available_variant
+-%}
+<div class="product-sku fl f-aic{% if current_variant.barcode.size == 0 %} hidden{% endif %}" id="barcode-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
+    {% if block_st.islabel %}<span class="lbl mr5">{{ 'products.product.barcode' | t }}</span> {% endif %}<span class="variant-sku">{{ current_variant.barcode }}</span>
+</div>
+{% schema %}
+{
+  "name": "Barcode",
+  "tag": null,
+  "settings": [
+    {
+        "type": "checkbox",
+        "id": "islabel",
+        "label": "Show label",
+        "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Barcode",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

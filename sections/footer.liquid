@@ -1,0 +1,463 @@
+{%- capture footer -%}
+{%- assign section_st = section.settings -%}
+{%- if section_st.tpreset == 'custom-hd' -%}
+<style>.adth-footer .head { --fs:{{ section_st.tfs }}px;--fsm:{{ section_st.tfsm }}px;--ff:var(--{{ section_st.tff }});--fw:{{ section_st.tfw }};--lh:{{ section_st.tlh }};--ls:{{ section_st.tls }}px; }</style>
+{%- endif -%}
+{%- capture ftstyle -%}
+    --hdcl:{{ section_st.tcl }};--cl:{{ section_st.cl }};--clh:{{ section_st.clh }};--fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;
+  --bg:{% if section_st.bgg != blank %}{{ section_st.bgg }}{% else %}{{ section_st.bg }}{% endif %};--bdr:{{ section_st.bdr }};--bdrm:{{ section_st.bdrm }};--tfw:{{ section_st.tfw }};
+    {% if section_st.bg-image != blank %}background-repeat:{{ section_st.bgrep }}; background-size:{{ section_st.bgsz }}; background-position:{{ section_st.bgpos | replace:"_", " " }}; background-attachment:{{ section_st.bgat }}; {% endif %}
+{%- endcapture -%}
+
+<footer class="adth-footer{% if section_st.bg-image != blank %} lazyload{% endif %}" role="contentinfo" style="{{ ftstyle }}"
+    {% if section_st.bg-image != blank %}data-bgset="{{ section_st.bg-image | image_url: width: section_st.bg-image.width | image_tag: widths: '400,600,800,1000,1400,1600,1920,2400,3000' | split: 'srcset="' | last | split: '"' | first }}" data-sizes="auto" data-parent-fit="contain"{% endif %}>
+    {%- if section.blocks.size != 0 -%}
+        <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %} t-left-md{% if section_st.m_text_center %} t-center{% endif %}">
+            <div class="grid {% if section_st.space %}equal-space f-jcsb{% endif %}">
+                {%- content_for 'blocks' -%}
+            </div>
+        </div>
+    {%- endif -%}
+    {%- if section_st.copyright_text != blank or section_st.show_payment -%}
+        <div class="adth-footer__bottom">
+            <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %} fl f-aic f-col f-row-md">            
+            {%- if section_st.copyright_text != blank -%}
+                <div class="fl1{% if section_st.show_payment %} wd50-md mb10 mb0-sm tl-md order0-md order2{% endif %} tc">
+                    {% assign year = "now" | date: "%Y" %}{% assign insert_year = year %}
+                    <span class="dbi">{{  section_st.copyright_text | replace:"[year]", insert_year }}</span>
+                    {% if section_st.show_designby %}<span class="designBy">{% if section_st.copyright_text != blank %} | {% endif %}Designed by <a href="https://www.adornthemes.com" target="_blank">AdornThemes</a></span>{% endif %}
+                </div>
+            {%- endif -%}
+            {%- if section_st.show_payment -%}
+                <div class="fl1{% if section_st.copyright_text != blank %} wd50-md tr-md{% endif %} tc mb10 mb0-md">
+                    {%- if section_st.payimg != blank -%}
+                        <p class="footer-img dbi" style="max-width:{{ section_st.payimgwd }}px">
+                          {%- assign sizes = section_st.payimgwd | append: 'px' -%}
+                          {{- section_st.payimg | image_url: width: section_st.payimg.width | image_tag: class:'img-auto', loading:'lazy', siezs: sizes, widths:'200, 350,500,700,900,1200' -}}
+                        </p>
+                    {%- else -%}
+                        {% for type in shop.enabled_payment_types %}{{ type | payment_type_svg_tag: class: 'payment-item' }}{% endfor %}
+                    {%- endif -%}
+                </div>
+            {%- endif -%}
+        </div>
+    </div>
+{%- endif -%}
+</footer>
+{%- endcapture -%}
+{{- footer | strip_newlines | remove: "	" | replace: "  "," " | replace: "  "," " -}}
+{%- schema -%}
+  {
+    "name": "Footer",
+    "blocks": [
+      {
+        "type": "_footer-custom-block"
+      },
+      {
+        "type": "_footer-menu"
+      },
+      {
+        "type": "_footer-contact-details"
+      },
+      {
+        "type": "divider"
+      }
+    ],
+    "settings": [	
+	  {
+		"type":"checkbox",
+		"id":"fullwidth",
+		"label":"Full width",
+		"default": false
+	  },
+	  {
+		"type":"checkbox",
+		"id":"space",
+		"label":"Equal spacing between blocks",
+		"default": false
+	  },
+ 	  {
+        	"type": "textarea",
+        	"id": "copyright_text",
+        	"label": "Copyright text",
+        	"default": "© [year],Avone. All Rights Reserved."
+      	},        
+		{
+			"type":"header",
+        	"content":"Payment options"
+		},
+      	{
+        	"type": "checkbox",
+        	"id": "show_payment",
+        	"label": "Show payment icons",
+        	"default": true
+        },
+		{
+          "type": "image_picker",
+          "id": "payimg",
+          "label": "Payment icon image",
+          "info": "Use image instead of Payment icons"
+        },
+		{
+            "type": "range",
+            "id": "payimgwd",
+            "label": "Image width",
+            "default": 300,
+            "min": 100,
+            "max": 600,
+            "step": 5,
+            "unit": "px",
+            "visible_if":"{{section.settings.payimg != blank}}"
+        },
+         {
+            "type": "header",
+            "content": "Mobile settings"
+        },
+        {
+        	"type": "checkbox",
+        	"id": "m_text_center",
+        	"label": "Center text",
+        	"default": false
+        },
+         {
+        	"type": "checkbox",
+        	"id": "m_accordion",
+        	"label": "Enable accordions",
+        	"default": true
+        },
+        {
+        "type": "color",
+        "id": "bdrm",
+        "label": "Block divider",
+        "default": "#f9f9f9",
+        "alpha":true        
+        },
+        {
+            "type": "header",
+            "content": "Appearance"
+        },
+        {
+          "type": "paragraph",
+          "content": "Title"
+        },
+      {
+        "type": "color",
+        "id": "tcl",
+        "label": "Color",
+        "default": "#000"
+      },
+    {
+      "type": "select",
+      "id": "tpreset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h6",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+       {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "tff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.tpreset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "label": "Font size",
+      "default": 16,
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "label": "Font size (mobile)",
+      "default": 14,
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.tpreset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "600",
+      "visible_if": "{{ section.settings.tpreset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tlh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ section.settings.tpreset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "tls",
+      "label": "Letter spacing",
+      "default": 0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",     
+      "visible_if": "{{ section.settings.tpreset == 'custom-hd' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Text and links"
+    },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Color",
+        "default": "#000"
+      },
+      {
+        "type": "color",
+        "id": "clh",
+        "label": "Links hover",
+        "default": "#666"
+      },
+      {
+        "type": "range",
+        "id": "fs",
+        "label": "Font size",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "default": 13,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "fsm",
+        "label": "Font size (mobile)",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "default": 13,
+        "unit": "px"
+      },        
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background",
+        "default": "#f5f5f5"
+      },
+      {
+        "type": "color_background",
+        "id": "bgg",
+        "label": "Background gradient"
+      },
+      {
+        "type": "image_picker",
+        "id": "bg-image",
+        "label": "Background image",
+        "info": "This is optional"
+      },
+      {
+        "type": "select",
+        "id": "bgrep",
+        "label": "Background repeat",
+        "default": "inherit",
+        "info": "[how to repeat the background image](https:\/\/w3schools.com\/cssref\/pr_background-repeat.asp)",
+        "options": [
+          {
+            "value": "no-repeat",
+            "label": "No Repeat"
+          },
+          {
+            "value": "repeat",
+            "label": "All Sides"
+          },
+          {
+            "value": "repeat-x",
+            "label": "Horizontally"
+          },
+          {
+            "value": "repeat-y",
+            "label": "Vertically"
+          },
+          {
+            "value": "inherit",
+            "label": "Inherit"
+          }
+        ],
+        "visible_if": "{{ section.settings.bg-image != blank }}"
+      },
+      {
+        "type": "select",
+        "id": "bgpos",
+        "label": "Background position",
+        "default": "center_center",
+        "info": "[position of the background images](https:\/\/w3schools.com\/cssref\/pr_background-position.asp)",
+        "options": [
+          {
+            "value": "left_top",
+            "label": "Left Top"
+          },
+          {
+            "value": "left_center",
+            "label": "Left Center"
+          },
+          {
+            "value": "left_bottom",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "center_top",
+            "label": "Center Top"
+          },
+          {
+            "value": "center_center",
+            "label": "Center Center"
+          },
+          {
+            "value": "center_bottom",
+            "label": "Center Bottom"
+          }
+        ],
+        "visible_if": "{{ section.settings.bg-image != blank }}"
+      },
+      {
+        "type": "select",
+        "id": "bgsz",
+        "label": "Background size",
+        "default": "auto",
+        "info": "[Specifies the size of the background image](https:\/\/w3schools.com\/cssref\/css3_pr_background-size.asp)",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "cover",
+            "label": "Cover"
+          },
+          {
+            "value": "contain",
+            "label": "Contain"
+          }
+        ],
+        "visible_if": "{{ section.settings.bg-image != blank }}"
+      },
+      {
+        "type": "select",
+        "id": "bgat",
+        "label": "Background attachment",
+        "default": "inherit",
+        "info": "[Specifies background image is fixed or scrolls with page](https:\/\/w3schools.com\/cssref\/pr_background-attachment.asp)",
+        "options": [
+          {
+            "value": "fixed",
+            "label": "Fixed"
+          },
+          {
+            "value": "scroll",
+            "label": "Scroll"
+          },
+          {
+            "value": "inherit",
+            "label": "Inherit"
+          }
+        ],
+        "visible_if": "{{ section.settings.bg-image != blank }}"
+      },
+      {
+        "type": "color",
+        "id": "bdr",
+        "label": "Top border",
+        "default": "#eee"
+      },
+      {
+          "type": "checkbox",
+          "id": "show_designby",
+          "label": "Show theme developer credit",
+          "default": true,
+		      "info":"Show design by in footer"
+        }      
+    ]
+  }
+{%- endschema -%}

@@ -1,0 +1,267 @@
+{%- capture custom_content -%}
+{%- liquid 
+    assign section_st = section.settings
+-%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+      <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %} custom-block {{section_st.style }}">    
+        {%- render 'sec-title' -%}
+        <div class="display-grid custom-cnt gap" style="--gap:{{ section_st.gspace }}px;--gapm:{{ section_st.gspacem }}px;">
+          {%- content_for 'blocks' -%}
+        </div>
+    </div>
+</div>
+{%- endcapture -%}
+{{- custom_content | strip_newlines | remove: '	' -}}
+{% schema %}
+{
+  "name": "Custom content",
+  "class": "custom-cnt",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "blocks": [
+    {
+      "type": "_column"
+    }
+  ],
+  "settings": [
+     {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Custom content"
+    },
+     {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Create advanced layout using custom blocks</p> "
+    },        
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Grid gap",
+      "default": 30,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Grid gap (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+     "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": false,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"            
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom content",
+      "category": "Layout",
+      "blocks": [
+        {
+          "type": "_column",
+           "blocks": [
+                        {
+                        "type": "heading",
+                        "settings": {
+                            "text": "BEST SELLING SHOPIFY THEME",
+                            "preset": "h3",
+                            "mb": 10,
+                            "mbm":5
+                          }
+                        },
+                        {
+                        "type": "text",
+                        "settings": {
+                            "text": "<p>We at Adornthemes craft beautiful, user-friendly Shopify themes that turn your store visitors into customers</p>",
+                            "mb": 25,
+                            "mbm":15
+                         }
+                        },
+                        {
+                        "type": "button",
+                        "settings": {
+                            "text": "Shop Now",
+                            "url": ""
+                          }
+                        }
+          ],
+          "settings": {
+            "column_dk": "6",
+            "column_tb": "6",
+            "column_mb": "12",
+            "gap":0,
+            "gapm":0,
+            "pad_lr": 30,
+            "pad_tb": 30,
+            "pad_lrt": 20,
+            "pad_tbt": 20,
+            "pad_tbm": 0,
+            "pad_lrm": 0,
+            "position": "cl-psc",            
+            "align": "center",
+            "alignm": "center",
+            "rounded": "none"
+          }
+        },
+        {
+          "type": "_column",
+          "blocks": [
+              {
+              "type": "image-banner"
+            }                                                
+          ],
+          "settings": {
+            "column_dk": "6",
+            "column_tb": "6",
+            "column_mb": "12",
+            "gap":0,
+            "gapm":0,
+            "pad_lr": 0,
+            "pad_tb": 0,
+            "pad_lrt": 0,
+            "pad_tbt": 0,
+            "pad_tbm": 0,
+            "pad_lrm": 0,
+            "position": "cl-psc",         
+            "align": "center",
+            "alignm": "center",
+            "rounded": "none"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

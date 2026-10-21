@@ -1,0 +1,520 @@
+{%- capture exit_intent_popup -%}
+{%- assign section_st = section.settings -%}
+{%- capture sizes -%}
+  (min-width:1024px){% if section_st.sty == '1' %}500px{% else %}900px{% endif %}, calc(100vw -30px)
+{%- endcapture -%}
+{% capture showexitpp %}{% if section_st.index %}index,{% endif %}{% if section_st.product %}product,{% endif %}{% if section_st.collection %}collection,{% endif %}{% if section_st.article %}article,{% endif %}{% if section_st.blog %}blog,{% endif %}{% if section_st.cart %}cart,{% endif %}{% if section_st.page %}page{% endif %}{% endcapture %}
+{%- capture head_styles -%}    
+    {%- if section_st.preset == 'custom-hd' -%}
+      --fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;--ff:var(--{{ section_st.ff }});--fw:{{ section_st.fw }};--lh:{{ section_st.lh }};--ls:{{ section_st.ls }};
+    {%- endif -%}
+{%- endcapture -%}
+{% if false %}
+    <div class="exit-modal tinglebox of-hidden{% if section_st.sty == '1' %} fl f-col f-row-md{% else %} tc{% endif %}">
+        {%  if section_st.cbn %}
+        <div class="fl1 fl f-aic f-col f-jcc tc pr of-hidden overlay" style="background-color:{{ section_st.bg }};--overlay:{{ section_st.overlay }};">
+            {%- if section_st.bg-image != blank -%}
+                {{ section_st.bg-image | image_url: width: section_st.bg-image.width | image_tag: class:'img-fit', loading:'lazy', width:section_st.bg-image.width, height:section_st.bg-image.height, sizes:sizes, widths:"400,600,800,1000,1200" }}
+            {%- endif -%}
+            <div class="fl f-col f-aic exit-modal__content pd25 pr zi1">{% content_for 'blocks' %}</div>
+        </div>
+        {% endif %}
+        <div class="fl1 exit-modal__products pd25{% if section_st.hidem %} hide-sm{% endif %}">
+         <div class="{% if section_st.title != blank %}mb30{% endif %}">
+           <{{ section_st.htag }} class="head {{ section_st.preset }} mb5" style="{{ head_styles }}">{{- section_st.title -}}</{{ section_st.htag }}>
+            <p class="m0">{{- section_st.subtitle -}}</p>
+         </div>
+          {%- if section_st.sty == '1' -%}
+              {% for product in section_st.products %}
+                  {% render 'product-card-columns', product: product %}
+              {% else %}
+                {% for i in (1..section_st.rows) %}
+                    <div class="fl f-aic mb15">
+                        <div class="mini-products__img">
+                            <a class="db" href="#">{% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}{% capture pl_class %}placeholder-svg svgcl{{ current }}{% endcapture %}{{ 'product-' | append: current | placeholder_svg_tag: pl_class }}</a>
+                        </div>
+                        <div class="fl1">
+                            <a href="#">{{ 'homepage.onboarding.product_title' | t }}</a>
+                            <div class="mini-products__meta mt5">{% render 'product-price' %}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+              {% endfor %}
+            {%- else -%}
+                <slide-section class="grid rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products swiper"
+                  data-swiper='{ "slidesPerView":"auto", "loop":{{ section_st.loop }}, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" }}'>
+                    <div class="swiper-wrapper">
+                      {%- for product in section_st.products -%}
+                        {%- capture primgsizes -%}
+                          (min-width:1024px){{ '900' | divided_by:section_st.grid }}px,(min-width:768px){{ '900px' | divided_by:section_st.gridtb }}px, calc(100vw / {{ section_st.gridmb }})
+                        {%- endcapture -%}
+                        <div class="swiper-slide gitem">{% render 'product-card-grid', product: product, section_st:section_st, sizes: primgsizes %}</div>
+                    {%- else -%}
+                    {%- for i in (1..section_st.rows) -%}
+                        <div class="swiper-slide gitem">
+                          <div class="grid-content">
+                            <a href="#" class="grid_lnk">
+                              <div class="grid-image__wrapper">{% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}{% capture pl_class %}placeholder-svg svgcl{{ current }}{% endcapture %}{{ 'product-' | append: current | placeholder_svg_tag: pl_class }}</div><br/>
+                              <div class="h4 grid-title">{{ 'homepage.onboarding.product_title' | t }}</div>
+                              <div class="grid-price">{%- render 'product-price' -%}</div>
+                            </a>
+                          </div>
+                        </div>
+                    {%- endfor -%}
+                  {%- endfor -%}
+                    </div>
+                    {%- render 'swiper-navigation', id:section.id, section_st:section_st -%}
+                </slide-section>
+            {%- endif -%}
+        </div>
+    </div>
+{%- unless request.design_mode -%}
+<script>
+    document.addEventListener("mouseleave", (e) => {
+       if(e.clientY < 0 && getCookie("exit-modal") != 'true'){
+          var isOpenex = document.querySelector(".tingle-modal.exitPopupWrap"),
+            exitPopup = document.querySelector(".exit-popup"),
+          exmodal = new tingle.modal({
+            footer: false,
+            cssClass: ['exitPopupWrap'],
+            onOpen: function() {
+                setTimeout(() => { window.dispatchEvent(new Event('resize')) }, 5);
+            },
+            onClose: function() {
+                setCookie("exit-modal", 'true', 1);
+            }
+        });
+        if(!isOpenex){
+          exmodal.setContent(exitPopup.innerHTML);
+          exmodal.open();
+        }
+       }
+    });
+</script>
+{%- endunless -%}
+{%- endif -%}
+{%- endcapture -%}
+{{- exit_intent_popup | strip_newlines | remove: '	' | replace: "  "," " | replace: "  "," " -}}
+{% schema %}
+{
+  "name": "Exit popup",
+  "class": "exit-popup hide",
+  "limit": 1,
+  "enabled_on": {
+    "groups": ["custom.overlay"]
+  },
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "sty",
+      "label": "Products style",
+      "default": "2",
+      "options": [
+        {
+          "label": "Listing",
+          "value": "1"
+        },
+        {
+          "label": "Carousel",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "iconc",
+      "label": "Close icon color",
+      "default": "#111"
+    },
+    {
+      "type": "checkbox",
+      "id": "cbn",
+      "label": "Show banner",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Banner background",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Banner image"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Overlay color",
+      "alpha": true,
+      "default":"#00000050"
+    },
+    {
+      "type": "header",
+      "content": "Recommended products"
+    },    
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Wait ! Before you go... This might interest you. "
+    },   
+    {
+      "type": "select",
+      "id": "htag",
+      "label": "Heading tag",
+      "info": "Specify heading type to improve SEO and accessibility.",
+      "default": "h4",
+      "options": [
+        {
+          "value": "p",
+          "label": "P"
+        },
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "div",
+          "label": "Div"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },        
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 16,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },    
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "700",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,     
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default":0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",     
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+     {
+      "type": "richtext",
+      "id": "subtitle",
+      "label": "Description",
+      "default": "<p>We have some handpicked items for you</p>"
+    },				
+    {
+      "id": "products",
+      "type": "product_list",
+      "label": "Products"
+    },
+    {
+      "type": "paragraph",
+      "content": "Products per row",
+      "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Desktop",
+      "default": 4,
+      "min": 2,
+      "max": 7,
+      "step": 1,
+      "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "range",
+      "id": "gridtb",
+      "label": "Tablet",
+      "default": 3,
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "range",
+      "id": "gridmb",
+      "label": "Mobile",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Slider settings",
+      "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "default": false,
+      "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate list",
+      "default": false,
+      "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "Sec",
+      "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrow",
+      "label": "Show arrows on desktop",
+       "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrowm",
+      "label": "Show arrows on mobile",
+      "default": false,
+       "visible_if": "{{ section.settings.sty == '2' }}"
+    },
+    {
+      "type": "header",
+      "content": "Display on:"
+    },
+    {
+      "type": "checkbox",
+      "id": "index",
+      "label": "Home page",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "product",
+      "label": "Product page"
+    },
+    {
+      "type": "checkbox",
+      "id": "collection",
+      "label": "Collection page"
+    },
+    {
+      "type": "checkbox",
+      "id": "article",
+      "label": "Article page"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog",
+      "label": "Blog page"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart",
+      "label": "Cart page"
+    },
+    {
+      "type": "checkbox",
+      "id": "page",
+      "label": "Other page"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Exit popup",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "Wait ! Before you go... This might interest you.",
+            "cl": "#111111",
+            "mb": 10,
+            "mbm": 10
+          }
+        },       
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>We have some handpicked items for you</p>",
+            "cl": "#555555",
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "text": "SHOP NOW",
+            "url": "shopify://collections/new-arrivals",
+            "btn-size": "btn-sm",
+            "btn-style":"btn2"
+          }
+        }
+      },
+      "block_order": ["heading", "heading","text", "button"],
+      "settings": {
+        "sty": "1"
+      }
+    }
+  ]
+}
+{% endschema %}

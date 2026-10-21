@@ -1,0 +1,236 @@
+{%- liquid
+    assign block_st = block.settings
+-%}
+{%- unless block_st.hide and block_st.richtxt == blank -%}
+    <details class="sumtabs" {% if block.settings.tbopen %}open=""{% endif %} {{ block.shopify_attributes }}>
+        <summary class="head [ttl-preset] pr fl f-aic col-gap" style="--gap:10px;">
+            {%- if block_st.sicon != blank and block_st.icon == "custom" -%}
+                <img loading="lazy" class="at-icon" src="{{ block_st.sicon | image_url: width: '60' }}" width="18" height="18" alt="">
+            {%- else -%}
+                {%- render 'icons', block_st: block_st, icon: block_st.icon -%}
+            {%- endif -%}
+            {{ block_st.title }} [icon]
+        </summary>
+        <div class="details-content rte{% if block_st.tabicon != blank %} pdside{% endif %}">{{ block_st.richtxt }}</div>
+    </details>
+{%- endunless -%}
+{% schema %}
+{
+  "name": "Accordion tab",
+  "tag": null,
+  "settings": [   
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "none",
+      "options": [
+                    {
+                        "value": "none",
+                        "label": "None"
+                    },
+                    {
+                        "value": "custom",
+                        "label": "Custom"
+                    },
+                    {
+                        "value": "check",
+                        "label": "Check"
+                    },
+                    {
+                        "value": "check2",
+                        "label": "Check 2"
+                    },	
+                    {
+                        "value": "truck",
+                        "label": "Truck"
+                    },
+                    {
+                        "value": "dollar",
+                        "label": "Dollar"
+                    },	
+                    {
+                        "value": "email",
+                        "label": "Email"
+                    },
+                    {
+                        "value": "phone",
+                        "label": "Phone"
+                    },
+                    {
+                        "value": "phone2",
+                        "label": "Phone 2"
+                    },
+                    {
+                        "value": "comment",
+                        "label": "Comment"
+                    },
+                    {
+                        "value": "support",
+                        "label": "Support"
+                    },                    											
+                    {
+                        "value": "package",
+                        "label": "Package"
+                    },
+                    {
+                        "value": "note",
+                        "label": "Note"
+                    },	
+                    {
+                        "value": "tape",
+                        "label": "Tape"
+                    },
+                    {
+                        "value": "progress",
+                        "label": "Progress"
+                    },
+                     {
+                        "value": "fire1",
+                        "label": "Fire"
+                    },
+                    {
+                        "value": "question",
+                        "label": "Question"
+                    },
+                    {
+                        "value": "return",
+                        "label": "Return"
+                    },
+                     {
+                    "value": "return2",
+                    "label": "Return 2"
+                    },  
+                    {
+                        "value": "rocket",
+                        "label": "Rocket"
+                    },	
+                    {
+                        "value": "plan",
+                        "label": "Plane"
+                    },						               						
+                    {
+                        "value": "heart",
+                        "label": "Heart"
+                    },										
+                    {
+                        "value": "star",
+                        "label": "Star"
+                    },
+                    {
+                        "value": "like",
+                        "label": "Like"
+                    }, 								
+                    {
+                        "value": "info",
+                        "label": "Info."
+                    }, 
+                    {
+                        "value": "tag",
+                        "label": "Tag"
+                    },
+                    {
+                        "value": "tag2",
+                        "label": "Tag"
+                    },			
+                    {
+                        "value": "globe",
+                        "label": "Globe"
+                    },
+                    {
+                        "value": "earth",
+                        "label": "Earth"
+                    },
+                    {
+                        "value": "gift",
+                        "label": "Gift"
+                    },
+                    {
+                        "value": "location",
+                        "label": "Location"
+                    },
+                    {
+                        "value": "shop",
+                        "label": "Shop"
+                    },
+                    {
+                        "value":"time",
+                        "label": "Time"
+                    },
+                    {
+                        "value": "leaf",
+                        "label": "Leaf"
+                    },
+                    {
+                        "value": "rain",
+                        "label": "Rain"
+                    },
+                    {
+                        "value": "sun",
+                        "label": "Sun"
+                    },
+                    {
+                        "value": "cloud",
+                        "label": "Cloud"
+                    },                                              
+                    {
+                        "value": "care2",
+                        "label": "Care"
+                    },
+                     {
+                    "value": "file",
+                    "label": "File"
+                    },
+                    {
+                    "value": "shield",
+                    "label": "Shield"
+                    },
+                    {
+                    "value": "lock",
+                    "label": "Lock"
+                    },
+                    {
+                    "value": "payment",
+                    "label": "Payment"
+                    }       
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "sicon",
+      "label": "Custom icon",
+      "visible_if": "{{ block.settings.icon == 'custom' }}"
+    },
+     {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Care Instructions"
+    },
+    {
+      "type": "richtext",
+      "id": "richtxt",
+      "label": "Text",
+      "default": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "tbopen",
+      "label": "Keep tab open on page load",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide",
+      "label": "Hide tab if content is empty",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Accordion tab",
+      "category": "Layout"
+    }
+  ]
+}
+{% endschema %}

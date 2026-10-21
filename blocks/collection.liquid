@@ -1,0 +1,363 @@
+{% liquid
+  assign block_st = block.settings
+  assign block_index = section.blocks | find_index: 'id', block.id
+  assign lazy_img = 'lazy'
+  assign collection = collections[block_st.collection]
+  assign collection_image = block_st.image | default:collection.image | default: collection.products.first.featured_image
+  assign img_alt = collection_image.alt | default: block_st.title | default: collection.title
+  assign count = collection.all_products_count
+  
+  if section.index < 2 and block_index == 0
+        assign lazy_img = 'eager'
+  endif
+%}
+
+{%- capture styles -%}
+--cl:{{ block_st.cl }};
+{%- if block_st.preset == 'custom-hd' -%}
+--fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--ff:var(--{{ block_st.ff }});--fw:{{ block_st.fw }};--lh:{{ block_st.lh }};--ls:{{ block_st.ls }}px;
+{%- endif -%}
+ --bg:{{ block_st.tbg }};--text_margin:{{block_st.text_margin}}px;--text_margin_mobile:{{block_st.text_margin_mobile}}px; --text_padding : 30px; --text_padding_y: 12px;                                    
+{%- endcapture -%}
+
+<div id="blk-{{ block.id }}" class="collection-list collection-list1 pr zi1 mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}" style="{{ styles | strip_newlines }}" {{ block.shopify_attributes }}>
+      <a href="{{ block_st.url | default:collection.url }}" class="db pr of-hidden {{ block_st.irounded }}{% if block_st.zoom %} zoom-hov{% endif %}" title="{{ block_st.title }}">                    
+        <div class="pr of-hidden">
+          {%- if collection_image != blank -%}
+            {{- collection_image | image_url: width: collection_image.width | image_tag: class: 'img-auto', loading: lazy_img, alt: img_alt, siezs: '100vw', widths: '400,600,800,1000,1200' -}}            
+          {%- else -%}
+            {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture -%}{{- 'collection-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg img-auto' }}
+          {%- endif -%}
+        </div>
+        <div class="collection-details pa {{block_st.text_position}} tc anim {{ block_st.rounded }}">
+            {% if block_st.title != blank %}<div class="head {{ block_st.preset }}">{{ block_st.title }}</div>{% endif %}
+            {% if block_st.count and count != blank %}<span class="fs13 db op-9 mt5">{{ 'collections.general.items_with_count' | t: count: count }}</span>{% endif %}                                      
+        </div>
+      </a>
+</div>
+{% schema %}
+{
+  "name": "Collection",
+  "tag": null,
+  "settings": [
+    {
+        "label": "Collection",
+        "id": "collection",
+        "type": "collection"
+    },
+    {
+        "type":"image_picker",
+        "id":"image",
+        "label":"Image"      
+    },
+    {
+        "type":"text",
+        "id":"title",
+        "label":"Title",
+        "default":"COLLECTION"                   
+    },    
+    {
+        "type":"checkbox",
+        "id":"count",
+        "label":"Show product count",
+        "default": false
+    }, 	
+    {
+        "type": "checkbox",
+        "id": "zoom",
+        "label": "Image zoom on hover",
+        "default": true
+    },
+    {
+      "type": "select",
+      "id": "irounded",
+      "label": "Image corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },             
+    {
+      "type": "header",
+      "content": "Text appearance"
+    },    
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h6",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },        
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 14,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 14,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "500",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,     
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ls",
+      "label": "Letter spacing",
+      "default": 0,
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",     
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "tbg",
+      "label": "Background",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text position",  
+      "default": "left-50 translate-x50",
+      "options": [
+        {
+          "value": "left-50 top-50 translate-50",
+          "label": "Center"
+        },
+        {
+          "value": "left-50 translate-x50",
+          "label": "Bottom center"
+        },
+        {
+          "value": "left-0",
+          "label": "Bottom left"
+        },
+         {
+          "value": "right-0",
+          "label": "Bottom right"
+        }  
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_margin",
+      "label": "Text margin",
+      "default": 25,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.text_position != 'left-50 top-50 translate-50' }}"
+    },
+     {
+      "type": "range",
+      "id": "text_margin_mobile",
+      "label": "Text margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.text_position != 'center' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },    
+    {
+        "type": "range",
+        "id": "mb",
+        "label": "Bottom margin",
+        "default": 0,
+        "min":0,
+        "max": 50,
+        "step":5,
+        "unit": "px"
+    },
+    {
+        "type": "range",
+        "id": "mbm",
+        "label": "Bottom margin (mobile)",
+        "default": 0,
+        "min":0,
+        "max":50,
+        "step":5,
+        "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection"   
+    }
+  ]
+}
+{% endschema %}

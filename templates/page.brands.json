@@ -1,0 +1,91 @@
+{
+  "sections": {
+    "banner": {
+      "type": "page-banner",
+      "blocks": {
+        "heading_TCCYnT": {
+          "type": "heading",
+          "name": "Heading",
+          "settings": {
+            "text": "{{ closest.page.title }}",
+            "htag": "h2",
+            "hide_mb": false,
+            "cl": "#000000",
+            "preset": "h3",
+            "fs": 26,
+            "fsm": 20,
+            "ff": "ft2",
+            "fw": "700",
+            "text-upper": false,
+            "lh": 1.2,
+            "ls": 0,
+            "isbg": false,
+            "bg": "",
+            "bgg": "",
+            "bdr": "none",
+            "brd_sz": 1,
+            "bdr-cl": "",
+            "rounded": "none",
+            "ispd": false,
+            "pd-lr": 0,
+            "pd-tb": 0,
+            "pd-lrm": 0,
+            "pd-tbm": 0,
+            "mb": 0,
+            "mbm": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": ["heading_TCCYnT"],
+      "disabled": true,
+      "settings": {
+        "height_desk": 180,
+        "height_tab": 180,
+        "height_mob": 120,       
+        "ovr": "#00000061",
+        "bg": "#f4f4f4",
+        "bgg": "",
+        "contwd": 1300,
+        "gap": 10,
+        "gapm": 10,
+        "txtpos": "f-aic-md f-jcc-md",
+        "txtposm": "f-aic f-jcc",
+        "align": "center",
+        "alignm": "center"
+      }
+    },
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "cl": "#111111",
+        "bg": "#f9f9f9",
+        "fsz": 13,
+        "case": false,
+        "fullwidth": false,
+        "tc": false,
+        "hidemb": false
+      }
+    },
+    "main": {
+      "type": "main-brand-list",
+      "settings": {
+        "pgttl": false,
+        "navigation": true,
+        "alpha": "#111111",
+        "alphabg": "#f3f3f3",
+        "bdr": "#eeeeee",
+        "fullwidth": false,
+        "addbg": false,
+        "bg": "#f7f7f7",
+        "bgg": "",
+        "overlay": "",
+        "sst": 60,
+        "ssb": 60,
+        "sstm": 30,
+        "ssbm": 30
+      }
+    }
+  },
+  "order": ["banner", "breadcrumb", "main"]
+}

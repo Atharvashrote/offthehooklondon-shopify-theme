@@ -1,0 +1,33 @@
+.rangeSlider { top:0; left:0; z-index:20; background-color:transparent; border:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; outline:none; cursor:ew-resize; }
+
+@media (hover){
+  .rangeSlider:hover ~ .comparison-slider .slider-thumb { transform: scale(1.2); }
+}
+.image-comparison .rangeSlider:active ~ .comparison-slider .slider-thumb,
+.image-comparison .rangeSlider:focus ~ .comparison-slider .slider-thumb,
+.image-comparison .comparison-active ~ .comparison-slider .slider-thumb { transform:scale(0.8); background-color:var(--bg); }
+
+.comparison-image__wrapper.before {width:calc(50% + 1px); }
+.comparison-image__wrapper.after { padding-top:var(--pdm); }
+@media only screen and (min-width: 766px){
+    .comparison-image__wrapper.after { padding-top:var(--pd); }
+}
+
+.image-caption { white-space:nowrap; bottom:20px; background-color:var(--lbg); padding:6px 20px; border-radius:30px; }
+.image-caption.before { inset-inline-start:20px; z-index:2; }
+.image-caption.after { inset-inline-end:20px; }
+
+.comparison-slider { top:0; inset-inline-start:50%; width:2px; background-color:var(--bg); transition:background-color 0.3s ease-in-out; z-index:10; }
+.comparison-active ~ .comparison-slider { background-color: rgba(255, 255, 255, 0); }
+
+.slider-thumb { top:calc(50% - 20px); left:calc(50% - 20px); width:40px; height:40px; color:var(--cl); background-color:var(--bg); border-radius:50%;
+    transform-origin:center; transition:transform 0.3s ease-in-out, background-color 0.3s ease-in-out; }
+
+.rangeSlider::-webkit-slider-runnable-track { width:40px; height:40px; opacity:0; }
+.rangeSlider::-moz-range-thumb { width:40px; height:40px; opacity:0; }
+.rangeSlider::-webkit-slider-thumb { width:40px; height:40px; opacity:0; }
+
+.rangeSlider::-ms-fill-lower { background-color:transparent; }
+.rangeSlider::-ms-track { position:relative; top:0; left:0; width:100%; height:100%; border:none; margin:0; padding:0; background-color:transparent; color:transparent; outline:none; cursor:col-resize; }
+.rangeSlider::-ms-thumb { width:0.5%; height:100%; opacity:0; }
+.rangeSlider::-ms-tooltip { display:none; }

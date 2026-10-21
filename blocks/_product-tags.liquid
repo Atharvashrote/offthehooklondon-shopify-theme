@@ -1,0 +1,62 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+-%}
+{%- if product.tags.size > 0 -%}
+    <div class="product-meta meta{{ block_st.stl }} fl f-ais" style="--gap:8px;--gapm:8px;--cl:{{block_st.cl}};--bg:{{block_st.bg}};" {{ block.shopify_attributes }}>
+        {% if block_st.islabel %}<span class="lbl mr5">{{ 'products.product.tags' | t }}</span> {% endif %}
+        <div class="fl1 fl f-wrap gap">
+            {%- for collection in product.collections limit:1 -%}
+                {%- for tag in product.tags limit:10 -%}<a class="fl" href="{{ collection.url }}?constraint={{ tag | handle }}">{{ tag | remove:'type ' | remove:'Type ' }}{%  if block_st.stl == "1" %}{% unless forloop.last %}, {% endunless %} {% endif %}</a>{%- endfor -%}
+            {%- endfor -%}
+        </div>
+    </div>
+{%- endif -%} 
+{% schema %}
+{
+  "name": "Tags",
+  "tag": null,
+  "settings": [
+    {
+        "type": "checkbox",
+        "id": "islabel",
+        "label": "Show label",
+        "default": true
+    },
+    {
+        "type": "select",
+        "id": "stl",
+        "label": "Style",
+        "default": "2",
+        "options": [
+            {
+                "value": "1",
+                "label": "Style 1 - text"
+            },
+            {
+                "value": "2",
+                "label": "Style 2 - button"
+            }
+        ]
+    },
+    {
+        "type": "color",
+        "id": "cl",
+        "label": "Text",
+        "default": "#333"
+    },
+    {
+        "type": "color",
+        "id": "bg",
+        "label": "Background",
+        "default": "#eee"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tags",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

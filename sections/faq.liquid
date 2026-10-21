@@ -1,0 +1,843 @@
+{% assign section_st = section.settings %}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+	<div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}">		
+        {% render 'sec-title' %}
+
+        {% liquid
+          assign is_links = false
+          for block in section.blocks
+            if block.type == 'ttl' or block.type == 'link' or block.type == 'custom'
+              if section_st.links
+                assign is_links = true
+              endif
+            endif
+          endfor
+        %}
+        {%- if is_links -%}
+            <div class="fl f-ais gap f-col f-row-md" style="--gap:50px;--gapm:20px;">
+              <div class="faq-links round-sm border {% render 'animate-data', css:true %}" style="--cl:{{ section_st.lcl }};--clh:{{ section_st.lclh }};--fs:{{ section_st.lfs }}px;--fsm:{{ section_st.lfsm }}px;--fw:{{ section_st.lfw }};--bg:{{ section_st.lbg }};--border:{{ section_st.lbd }};--icns:14px;">
+                {% for block in section.blocks %}
+                    {% assign block_st = block.settings %}
+                    {% if block.type == 'ttl' or block.type == 'link' %}
+                      <a href="{% if block.type == 'link' %}{{ block_st.link }}{% else %}#tt{{ block.id }}{% endif %}" class="reg-text fl f-aic f-jcsb fs16">
+                        {{ block_st.title }}
+                        <svg class="at-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m19.389 11.123c-.331 0-.6.269-.6.6v6.222c0 1.63-1.326 2.956-2.956 2.956h-9.777c-1.63 0-2.956-1.326-2.956-2.956v-9.777c0-1.63 1.326-2.956 2.956-2.956h6.222c.332 0 .6-.269.6-.6s-.269-.6-.6-.6h-6.222c-2.292 0-4.156 1.864-4.156 4.155v9.777c0 2.291 1.864 4.155 4.156 4.155h9.777c2.291 0 4.155-1.864 4.155-4.155v-6.222c0-.331-.269-.6-.6-.6z"/><path d="m21.5 1.9h-4.802c-.331 0-.6.269-.6.6s.269.6.6.6h3.354l-7.672 7.671c-.234.233-.234.614 0 .848.117.117.271.176.424.176s.307-.059.424-.176l7.671-7.671v3.384c0 .331.269.6.6.6s.6-.269.6-.6v-4.832c0-.331-.269-.6-.6-.6z"/></svg>
+                      </a>
+                    {% endif %}
+                    {% if block.type == 'custom' %}
+                       <div class="pd10">
+                          {%  if block_st.title != blank %}
+                              <div class="{{block_st.preset }} mb25" style="{%- if block_st.preset == 'custom-hd' -%}--fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--ff:var(--{{ block_st.ff }});--fw:{{ block_st.fw }};--lh:{{ block_st.lh }};--ls:{{ block_st.ls }};{%- endif -%}"> 
+                              {{  block_st.title  }}
+                              </div>
+                          {% endif %}
+                          {%  if block_st.block_text != blank %}<div class="mb25" style="color:var(--cl)">{{ block_st.block_text }}</div>{% endif %}
+                          {%- if block_st.text != blank -%}
+                              <a class="btn {{ block_st.btn-size }} {{ block_st.btn-style }} w-100" href="{{ block_st.url }}"{% if block_st.newtab %} target="_blank"{% endif %}>{{- block_st.text -}}</a>
+                          {% endif %}
+                          {%- if block_st.text2 != blank -%}
+                              <a class="btn {{ block_st.btn-size }} {{ block_st.btn-style2 }} w-100 mt10" href="{{ block_st.url2 }}"{% if block_st.newtab2 %} target="_blank"{% endif %}>{{- block_st.text2 -}}</a>
+                          {% endif %}
+                        </div>
+                    {% endif %}  
+                {% endfor %}
+              </div>
+        {%- endif -%}
+      
+		<div id="faq{{ section.id }}" class="m-auto{% if is_links %} fl1{% endif %}{% if section_st.accor %} accor{% else %} no-accor{% endif %}" style="max-width:{{ section_st.page_width }}px;--cl:{{ section_st.an }};--fs:{{ section_st.fst }}px;--fsm:{{ section_st.fsmt }}px;--qcl:{{ section_st.qu }};--qfs:{{ section_st.fs }}px;--qfsm:{{ section_st.fsm }}px;--qfw:{{ section_st.fw }};--bdr:{{ section_st.bdr }};">     
+			{% for block in section.blocks %}
+				{% if block.type == 'ttl' %}
+					{% if block.settings.title != blank %}<h3 id="tt{{ block.id }}" class="reg-text mb5{% unless forloop.first %} mt20{% endunless %} {% render 'animate-data', css:true, text:true %}" {% render 'animate-data' %} style="--cl:{{ section_st.tcl }};--fs:{{ section_st.tfs }}px;--fsm:{{ section_st.tfsm }}px;--fw:{{ section_st.tfw }};" {{ block.shopify_attributes }}>{{ block.settings.title }}</h3>{% endif %}         
+				{% endif %}
+				{% if block.type == 'faqs' %}
+                    {%- capture faq_data -%}
+                        <summary class="quest m0 fl f-jcsb f-aic {{ section_st.fw }}">
+                            {{ block.settings.title }}
+                            {% if section_st.accor %}
+                                {%- if section_st.acc_style == '1' -%}
+                                    <svg class="at-icon ml10"><use class="plus" xlink:href="#icon-plus"></use><use class="minus" xlink:href="#icon-minus"></use></svg>
+                                {%- else -%}
+                                    <svg class="at-icon arw ml10"><use xlink:href="#icon-arrow"></use></svg>
+                                {%- endif -%}
+                            {% endif %}
+                        </summary>
+						<div class="ans rte">{{ block.settings.answer }}</div>
+                    {%- endcapture -%}
+                    {% if section_st.accor %}
+                        <details {% if block.settings.open %}open{% endif %} class="faq-body {% render 'animate-data', css:true, text:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+                            {{- faq_data -}}
+                        </details>
+                    {% else %}
+                        <div class="faq-body {% render 'animate-data', css:true, text:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+                            {{- faq_data -}}
+                        </div>
+                    {% endif %}
+				{% endif %}
+			{% endfor %}
+		</div>
+        {% if is_links %}</div>{% endif %}
+	</div>  
+</div>
+{% schema %}
+{
+  "name": "FAQ",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+   {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "FAQs"
+    }, 
+     {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Provides answers to a list of typical questions that users might ask</p> "
+    },      
+    {
+      "type": "range",
+      "id": "page_width",
+      "label": "FAQ maximum width",
+      "default": 700,
+      "min": 600,
+      "max": 2000,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "FAQ design"
+    },
+    {
+      "type": "checkbox",
+      "id": "accor",
+      "label": "Enable accordion",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "acc_style",
+      "label": "Icons",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Plus"
+        },
+        {
+          "value": "2",
+          "label": "Caret"
+        }
+      ],
+      "visible_if": "{{ section.settings.accor }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "----------------------------------------------"
+    },
+    {
+      "type": "paragraph",
+      "content": "Titles"
+    },
+    {
+      "type": "color",
+      "id": "tcl",
+      "label": "Color",
+      "default": "#222"
+    },
+    {
+      "type": "range",
+      "id": "tfs",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "tfsm",
+      "min": 9,
+      "max": 100,
+      "step": 1,
+      "label": "Font size (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "tfw",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": "----------------------------------------------"
+    },
+    {
+      "type": "paragraph",
+      "content": "Questions"
+    },
+    {
+      "type": "color",
+      "id": "qu",
+      "label": "Color",
+      "default": "#222"
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "label": "Font size (mobile)",
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": "----------------------------------------------"
+    },
+    {
+      "type": "paragraph",
+      "content": "Answers"
+    },
+    {
+      "type": "color",
+      "id": "an",
+      "label": "Color",
+      "default": "#333"
+    },
+    {
+      "type": "range",
+      "id": "fst",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "fsmt",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "label": "Font size (mobile)",
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "color",
+      "id": "bdr",
+      "label": "Borders",
+      "default": "#eee"
+    },
+    {
+      "type": "header",
+      "content": "Link list"
+    },
+    {
+      "type": "checkbox",
+      "id": "links",
+      "label": "Enable",
+      "default": false,
+      "info": "Show faq's titles and other links"
+    },
+    {
+      "type": "range",
+      "id": "lfs",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 15,
+      "visible_if": "{{ section.settings.links }}"
+    },
+    {
+      "type": "range",
+      "id": "lfsm",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "label": "Font size (mobile)",
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ section.settings.links }}"
+    },
+    {
+      "type": "select",
+      "id": "lfw",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "visible_if": "{{ section.settings.links }}"
+    },
+    {
+      "type": "color",
+      "id": "lcl",
+      "label": "Color",
+      "default": "#444",
+      "visible_if": "{{ section.settings.links }}"
+    },
+    {
+      "type": "color",
+      "id": "lclh",
+      "label": "Hover color",
+      "default": "#000",
+      "visible_if": "{{ section.settings.links }}"
+    },
+    {
+      "type": "color",
+      "id": "lbg",
+      "label": "Background",
+      "default": "#fff",
+      "visible_if": "{{ section.settings.links }}"
+    },
+    {
+      "type": "color",
+      "id": "lbd",
+      "label": "Border",
+      "default": "#eee",
+      "visible_if": "{{ section.settings.links }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+     "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },    
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }    
+  ],
+  "blocks": [
+    {
+      "type": "ttl",
+      "name": "FAQ's title",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "FAQ's Title"
+        }
+      ]
+    },
+    {
+      "type": "faqs",
+      "name": "FAQs",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Question",
+          "default": "Is Avone compatible with Shopify Online Store 2.0?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Yes, Avone is fully compatible and supports Sections on every page.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "link",
+      "name": "Other link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Other Link",
+          "info": "display with link list"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    },
+     {
+      "type": "custom",
+      "name": "Custom block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Contact us"
+        },
+        {
+          "type": "select",
+          "id": "preset",
+          "label": "Preset",
+          "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+          "default": "h2",
+          "options": [
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "h5",
+              "label": "H5"
+            },
+            {
+              "value": "h6",
+              "label": "H6"
+            },
+            {
+              "value": "text-1",
+              "label": "Text 1"
+            },
+            {
+              "value": "text-2",
+              "label": "Text 2"
+            },
+            {
+              "value": "custom-hd",
+              "label": "Custom"
+            }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "600",
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },   
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ block.settings.preset == 'custom-hd' }}"
+      },
+        {
+          "type": "richtext",
+          "id": "block_text",
+          "label": "Text",
+          "default": "<p>If you have an issue or question that requires immediate assistance, you can click the button below to chat live with a Customer Service representative.  <br/>If we aren’t available, drop us an email and we will get back to you within 20-36 hours!</p>"         
+        },
+        {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "newtab",
+      "label": "Open in new tab",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "text2",
+      "label": "Text",
+      "default": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "url2",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "newtab2",
+      "label": "Open in new tab",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "btn-style2",
+      "label": "Button design",
+      "default": "btn4",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "btn-size",
+      "label": "Buttons size",
+      "default": "btn-md",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ]
+      }        
+     ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQs",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "faqs"
+        },
+        {
+          "type": "faqs"
+        },
+        {
+          "type": "faqs"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

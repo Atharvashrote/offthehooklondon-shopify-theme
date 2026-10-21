@@ -1,0 +1,320 @@
+/* =========================================================
+   PREMIUM CATEGORY GRID
+   FIND YOUR PERFECT PAIR
+   ========================================================= */
+
+.premium-category-section {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   SECTION HEADER
+   ========================================================= */
+
+.premium-category-section .premium-category-header {
+    text-align: center;
+    margin: 20px auto 30px;
+}
+
+
+.premium-category-section .premium-category-header h2 {
+    margin: 0;
+
+    font-family: inherit !important;
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    line-height: 33px !important;
+    letter-spacing: 0 !important;
+
+    color: #111 !important;
+}
+
+
+.premium-category-section .premium-category-header p {
+    max-width: 650px;
+
+    margin: 10px auto 10px;
+
+    font-family: inherit !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 26px !important;
+    letter-spacing: 0 !important;
+
+    color: #666 !important;
+}
+
+
+/* =========================================================
+   HEADING LINE
+   Scoped to this section
+   ========================================================= */
+
+.premium-category-section .heading-line {
+    display: block;
+
+    width: 70px;
+    height: 2px;
+
+    margin: 0 auto;
+
+    background: #111;
+}
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.premium-category-section .premium-category-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 2px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   CATEGORY CARD
+   ========================================================= */
+
+.premium-category-section .premium-category-card {
+    position: relative;
+
+    display: block;
+
+    overflow: hidden;
+
+    aspect-ratio: 1 / 1;
+
+    background: #000;
+
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   IMAGE
+   ========================================================= */
+
+.premium-category-section .premium-category-card img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform 0.7s ease;
+}
+
+
+.premium-category-section .premium-category-card:hover img {
+    transform: scale(1.08);
+}
+
+
+/* =========================================================
+   OVERLAY
+   ========================================================= */
+
+.premium-category-section .premium-overlay {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.35),
+            rgba(0, 0, 0, 0.10),
+            rgba(0, 0, 0, 0.45)
+        );
+
+    transition: background 0.4s ease;
+}
+
+
+.premium-category-section .premium-category-card:hover .premium-overlay {
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.60)
+        );
+}
+
+
+/* =========================================================
+   CARD CONTENT
+   ========================================================= */
+
+.premium-category-section .premium-content {
+    position: absolute;
+    inset: 0;
+}
+
+
+/* =========================================================
+   CARD TITLE
+   ========================================================= */
+
+.premium-category-section .premium-content h3 {
+    position: absolute;
+
+    top: 22px;
+    left: 22px;
+
+    margin: 0;
+
+    font-family: inherit !important;
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    line-height: 36px !important;
+    letter-spacing: 0 !important;
+
+    color: #fff !important;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   SHOP NOW
+   ========================================================= */
+
+.premium-category-section .shop-now {
+    position: absolute;
+
+    right: 22px;
+    bottom: 22px;
+
+    font-family: inherit !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    line-height: 16px !important;
+    letter-spacing: 1.4px !important;
+
+    color: #fff !important;
+
+    text-transform: uppercase;
+
+    border-bottom: 1px solid #fff;
+
+    padding-bottom: 4px;
+
+    transition:
+        letter-spacing 0.3s ease,
+        border-color 0.3s ease;
+}
+
+
+.premium-category-section .premium-category-card:hover .shop-now {
+    letter-spacing: 1.8px;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media screen and (max-width: 1200px) {
+
+    .premium-category-section .premium-category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 768px) {
+
+    .premium-category-section {
+        padding: 45px 15px;
+    }
+
+
+    .premium-category-section .premium-category-header {
+        margin-bottom: 35px;
+    }
+
+
+    .premium-category-section .premium-category-header h2 {
+        font-size: 26px !important;
+        line-height: 31px !important;
+    }
+
+
+    .premium-category-section .premium-category-header p {
+        max-width: 500px;
+
+        margin: 14px auto 22px;
+
+        font-size: 14px !important;
+        line-height: 23px !important;
+    }
+
+
+    .premium-category-section .premium-category-grid {
+        grid-template-columns: 1fr;
+
+        gap: 4px;
+    }
+
+
+    .premium-category-section .premium-content h3 {
+        top: 18px;
+        left: 18px;
+
+        font-size: 24px !important;
+        line-height: 29px !important;
+    }
+
+
+    .premium-category-section .shop-now {
+        right: 18px;
+        bottom: 18px;
+
+        font-size: 10px !important;
+        line-height: 15px !important;
+        letter-spacing: 1.2px !important;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 420px) {
+
+    .premium-category-section .premium-category-header h2 {
+        font-size: 24px !important;
+        line-height: 29px !important;
+    }
+
+
+    .premium-category-section .premium-category-header p {
+        font-size: 14px !important;
+        line-height: 22px !important;
+    }
+
+
+    .premium-category-section .premium-content h3 {
+        font-size: 22px !important;
+        line-height: 27px !important;
+    }
+
+}

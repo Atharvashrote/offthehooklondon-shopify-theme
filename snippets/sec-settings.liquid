@@ -1,0 +1,31 @@
+{%- capture image -%}
+    {% if section_st.bg-image != blank %}data-bgset="{{ section_st.bg-image | image_url: width: section_st.bg-image.width | image_tag: widths: '400,600,800,1000,1400,1600,2000,2400,3000' | split: 'srcset="' | last | split: '"' | first }}" data-sizes="auto"{% endif %}
+{%- endcapture -%}
+{%- capture section_style -%}
+    --sst:{{ section_st.sst }}px;--ssb:{{ section_st.ssb }}px;--sstm:{{ section_st.sstm }}px;--ssbm:{{ section_st.ssbm }}px;
+    {%- if section_st.addbg -%}
+        --sbg:{% if section_st.bgg != blank %}{{ section_st.bgg }}{% else %}{{ section_st.bg }}{% endif %};
+    {%- endif -%}
+    {%- if section_st.bg-image != blank -%}--overlay:{{ section_st.overlay }};{%- endif -%}
+{%- endcapture -%}
+{%- liquid
+  capture classes
+    if section_st.hidem
+      echo 'hide-sm '
+    endif
+    if section_st.hided
+      echo 'hide-md hide-lg '
+    endif
+    if section_st.addbg and section_st['bg-image'] != blank
+      echo 'background-image lazyload zi1'
+    endif
+  endcapture
+
+  if class
+    echo classes
+  elsif bgimage
+    echo image
+  elsif styles
+    echo section_style
+  endif
+-%}

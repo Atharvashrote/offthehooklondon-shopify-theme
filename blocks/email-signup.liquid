@@ -1,0 +1,294 @@
+{%- liquid
+  assign block_st = block.settings
+  assign formid = 'nwform' | append: block.id
+  capture classes
+    echo 'wd-' | append: block_st.width | append: '-md '
+    echo 'wd-' | append: block_st.widthm | append: ' '
+  endcapture
+  capture block_classes
+    if block_st.style == 'def'
+      echo 'default '
+    elsif block_st.style == 'btm'
+      echo 'btm-border '
+    elsif block_st.style == 'verticle'
+      echo 'news-column '
+    elsif block_st.style == 'int'
+      echo 'integrated '
+    endif
+  endcapture
+-%}
+{%- capture styles -%}
+    --tf_txt:{{ block_st.cl }};--tf_bg:{{ block_st.bg }};--tf_bdr:{{ block_st.bdr-cl }};--gap:10px;--gapm:10px;--icns:18px;
+
+    {%- if block_st.width == 'custom' -%}
+        --wd:{{ block_st.ct_width | default: '100%' }};
+    {%- endif -%}
+    {%- if block_st.widthm == 'custom' -%}
+        --wdm:{{ block_st.ct_widthm | default: '100%' }};
+    {%- endif -%}
+{%- endcapture -%}
+<div id="blk-{{ block.id }}" class="mb{{ block_st.mbm }} mb{{ block_st.mb }}-md {{ classes }}" style="{{ styles }}" {{ block.shopify_attributes }}>
+  {%- form 'customer', id:formid, class:'email-signup__form spacing-style' %}
+    {%- if form.posted_successfully? -%}
+      <div id="Email-signup__message-success-{{ block.id }}" class="email-signup__message email-signup__message--success" tabindex="-1">
+        <span class="svg-wrapper icon-success">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>
+        <p class="form-success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+      </div>
+    {%- else -%}
+      <div class="nw-form fl gap {{ block_st.rounded }} {{ block_classes }}" style="{{ styles }}">
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <label for="EmailInput-{{ block.id }}" class="hidden_txt">{{- 'general.newsletter_form.email_placeholder' | t -}}</label>
+        <input id="EmailInput-{{ block.id }}" class="newsletter-txt mb0 w-100 fl1 {{ block_st.rounded }}" type="email" name="contact[email]"
+          autocorrect="off" autocapitalize="off" autocomplete="email" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" required
+          {% if form.errors %}
+            autofocus aria-invalid="true" aria-describedby="Email-signup__message-error-{{ block.id }}"
+          {% elsif form.posted_successfully? %}
+            aria-describedby="Email-signup__message-success-{{ block.id }}"
+          {% endif %}
+        >
+        <button class="btn btn-sm {{ block_st.btn-style }} {{ block_st.rounded }}" {% if block.settings.display_type != 'text' %}aria-label="{{ 'general.newsletter_form.submit' | t }}"{% endif %}>
+          {% if block.settings.display == 'text' %}{{ block.settings.text }}{% else %}<svg class="at-icon"><use xlink:href="#icon-email"></use></svg>{% endif %}
+        </button>
+      </div>
+    {%- endif -%}
+
+    {%- if form.errors -%}
+      <div id="Email-signup__message-error-{{ block.id }}" class="email-signup__message email-signup__message--error" tabindex="-1">
+        {{- form.errors.translated_fields.email | capitalize }}
+        {{ form.errors.messages.email -}}
+      </div>
+    {%- endif -%}
+  {% endform %}
+</div>
+{% schema %}
+{
+  "name": "Email signup",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Signups add [customer profiles](https://help.shopify.com/manual/customers)"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "def",
+      "options": [
+        {
+          "label": "Default",
+          "value": "def"
+        },
+        {
+          "label": "Bottom line",
+          "value": "btm"
+        },
+        {
+          "label": "Vertical",
+          "value": "verticle"
+        },
+        {
+          "label": "Integrated",
+          "value": "int"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Input"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text color",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background color",
+      "alpha": true,
+      "default":"#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "default": "#ddd",
+      "alpha": true
+    },
+    {
+      "type": "header",
+      "content": "Submit button"
+    },
+    {
+      "type": "select",
+      "id": "display",
+      "label": "Display",
+      "default": "text",
+      "options": [
+        {
+          "value": "text",
+          "label": "Text"
+        },
+        {
+          "value": "icon",
+          "label": "Icon"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Sign Up",
+      "visible_if": "{{ block.settings.display == 'text' }}"
+    },
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "fill",
+      "options": [
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "ct_width",
+      "label": "Custom width",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "widthm",
+      "label": "Width (mobile)",
+      "default": "fill",
+      "options": [
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "ct_widthm",
+      "label": "Custom width (mobile)",
+      "default": "500px",
+      "info": "Use numbers with 'px' or '%'. Ex: 600px or 60%",
+      "visible_if": "{{ block.settings.widthm == 'custom' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Email signup"     
+    }
+  ]
+}
+{% endschema %}

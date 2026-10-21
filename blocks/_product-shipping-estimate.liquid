@@ -1,0 +1,100 @@
+{%- liquid
+    assign block_st = block.settings
+
+    if product.metafields.custom.shipping_days != blank
+        assign days = product.metafields.custom.shipping_days | split: "/"
+    else
+        assign days = block_st.estimate_ship | split: "/"
+    endif
+    assign day_1 = days[0] | times: 86400
+    assign day_2 = days[1] | times: 86400
+    assign day_1_day = "now" | date: "%s" | plus: day_1 | date: '%A'
+    if day_1_day == 'Saturday'
+        assign day_1 = days[0] | plus: 2 | times: 86400
+        assign day_2 = days[1] | plus: 2 | times: 86400
+    elsif day_1_day == 'Sunday'
+        assign day_1 = days[0] | plus: 1 | times: 86400
+        assign day_2 = days[1] | plus: 1 | times: 86400
+    endif
+
+    assign day_2_day = "now" | date: "%s" | plus: day_2 | date: '%A'
+    if day_2_day == 'Saturday'
+        assign day_2 = days[1] | plus: 2 | times: 86400
+    elsif day_2_day == 'Sunday'
+        assign day_2 = days[1] | plus: 1 | times: 86400
+    endif 
+-%}
+{% capture startdate %}<b>{{ "now" | date: "%s" | plus: day_1 | time_tag: format: 'day_month' }}</b>{% endcapture %}
+{% capture enddate %}<b>{{ "now" | date: "%s" | plus: day_2 | time_tag: format: 'day_month' }}</b>{% endcapture %}
+<div class="fl shipping-msg mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" {{ block.shopify_attributes }} style="--icns:18px">
+    {%- if block_st.shipmsg_ico -%}
+        <svg class="at-icon mr10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M400 64h-48V12c0-6.6-5.4-12-12-12h-8c-6.6 0-12 5.4-12 12v52H128V12c0-6.6-5.4-12-12-12h-8c-6.6 0-12 5.4-12 12v52H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM48 96h352c8.8 0 16 7.2 16 16v48H32v-48c0-8.8 7.2-16 16-16zm352 384H48c-8.8 0-16-7.2-16-16V192h384v272c0 8.8-7.2 16-16 16zM148 320h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm96 0h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm96 0h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-96 96h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-96 0h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm192 0h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12z"/></svg>
+    {%- endif -%}
+    <span>{{ block_st.estimate_shipping_msg | replace:'[startdate]', startdate | replace:'[enddate]',enddate }}</span>
+</div>
+{% schema %}
+{
+  "name": "Shipping estimate",
+  "tag": null,
+  "settings": [
+    {
+        "type": "paragraph",       
+        "content": "Display same time for all products"
+    },
+    {
+        "type": "checkbox",
+        "id": "shipmsg_ico",
+        "label": "Show Icon",
+        "default": true
+    },
+    {
+        "type": "text",
+        "id": "estimate_ship",
+        "label": "Shipping estimated days",
+        "default": "4\/10",
+        "info": "Add value in days like 4\/10 and customer will show date after 4 to 10 days from today date."
+    },
+    {
+        "type": "textarea",
+        "id": "estimate_shipping_msg",
+        "label": "Shipping estimate message",
+        "default": "Estimated delivery between [startdate] and [enddate].",
+        "info": "Use '[startdate]' and [enddate] for date to show with message"
+    },
+    {
+        "type": "paragraph",       
+        "content": "[Follow given article](https:\/\/www.adornthemes.com\/knowledge-base\/show-shipping-estimated-time-for-specific-product-2\/) to set different time for each product"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shipping estimate",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

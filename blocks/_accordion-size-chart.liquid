@@ -1,0 +1,214 @@
+{% liquid
+  assign block_st = block.settings
+%}
+<details class="sumtabs" {% if block.settings.tbopen %}open=""{% endif %} {{ block.shopify_attributes }}>
+    <summary class="head [ttl-preset] pr fl f-aic col-gap" style="--gap:10px;">
+        {%- if block_st.sicon != blank and block_st.icon == "custom" -%}
+           <img loading="lazy" class="at-icon" src="{{ block_st.sicon | image_url: width: '60' }}" width="18" height="18" alt="">
+        {%- else -%}
+          {%- render 'icons', block_st: block_st, icon: block_st.icon -%}
+        {%- endif -%}
+        {{ block_st.title }} [icon]
+    </summary>
+    <div class="details-content rte{% if block_st.tabicon != blank %} pdside{% endif %}">
+        {%- assign prtype = product.type | handleize | append: "-size-chart" -%}
+        {%- assign prbrand = product.vendor | handleize | append: "-size-chart" -%}
+        {%- if product.metafields.custom.sizechart != blank or  product.metafields.my_fields.sizechart != blank -%}
+            {{ product.metafields.custom.sizechart | default : product.metafields.my_fields.sizechart }}
+        {%- elsif settings.sizechart_type == "type" and pages[prtype].content != empty -%}
+            {{ pages[prtype].content }}
+        {%- elsif settings.sizechart_type == "brand" and pages[prbrand].content != empty -%}
+            {{ pages[prbrand].content }}
+        {%- else -%}
+            {{ pages[settings.sizechart_page].content }}
+        {%- endif -%}
+    </div>
+</details>
+{% schema %}
+{
+  "name": "Size Chart Tab",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "This tab show only on product pages."
+    },    
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "none",
+      "options": [
+        {
+                        "value": "none",
+                        "label": "None"
+                    },
+                    {
+                        "value": "custom",
+                        "label": "Custom"
+                    },
+                    {
+                        "value": "check",
+                        "label": "Check"
+                    },
+                    {
+                        "value": "check2",
+                        "label": "Check 2"
+                    },	
+                    {
+                        "value": "truck",
+                        "label": "Truck"
+                    },
+                    {
+                        "value": "email",
+                        "label": "Email"
+                    },
+                    {
+                        "value": "phone",
+                        "label": "Phone"
+                    },
+                    {
+                        "value": "phone2",
+                        "label": "Phone 2"
+                    },
+                    {
+                        "value": "comment",
+                        "label": "Comment"
+                    },
+                    {
+                        "value": "support",
+                        "label": "Support"
+                    },
+                    {
+                        "value": "dollar",
+                        "label": "Dollar"
+                    },												
+                    {
+                        "value": "package",
+                        "label": "Package"
+                    },
+                    {
+                        "value": "tape",
+                        "label": "Tape"
+                    },
+                    {
+                        "value": "progress",
+                        "label": "Progress"
+                    },
+                     {
+                        "value": "fire1",
+                        "label": "Fire"
+                    },
+                    {
+                        "value": "question",
+                        "label": "Question"
+                    },                   
+                     {
+                    "value": "return2",
+                    "label": "Return 2"
+                    },   
+                    {
+                        "value": "return",
+                        "label": "Return"
+                    },
+                    {
+                        "value": "rocket",
+                        "label": "Rocket"
+                    },	
+                    {
+                        "value": "plan",
+                        "label": "Plane"
+                    },						               						
+                    {
+                        "value": "heart",
+                        "label": "Heart"
+                    },										
+                    {
+                        "value": "star",
+                        "label": "Star"
+                    },
+                    {
+                        "value": "like",
+                        "label": "Like"
+                    }, 								
+                    {
+                        "value": "info",
+                        "label": "Info."
+                    }, 
+                    {
+                        "value": "tag",
+                        "label": "Tag"
+                    },
+                    {
+                        "value": "tag2",
+                        "label": "Tag"
+                    },			
+                    {
+                        "value": "globe",
+                        "label": "Globe"
+                    },
+                    {
+                        "value": "earth",
+                        "label": "Earth"
+                    },
+                    {
+                        "value": "gift",
+                        "label": "Gift"
+                    },
+                    {
+                        "value": "location",
+                        "label": "Location"
+                    },
+                    {
+                        "value": "shop",
+                        "label": "Shop"
+                    },
+                    {
+                        "value":"time",
+                        "label": "Time"
+                    },
+                    {
+                        "value": "rain",
+                        "label": "Rain"
+                    },
+                    {
+                        "value": "sun",
+                        "label": "Sun"
+                    },
+                    {
+                        "value": "cloud",
+                        "label": "Cloud"
+                    },                                              
+                    {
+                        "value": "care2",
+                        "label": "Care"
+                    }         
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "sicon",
+      "label": "Custom icon",
+      "visible_if": "{{ block.settings.icon == 'custom' }}"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "tbopen",
+      "label": "Keep tab open on page load",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Size chart tab",
+      "category": "Layout"
+    }
+  ]
+}
+{% endschema %}

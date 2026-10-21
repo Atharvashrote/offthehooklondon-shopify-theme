@@ -1,0 +1,315 @@
+{%- if secblk.size > 0 -%}
+{%- liquid
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+
+    assign mmclass = 'mgmenu custom-scroll'
+    assign nav_align = settings.nAlign
+    capture arrow
+       if ishmb
+          echo '<svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg>'
+       else
+         echo '<svg class="at-icon arw"><use xlink:href="#icon-arrow"></use></svg>'
+       endif
+    endcapture
+-%}
+<ul id="main-nav" class="{% if ishmb %}{% else %}fl1 fl f-wrap hide-sm hide-md {{ nav_align }} {% endif %}">
+    {%- for block in secblk -%}
+        {%- liquid
+            assign block_st = block.settings
+            assign label = block_st.title | split: '[label' | last  | split: ']' | first | prepend: "nm_lbl"
+            assign ttlink = block_st.url
+        -%}
+        {%- capture link_level_1 -%}
+              <a href="{% if ttlink != blank %}{{ ttlink }}{% else %}#{% endif %}" {% if block_st.title contains '[new]' %}target="_blank"{% endif %}>
+                  {{ block_st.title | split: '[' | first }}
+                  {% if block_st.title contains '[label' %}<span class="lbl {{ label }}">{{ settings[label] }}</span>{% endif %}
+                  {% if settings.navarw %}{{ arrow }}{% endif %}
+              </a>
+         {%- endcapture -%}
+    {%- case block.type -%}
+    {%- when 'home' -%}
+    <li class="lvl1" {{ block.shopify_attributes }}><a href="{{ routes.root_url }}">{{ block_st.title | split: '[' | first }}</a></li>
+
+    {%- when 'slink' -%}
+    <li class="lvl1" {{ block.shopify_attributes }}>{{ link_level_1 | remove: arrow }}</li>
+
+    {%- when 'm1' -%}
+    {%- if block_st.title != blank -%}
+    <li class="lvl1 parent{% if block_st.cwd %} ctsize{% endif %}" {%- if request.design_mode -%}id="mm{{ block.id }}"{%- endif -%} {{ block.shopify_attributes }}>{{ link_level_1 }}
+      <div class="{{ mmclass }} st1{% if block_st.callPos == "right" %} fl f-ais{% endif %}{% if block_st.cwd %} {{ block_st.mmal }}{% else %} mmfull block{{ block.id }}{% endif %}"{% if block_st.cwd %}style="width:{{ block_st.bxwd }}px;"{% endif %}>
+          {%- if block_st.bxsz -%}<div class="w-100 page-width{% if block_st.callPos == "right" %} fl f-ais{% endif %}">{%- endif -%}
+          {%- capture img_columns -%}
+            {%- liquid
+                assign column = 100.00 | divided_by: block_st.colWd | times: 1
+                assign divide_colunm = 1.00 | divided_by: column | round: 2
+            -%}
+            {%- capture sizes -%}
+              {%- if block_st.callPos == "right" -%}
+                (min-width:1024px) calc((({{ page_width }} - {{ 30 | times: block_st.icol | minus: 30 }}px) * {{ divide_colunm }}) / {{ block_st.icol }})
+              {%- else -%}
+                (min-width:1024px) calc(({{ page_width }} - {{ 30 | times: block_st.icol | minus: 30 }}px) / {{ block_st.icol }})
+              {%- endif -%}
+            {%- endcapture -%}
+            {%- for i in (1..4) -%}
+                {%- capture bkimg_1 -%}{% if block_st.image1 != blank %}{{ block_st.image1 | image_url: width: block_st.image1.width | image_tag: loading:'lazy', class:'img-auto', sizes:sizes, widths:"180,320,400,560,740,900,1200" }}{%- else -%}-{%- endif -%}{%- endcapture -%}
+                {%- capture bkimg_2 -%}{% if block_st.image2 != blank %}{{ block_st.image2 | image_url: width: block_st.image2.width | image_tag: loading:'lazy', class:'img-auto', sizes:sizes, widths:"180,320,400,560,740,900,1200" }}{%- else -%}-{%- endif -%}{%- endcapture -%}
+                {%- capture bkimg_3 -%}{% if block_st.image3 != blank %}{{ block_st.image3 | image_url: width: block_st.image3.width | image_tag: loading:'lazy', class:'img-auto', sizes:sizes, widths:"180,320,400,560,740,900,1200" }}{%- else -%}-{%- endif -%}{%- endcapture -%}
+                {%- capture bkimg_4 -%}{% if block_st.image4 != blank %}{{ block_st.image4 | image_url: width: block_st.image4.width | image_tag: loading:'lazy', class:'img-auto', sizes:sizes, widths:"180,320,400,560,740,900,1200" }}{%- else -%}-{%- endif -%}{%- endcapture -%}
+                {%- capture is_img -%}{% cycle bkimg_1, bkimg_2, bkimg_3, bkimg_4 %}{%- endcapture -%}
+                {%- capture bkttl -%}{% cycle block_st.iTtl1, block_st.iTtl2, block_st.iTtl3, block_st.iTtl4 %}{%- endcapture -%}
+                {%- capture bkurl -%}{% cycle block_st.imgurl1, block_st.imgurl2, block_st.imgurl3, block_st.imgurl4 %}{%- endcapture -%}
+                {%- capture newtab -%}{% cycle block_st.new_tab, block_st.new_tab2, block_st.new_tab3, block_st.new_tab4 %}{%- endcapture -%}
+                {%- if is_img != "-" -%}
+                   <li class="gitem imageCol tc">
+                        <a href="{{ bkurl }}" class="db"{% if newtab %} target="_blank"{% endif %}>
+                          {{ is_img }}
+                          {% if bkttl != blank %}<div class="img-ttl reg-text mt15 {{ block_st.ttla }}{% if block_st.overlay_lbl %} above{% endif %}">{{ bkttl }}</div>{% endif %}
+                        </a>                        
+                      </li>
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endcapture -%}
+          
+          <ul class="grid rwcols-{{ block_st.mcol }} fl1">{% for link in linklists[block_st.menu].links %}{% render 'mm-links', link:link %}{% endfor %}</ul>
+          {%- if img_columns != blank -%}
+            {%- if block_st.callPos == "bottom" -%}<div class="mb25"></div>{%- endif -%}
+           	<ul class="grid rwcols-{{ block_st.icol }} row-gap" style="--gap:30px;--cl:{{ block_st.ttcl }};--bg:{{ block_st.ttbg }};--fs:{{ block_st.ttfs }}px;--fw:{{ block_st.ttfw }};--rounded:{{ block_st.icnbr }}px;{% if block_st.callPos == "right" %}width:{{ block_st.colWd }}%;{%- endif -%}">{{ img_columns }}</ul>
+          {%- endif -%}
+          {%- if block_st.bxsz -%}</div>{%- endif -%}
+      </div>
+    </li>
+    {%- endif -%}
+
+    {%- when 'm2' -%}
+    {%- if block_st.title != blank -%}
+    <li class="lvl1 parent{% if block_st.cwd %} ctsize{% endif %}" {{ block.shopify_attributes }}>{{ link_level_1 }}
+      <div class="{{ mmclass }} st2{% if block_st.cwd %} {{ block_st.mmal }}{% else %} mmfull{% endif %}" {% if block_st.cwd  %}style="width:{{ block_st.bxwd }}px;"{% endif %}>
+        <div class="{% if block_st.bxsz %} page-width{% endif %}">
+          <div class="fl f-ais gap" style="--gap:30px;">
+            {%- if block_st.menu != blank -%}
+                <ul class="grid fl1 rwcols-{{ block_st.lgrid }} f-ass fl1">
+                    {%- for link in linklists[block_st.menu].links -%}{%- render 'mm-links', link:link -%}{%- endfor -%}
+                </ul>
+            {%- endif -%}
+
+            {%- if block_st.products != blank -%}
+              <div class="prColumn{% unless block_st.ftcl -%} fl1{% endunless %}" style="--grsp:7.5px;width:{{ block_st.pcolWd }}%;">
+                {%- if block_st.pttl != blank -%}<div class="mb10 colttl">{{ block_st.pttl }}</div>{%- endif -%}
+                {%- capture product_data -%}
+                    {%- for product in block_st.products -%}
+                        <div class="gitem{% if block_st.prslider %} swiper-slide{% endif %}">{% render 'product-card-grid', product:product, sizes:'350px' %}</div>
+                    {%- endfor -%}
+                {%- endcapture -%}
+                {%- if block_st.prslider -%}
+                    <slide-section class="grid gspace rwcols-{{ block_st.grid }} grid-products swiper" style="--grsp:7.5px;"
+                        data-swiper='{ "slidesPerView":"auto", "loop":true, "autoplay":{ "delay":"3000" },"navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+                        <div class="swiper-wrapper">{{ product_data }}</div>
+                        <div class="swiper-arrows swiper-button-next swn{{ section.id }}"></div>
+                        <div class="swiper-arrows swiper-button-prev swp{{ section.id }}"></div>
+                    </slide-section>
+                {%- else -%}
+                    <div class="grid gspace rwcols-{{ block_st.grid }} grid-products" style="--grsp:7.5px;">{{ product_data }}</div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            {%- if block_st.ftcl -%}
+              <div class="imagebanner" style="width:{{ block_st.colWd }}%;">
+                <a {% if block_st.link != blank %}href="{{ block_st.link }}"{% else %}role="link" aria-disabled="true"{% endif %} class="db mmftcolumn tc pr brad of-hidden" style="--rounded:{{ block_st.icnbr }}px">
+                  {%- if block_st.image != blank -%}
+                        {%- liquid
+                            assign column = 100.00 | divided_by: block_st.colWd | times: 1
+                            assign divide_colunm = 1.00 | divided_by: column | round: 2
+                        %}
+                        {%- capture sizes -%}
+                          (min-width:1024px) calc(({{ page_width }} * {{ column | minus: 1 }}) * {{ divide_colunm }})
+                        {%- endcapture -%}
+                        {{ block_st.image | image_url: width: block_st.image.width | image_tag: loading:'lazy', class:'img-fill', sizes:sizes, widths:"180,320,400,560,740,900,1200" }}
+                    {%- endif -%}
+                    <div class="pa w-100 h-100 fl f-aic f-jce f-col gap pd20 pd40-md" style="background-color:{{ block_st.ft_bg }};--gap:10px;top:0;">
+                      {%- if block_st.ft_ttl != blank -%}<p class="mb0 fw-600" style="color:{{ block_st.txtcl }};font-size:{{ block_st.ft_ttls }}px;line-height:1.2">{{ block_st.ft_ttl }}</p>{%- endif -%}
+                      {%- if block_st.ft_sttl != blank -%}<p class="mb20" style="color:{{ block_st.txtcl }};font-size:{{ block_st.ft_sttls }}px;">{{ block_st.ft_sttl }}</p>{%- endif -%}
+                      {%- if block_st.link != blank and block_st.ft_btn != blank -%} <span class="btn {{ block_st.btn-style2 }}">{{ block_st.ft_btn }}</span>{%- endif -%}
+                    </div>
+                </a>
+              </div>
+            {%- endif %}
+          </div>
+        </div>
+      </div>
+    </li>
+    {%- endif -%}
+
+    {%- when 'm3' -%}
+         {%- if block_st.title != blank -%}
+        <li class="lvl1 parent{% if block_st.cwd %} ctsize{% endif %}" {{ block.shopify_attributes }}>{{ link_level_1 }}
+          <div class="{{ mmclass }} st3{% if block_st.cwd %} {{ block_st.mmal }}{% else %} mmfull{% endif %}"{% if block_st.cwd %}style="width:{{ block_st.bxwd }}px;"{% endif %}>
+              {%- capture menucolumns -%}{{ block_st.image1 }} {{ block_st.image2 }} {{ block_st.image3 }} {{ block_st.image4 }} {{ block_st.image5 }}{%- endcapture -%}
+              {%- assign columnitems = menucolumns | split: ' ' -%}
+              {%- capture m_3_sizes -%}
+                (min-width:1024px) calc(({{ page_width }} - {{ 30 | times: columnitems.size | minus: 30 }}px) / {{ columnitems.size }})
+            {%- endcapture -%}
+            {%- if block_st.bxsz -%}<div class="page-width">{%- endif -%}
+            <ul class="grid rwcols-{{ columnitems.size }} mmWrapper" style="--rounded:{{ block_st.icnbr }}px;">
+                {% for i in (1..5) %}
+                    {%- liquid
+                      # theme-check-disable UnusedAssign
+                      assign nindex = forloop.index
+                      assign assign m3Image = 'image' | append: nindex
+                      assign assign m3Title = 'ttl' | append: nindex
+                      assign assign m3URL = 'url' | append: nindex
+                      assign assign m3Menu = 'menu' | append: nindex
+                      assign assign m3Links = block_st[m3Menu]
+                      assign m_3_label = block_st[m3Title] | split: '[label' | last | split: ']' | first | prepend: "nm_lbl"
+                      # theme-check-enable UnusedAssign
+                    -%}
+                    {%- if block_st[m3Image] != blank -%} 
+                        <li class="gitem lvl-1">
+                            <a href="{% if block_st[m3URL] != blank %}{{ block_st[m3URL] }}{% else %}#{% endif %}" class="lvl-1">
+                                {{ block_st[m3Image] | image_url: width: block_st[m3Image].width | image_tag: loading:'lazy', class:'img-auto', sizes:m_3_sizes, widths:"180,320,400,560,740,900,1200" }}
+                                <span class="title db mt20 mb5">{{ block_st[m3Title] | split: '[label' | first }}{% if block_st[m3Title] contains '[label' %}<span class="lbl {{ m_3_label }}">{{ section_st[m_3_label] }}</span>{% endif %}</span>
+                            </a>
+                            {% if linklists[m3Links].links != blank %}
+                                <ul class="sublinks">
+                                    {% for link in linklists[m3Links].links %}
+                                        <li{% if link.active %} class="active"{% endif %}>
+                                            {%- assign label = link.title |  split: '[label' | last | split: ']' | first | prepend: "nm_lbl" -%}
+                                            <a href="{{ link.url }}" class="snav">{{ link.title | split: '[label' | first }}{% if link.title contains '[label' %}<span class="lbl {{ label }}">{{ settings[label] }}</span>{% endif %}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {%- endif -%}
+                        </li>
+                    {%- endif -%}
+                {% endfor %}
+            </ul>
+           {% if block_st.bxsz %}</div>{% endif %}
+          </div>
+        </li>
+        {%- endif -%}
+
+    {%- when 'm4' -%}
+    {%- if block_st.title != blank -%}
+        <li class="lvl1 parent{% if block_st.cwd %} ctsize{% endif %}" {{ block.shopify_attributes }}>{{ link_level_1 }}
+            <div class="{{ mmclass }} st4{% if block_st.cwd %} {{ block_st.mmal }}{% else %} mmfull{% endif %}"{% if block_st.cwd %} style="width:{{ block_st.bxwd }}px;"{% endif %}>
+                <div class="fl gap w-100{% if block_st.bxsz %} page-width{% endif %}" style="--gap:30px;">
+                    <div class="mm4main mr10" style="--isz:{{ block_st.icnsz }}px;--ibr:{{ block_st.icnbr }}px;--fs:{{ block_st.fs }}px;">
+                        {% for link in linklists[block_st.menu].links %}
+                            {%- assign label_1 = link.title |  split: '[label' | last | split: ']' | first | prepend: "nm_lbl" -%}
+                            <a href="{{ link.url }}" class="lvl-1{% if link.links != blank %} hasSub{% endif %}{% if forloop.first %} active{% endif %}" data-link="#{{ block.id }}-nv-{{ link.title | handleize }}">
+                                {% assign collection = link.object %}
+                                {% assign img = collection.metafields.custom.icon | default:collection.image | default: collection.featured_image %}
+                                {% if block_st.icn and img != blank %}
+                                    <div class="mm-cat-img mr10">{{ img | image_url: width: 120 | image_tag: loading:'lazy', class:'img-fit', widths:"60,90,120" }}</div>
+                                {% endif %}
+                                {{ link.title | split: '[label' | first }}
+                                {% if link.title contains '[label' %}<span class="lbl {{ label_1 }}">{{ settings[label_1] }}</span>{% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    {% for link in linklists[block_st.menu].links %}
+                        <div id="{{ block.id }}-nv-{{ link.title | handleize }}" class="fl1 fl f-ais gap mm-categories{% unless forloop.first %} hide{% endunless %}">
+                            {%- if link.links != blank -%}
+                                <div class="subCat grid fl1 rwcols-{{ block_st.mcol }}" style="--isz:{{ block_st.sicnsz }}px;--ibr:{{ block_st.sicnbr }}px;--fs:{{ block_st.sfs }}px;">
+                                    {%- for childlink in link.links -%}
+                                        {%- assign label_2 = childlink.title |  split: '[label' | last  | split: ']' | first | prepend: "nm_lbl" -%}
+                                        <a href="{{ childlink.url }}" class="gitem mcatLink{% if block_st.tps == '2' %} f-col f-jcc{% endif %}">
+                                            {% assign collection = childlink.object %}
+                                            {% assign img = collection.metafields.custom.icon | default:collection.image | default: collection.featured_image %}
+                                            {% if block_st.icn1 and img != blank %}
+                                                <div class="mm-cat-img{% if block_st.tps == '1' %} mr10{% else %} mb10{% endif %}">{{ img | image_url: width: 120 | image_tag: loading:'lazy', class:'img-fit', widths:"60,90,120" }}</div>
+                                            {% endif %}
+                                            {{ childlink.title | split: '[label' | first }}
+                                            {% if childlink.title contains '[label' %}<span class="lbl {{ label_2 }}">{{ settings[label_2] }}</span>{% endif %}
+                                        </a>
+                                    {%- endfor -%}
+                                </div>
+                            {%- endif -%}
+                            {%- assign collection = link.object -%}
+                            {%- if collection.products.size > 0 and block_st.showpr -%}
+                                <div class="lvl-1 mm5bx grid gspace rwcols-{{ block_st.grid }}" style="width:{{ block_st.prColwd }}%;--grsp:7.5px;">
+                                    {% for product in collection.products limit: block_st.prlimit %}
+                                        <div class="gitem">{% render 'product-card-columns', product:product  %}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </li>
+    {%- endif -%}
+    
+    {%- when 'm5' -%}
+    {%- if block_st.title != blank -%}
+        <li class="lvl1 parent{% if block_st.cwd %} ctsize{% endif %}" {{ block.shopify_attributes }}>{{ link_level_1 }}
+            <div class="{{ mmclass }} st7{% if block_st.cwd %} {{ block_st.mmal }}{% else %} mmfull{% endif %}"{% if block_st.cwd %} style="width:{{ block_st.bxwd }}px;"{% endif %}>
+                {% if block_st.bxsz %}<div class="fl f-jcc w-100 page-width">{% endif %}
+                <ul class="grid gspace rwcols-{{ block_st.mcol }}" style="--isz:{{ block_st.icnsz }}px;--ibr:{{ block_st.icnbr }}px;--fs:{{ block_st.fs }}px;--grsp:10px;">
+                    {% for link in linklists[block_st.menu].links %}
+                        <li class="gitem">
+                            {%- assign label_1 = link.title |  split: '[label' | last | split: ']' | first | prepend: "nm_lbl" -%}
+                            <a href="{{ link.url }}" class="lvl-1 mcatLink{% if block_st.tps == '2' %} f-col f-jcc{% endif %}">
+                                {% assign collection = link.object %}
+                                {% assign img = collection.metafields.custom.icon | default:collection.image | default: collection.featured_image %}
+                                {% if block_st.icn and img != blank %}
+                                    <div class="mm-cat-img{% if block_st.tps == '1' %} mr10{% else %} mb10{% endif %}">
+                                      {{ img | image_url: width: 300 | image_tag: loading:'lazy', class:'img-fit', widths:"60,90,150,220,300" }}
+                                    </div>
+                                {% endif %}
+                                {{ link.title | split: '[label' | first }}
+                                {% if link.title contains '[label' %}<span class="lbl {{ label_1 }}">{{ settings[label_1] }}</span>{% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+              {% if block_st.bxsz %}</div>{% endif %}
+            </div>
+        </li>
+    {%- endif -%}
+
+    {%- when 'm6' -%}
+    {%- if block_st.title != blank -%}
+        <li class="lvl1 parent{% if block_st.cwd %} ctsize{% endif %}" {{ block.shopify_attributes }}>{{ link_level_1 }}
+            <div class="{{ mmclass }} st5{% if block_st.cwd %} {{ block_st.mmal }}{% else %} mmfull{% endif %}"{% if block_st.cwd %} style="width:{{ block_st.bxwd }}px;"{% endif %}>
+                {% if block_st.bxsz %}<div class="page-width">{% endif %}
+                {%- capture m6_sizes -%}
+                    (min-width:1024px) calc({{ page_width }} / {{ block_st.mcol }}), calc(100vw / {{ block_st.mcol }})
+                {%- endcapture -%}
+                <ul class="grid gspace {{ block_st.linkStyle }} rwcols-{{ block_st.mcol }}" style="--rounded:{{ block_st.img_rad }}px;--fs:{{ block_st.fs }}px;--grsp:10px;">
+                    {%- for link in linklists[block_st.menu].links -%}
+                        <li class="gitem tc">
+                            {%- assign image_name = link.title | handleize -%}
+                            {%- assign image_url = image_name | append: '.jpg' -%}
+                            <a href="{{ link.url }}" class="db mmlinkimage">
+                            {%- if block_st.linkStyle == "above" -%}<span class="reg-text db mb10">{{ link.title }}</span>{%- endif -%}
+                            <img src="{{ image_url | file_img_url: '600x' }}" srcset="{{ image_url | file_img_url: '200x' }} 200w, {{ image_url | file_img_url: '400x' }} 400w, {{ image_url | file_img_url: '600x' }} 600w"
+                                class="img-fill" sizes="{{ m6_sizes }}" width="400" height="400" alt="link.title" />
+                            {%- if block_st.linkStyle != "above" -%}<span class="reg-text {% if block_st.linkStyle == "below" %}db mt10{% else %}imgOver{% endif %}">{{ link.title }}</span>{%- endif -%}
+                            </a>
+                        </li>
+                    {%- endfor -%}
+                </ul>
+              {% if block_st.bxsz %}</div>{% endif %}
+            </div>
+        </li>
+    {%- endif -%}
+    
+    {%- when 'dd' -%}
+    {%- if block_st.title != blank -%}
+        <li class="lvl1 parent ddmenu anim">
+            {{- link_level_1 -}}
+            <ul class="ddmenu anim">
+                {%- for link in linklists[block_st.menu].links -%}
+                    {%- render 'mm-dropdown',link:link -%}
+                {%- endfor -%}
+            </ul>
+        </li>
+    {%- endif -%}
+
+    {%- endcase -%}
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

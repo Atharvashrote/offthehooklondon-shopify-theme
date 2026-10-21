@@ -1,0 +1,259 @@
+{{ 'overlay-text.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- liquid
+  assign block_st = block.settings
+  assign source_items = block_st.items | newline_to_br | split: '<br />'
+  assign first_item = true
+-%}
+
+{%- capture circle_text -%}
+  {%- for item in source_items -%}
+    {%- assign clean_item = item | strip -%}
+    {%- if clean_item != blank -%}
+      {%- unless first_item -%}
+        {{- ' • ' -}}
+      {%- endunless -%}
+      {{- clean_item -}}
+      {%- assign first_item = false -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- assign has_text = circle_text | strip -%}
+{%- if has_text != blank -%}
+  <div id="rotating-text-{{ block.id }}" class="rt-logo-wrap w-100{% if block_st.position_mode == 'overlap' %} rt-logo-anchor pr{% else %} fl {{ block_st.horizontal_position }}{% endif %}{% if block_st.hide_mb %} hide-sm{% endif %}"
+    style="--circle_size:{{ block_st.circle }}px;--circle_size_mobile:{{ block_st.circle_mobile }}px;--cl:{{ block_st.cl }};--fw:{{block_st.fw}};--bg:{{ block_st.bg }};--speed:{{ block_st.speed }}s;--fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--logo-size:{{ block_st.logo_size }}%;--overlap:{{ block_st.overlap }}px;--h-offset:{{ block_st.h_offset }}px;--rounded:50%;"
+    {{ block.shopify_attributes }}>
+    {%- if block_st.position_mode == 'overlap' -%}
+      <div class="rt-logo-overlap-inner pa left-0 top-0 right-0 fl w-100 {{ block_st.horizontal_position }}">
+    {%- endif -%}
+    <div class="rt-logo-inner pr brad">
+      <svg class="rt-logo-svg h-100 w-100 db pr" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 300" role="img" aria-label="{{ has_text | escape }}">
+        <defs>
+          <path id="rt-logo-path-{{ block.id }}" d="M150,150 m-106,0 a106,106 0 1,1 212,0 a106,106 0 1,1 -212,0"></path>
+        </defs>
+        <g class="rt-logo-rotator">
+          <text class="rt-logo-text text-upper" textLength="650" lengthAdjust="spacing">
+            <textPath href="#rt-logo-path-{{ block.id }}" xlink:href="#rt-logo-path-{{ block.id }}">{{ has_text }}</textPath>
+          </text>
+        </g>
+      </svg>
+
+      <span class="rt-logo-center pa left-50 top-50 translate-50 brad fl f-aic f-jcc zi2 of-hidden">
+        {%- if block_st.center_logo != blank -%}
+          {{
+            block_st.center_logo
+            | image_url: width: 360
+            | image_tag: loading: 'lazy', sizes: '220px', widths: '120,180,240,300,360'
+          }}
+        {%- elsif block_st.center_text != blank -%}
+          <span class="rt-logo-center-text t-center fw-600">{{ block_st.center_text }}</span>
+        {%- endif -%}
+      </span>
+    </div>
+    {%- if block_st.position_mode == 'overlap' -%}
+      </div>
+    {%- endif -%}    
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Spinning text",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false      
+    },
+    {
+      "type": "image_picker",
+      "id": "center_logo",
+      "label": "Center logo"
+    },  
+     {
+      "type": "range",
+      "id": "logo_size",
+      "label": "Logo size",
+      "default": 52,
+      "min": 28,
+      "max": 74,
+      "step": 1,
+      "unit": "%"
+    }, 
+    {
+      "type": "text",
+      "id": "center_text",
+      "label": "Logo text",
+      "default": "LOGO",
+      "info": "Optional",
+      "visible_if": "{{ block.settings.center_logo == blank }}"
+    },
+    {
+      "type": "textarea",
+      "id": "items",
+      "label": "Text",     
+      "default": "Trusted by Thousands  • Pure • Potent • Proven •"
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 18,
+      "min": 10,
+      "max": 42,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 14,
+      "min": 8,
+      "max": 32,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "500",     
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type":"header",
+      "content":"Circle"
+    },
+     {
+      "type": "range",
+      "id": "circle",
+      "label": "Size",
+      "default": 150,
+      "min": 100,
+      "max": 250,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "circle_mobile",
+      "label": "Size (mobile)",
+      "default": 100,
+      "min": 50,
+      "max": 200,
+      "step": 2,
+      "unit": "px"
+    },   
+    {
+      "type": "select",
+      "id": "position_mode",
+      "label": "Position",
+      "default": "overlap",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "overlap",
+          "label": "Overlap"
+        }
+      ]
+    },    
+    {
+      "type": "range",
+      "id": "overlap",
+      "label": "Overlap amount",    
+      "default": 80,
+      "min": -500,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "visible_if":"{{ block.settings.position_mode == 'overlap' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_position",
+      "label": "Horizontal position",
+      "default": "f-jcc",
+      "options": [
+        {
+          "value": "f-jcs",
+          "label": "Left"
+        },
+        {
+          "value": "f-jcc",
+          "label": "Center"
+        },
+        {
+          "value": "f-jce",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "h_offset",
+      "label": "Horizontal offset (desktop)",
+      "default": 0,
+      "min": -500,
+      "max": 500,
+      "step": 10,
+      "unit": "px"
+    },        
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Rotation speed",
+      "default": 16,
+      "min": 4,
+      "max": 40,
+      "step": 1,
+      "unit": "s"
+    }   
+  ],
+  "presets": [
+    {
+      "name": "Spinning text"      
+    }
+  ]
+}
+{% endschema %}
+

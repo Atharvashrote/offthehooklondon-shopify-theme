@@ -1,0 +1,67 @@
+{%- liquid
+  assign block_st = block.settings
+-%}
+<div id="blk-{{ block.id }}" class="w-100 mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}" {{ block.shopify_attributes }} style="--grid-product_ttl_cl:{{ block_st.cl}};--pcl:{{ block_st.cl}}"> 
+  {%- assign product = all_products[block_st.product] -%}
+  {% if product.title.size > 0 %}
+      {% render 'product-card-grid', product: product, block: block.settings, section: section.settings %}
+  {% else %}
+      <div class="grid-content">
+          <a href="#" class="grid_lnk">
+              <div class="grid-image__wrapper">{% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'product-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}</div><br/>
+              <div class="h4 grid-title">{{ 'homepage.onboarding.product_title' | t }}</div>
+              <div class="grid-price">{% render 'product-price' %}</div>
+          </a>
+      </div>
+  {% endif %}
+</div>
+{% schema %}
+{
+  "name": "Product",
+  "tag": null,
+  "settings": [
+      {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+      },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+        "type": "color",
+        "id": "cl",
+        "label": "Color",
+        "default": "#000"
+    },    
+    {
+        "type": "range",
+        "id": "mb",
+        "label": "Bottom margin",
+        "default": 0,
+        "min":0,
+        "max": 50,
+        "step":5,
+        "unit": "px"
+    },
+    {
+        "type": "range",
+        "id": "mbm",
+        "label": "Bottom margin (mobile)",
+        "default": 0,
+        "min":0,
+        "max":50,
+        "step":5,
+        "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product"     
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,174 @@
+{%- capture richtext -%}
+{%- assign section_st = section.settings -%}
+<div class="section-cover{%  if section_st.ganim %} gr_bg{% endif %} {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}--as:{{ section_st.animsp }}s;"  {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+	<div class="page-width" style="--page-width:{{ section_st.maxwd }}px;">
+		<div class="richtext fl f-col gap t-{{ section_st.alignm }} t-{{ section_st.align }}-md {% render 'group-settings', section_st:section_st, class: true %}{% render 'animate-data', css:true %}" {% render 'animate-data' %} style="{% render 'group-settings', section_st:section_st, styles:true %}">
+        {%- content_for 'blocks' -%}
+    </div>
+	</div> 
+</div>
+{%- endcapture -%}
+{{- richtext | strip_newlines | remove: '  ' | remove: '	' -}}
+{%- schema -%}
+{
+  "name": "Rich Text",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "blocks": [{ "type": "@theme" }, { "type": "@app" }],
+  "settings": [
+    {
+      "type": "range",
+      "id": "maxwd",
+      "label": "Content width (desktop)",
+      "default": 600,
+      "min": 400,
+      "max": 1600,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Alignment",
+      "default": "center"
+    },    
+    {
+      "type": "text_alignment",
+      "id": "alignm",
+      "label": "Alignment (mobile)",
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },    
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }   
+  ],
+  "presets": [
+    {
+      "name": "Rich text",
+      "category": "Text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "I AM RICH TEXT",
+            "mb" :20,
+            "mbm":10
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+             "text": "<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.</p>",
+             "mb" :30,
+             "mbm":20
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "text": "Read More",
+            "url": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": ["heading", "text", "button"]
+    }
+  ]
+}
+{%- endschema -%}

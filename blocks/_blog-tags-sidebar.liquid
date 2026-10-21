@@ -1,0 +1,96 @@
+{%- liquid
+  assign section_st = section.settings
+  assign block_st = block.settings
+-%}
+<div class="sidebar-widget" {{ block.shopify_attributes }}>
+    {%- if block_st.title != blank -%}
+        <div class="widget-title head {{ section_st.ttlpreset }}{% if section_st.text-upper %} text-upper{% endif %}">{{ block_st.title }}</div>
+    {%- endif -%}
+    <div class="widget-content">
+        <div class="blog-tags pr fl f-wrap gap" style="--gap:10px;--gapm:10px;--cl:{{ block_st.cl }};--cla:{{ block_st.cla }};--bd:{{ block_st.bd }};--bda:{{ block_st.bda }};--bdr:{{ block_st.bdr }}px">
+          {%- for tag in blog.all_tags -%}
+            {{- tag | link_to_tag: tag -}}
+          {%- endfor -%}
+        </div>
+    </div>
+</div>
+{% schema %}
+{
+  "name": "Tags",
+  "tag": null,
+  "settings": [
+    { 
+      "type":"text",
+      "id":"title",
+      "label":"Title",
+      "default": "Blog Tags"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "bd",
+      "label": "Border",
+      "default": "#eeeeee"
+    },
+    {
+      "type": "color",
+      "id": "cla",
+      "label": "Text hover",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "bda",
+      "label": "Border hover",
+      "default": "#666"
+    },
+    {
+      "type": "range",
+      "id": "bdr",
+      "label": "Corner radius",
+      "default":7,
+      "min":0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidemb",
+      "label": "Hide on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tags",
+      "category": "Sidebar"
+    }
+  ]
+}
+{% endschema %}

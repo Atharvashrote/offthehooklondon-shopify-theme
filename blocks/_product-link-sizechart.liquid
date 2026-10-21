@@ -1,0 +1,211 @@
+{%- liquid
+    assign block_st = block.settings
+-%}
+<a href="#sizechart" class="sizechart fl f-aic popup-link [linkclass]" data-popup="sizechart" aria-haspopup="dialog" role="link" aria-disabled="true">
+ {% if block_st.image != blank and block_st.icon == 'custom' -%}
+    <img loading="lazy" class="at-icon" src="{{ block_st.image | image_url: width: '60' }}" width="18" height="18" alt="" >
+  {%- else -%}
+    {%- render 'icons', icon: block_st.icon %}
+  {% endif %}
+  {{ 'products.product.size_chart' | t }}
+</a>
+{% schema %}
+{
+  "name": "Size chart link",
+  "tag": null,
+  "settings": [
+    {
+        "type": "paragraph",
+        "content": "Change link text from theme default content page"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "tape",
+      "options": [
+         {
+            "value": "none",
+            "label": "None"
+        },
+        {
+            "value": "custom",
+            "label": "Custom icon"
+        },
+        {
+            "value": "tape",
+            "label": "Measure tape"
+        },
+         {
+            "value": "ruler",
+            "label": "Ruler"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check2",
+          "label": "Check 2"
+        },
+        {
+          "value": "truck",
+          "label": "Truck"
+        },
+        {
+          "value": "email",
+          "label": "Email"
+        },
+        {
+          "value": "phone",
+          "label": "Phone"
+        },
+        {
+          "value": "phone2",
+          "label": "Phone 2"
+        },
+        {
+          "value": "comment",
+          "label": "Comment"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "dollar",
+          "label": "Dollar"
+        },
+        {
+          "value": "package",
+          "label": "Package"
+        },
+        {
+          "value": "return",
+          "label": "Return"
+        },
+        {
+          "value": "rocket",
+          "label": "Rocket"
+        },
+        {
+          "value": "plan",
+          "label": "Plane"
+        },
+        {
+          "value": "measure",
+          "label": "Measure"
+        },
+        {
+          "value": "file",
+          "label": "File"
+        },
+        {
+          "value": "shield",
+          "label": "Shield"
+        },
+        {
+          "value": "lock",
+          "label": "Lock"
+        },
+        {
+          "value": "payment",
+          "label": "Payment"
+        },
+        {
+          "value": "progress",
+          "label": "Progress"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "like",
+          "label": "Like"
+        },
+        {
+          "value": "tag",
+          "label": "Tag"
+        },
+        {
+          "value": "tag2",
+          "label": "Tag"
+        },
+        {
+          "value": "info",
+          "label": "Info."
+        },
+        {
+          "value": "question",
+          "label": "Question"
+        },
+        {
+          "value": "globe",
+          "label": "Globe"
+        },
+        {
+          "value": "earth",
+          "label": "Earth"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "location",
+          "label": "Location"
+        },
+        {
+          "value": "shop",
+          "label": "Shop"
+        },
+        {
+          "value": "rain",
+          "label": "Rain"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "cloud",
+          "label": "Cloud"
+        },
+        {
+          "value": "leaf",
+          "label": "Leaf"
+        },
+        {
+          "value": "care2",
+          "label": "Care"
+        },
+        {
+          "value": "rabit",
+          "label": "Rabbit"
+        },
+        {
+          "value": "paraben",
+          "label": "Paraben"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Custom icon",
+      "visible_if": "{{ block.settings.icon == 'custom' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Size chart link",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

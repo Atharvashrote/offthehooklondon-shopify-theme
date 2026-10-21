@@ -1,0 +1,111 @@
+{% liquid
+  assign section_st = section.settings
+  assign block_st = block.settings
+%}
+{% if block_st.date or block_st.author or blog.comments_enabled? %}
+  <ul class="fl{% if section_st.text-align %} f-jcc tc{% else %} tl{% endif %} blog-meta mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.post_case %} text-upper{% endif %}"
+    style="--cl:{{ block_st.cl }};--adfs:{{ block_st.fs }}px;--adfsm:{{ block_st.fsm }}px;--icns:14px;" {{ block.shopify_attributes }}>
+    {% capture post_sep %}
+      {%- if block_st.post_sep == '1' -%}{%- render 'icon-date' %}{% elsif block_st.post_sep == '2' %}〡{% elsif block_st.post_sep == '3' %} ● {% elsif block_st.post_sep == '4' %} ━ {% endif -%}
+    {% endcapture %}
+    {%- if block_st.date -%}
+      <li><span class="sep-{{ block_st.post_sep }}">{{ post_sep }}</span><time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{- article.published_at | date: format: 'month_day_year' -}}</time></li>
+    {% endif %}
+    {% if block_st.author %}
+      <li>
+        <span class="sep-{{block_st.post_sep }}">{%- if block_st.post_sep == '1' -%}{%- render 'icon-user' %}{% else %}{{ post_sep }}{% endif -%}</span>
+        <span>{{- 'blogs.article.by_author' | t }} <span>{{ article.author }}</span></span>
+      </li>
+    {% endif %}
+    {% if blog.comments_enabled? and article.comments_count > 0 %}
+      <li class="cmnt fl">
+        <span class="sep-{{ block_st.post_sep }}">{%- if block_st.post_sep == '1' -%}{%- render 'icon-comment' %}{% else %}{{ post_sep }}{% endif -%}</span>
+        <a href="{{ article.url }}#comments">{{- 'blogs.comments.comments_with_count' | t: count: article.comments_count -}}</a>
+      </li>
+    {% endif %}
+  </ul>
+{% endif %}
+{% schema %}
+{
+  "name": "Article details",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "post_sep",
+      "label": "Separator",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Icons"
+        },
+        {
+          "value": "2",
+          "label": "Pipe"
+        },
+        {
+          "value": "3",
+          "label": "Bullets"
+        },
+        {
+          "value": "4",
+          "label": "Dash"
+        },
+        {
+          "value": "5",
+          "label": "none"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "post_case",
+      "label": "Use uppercase text"
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Color",
+      "default": "#777"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 10,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 5,
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article details",     
+    }
+  ]
+}
+{% endschema %}

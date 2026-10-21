@@ -1,0 +1,435 @@
+{%- liquid
+  assign sw_size = settings.sw_size
+
+  if section.id == 'quick-view'
+    assign sw_size = settings.qvsw_size
+  endif
+
+  assign related_color_products = product.metafields.custom.related_color_swatches.value
+-%}
+
+{%- for value in option.values -%}
+
+  {%- liquid
+    capture input_dataset
+      if value.product_url != blank
+        echo 'data-product-url="' | append: value.product_url | append: '"'
+      endif
+
+      echo 'data-option-value-id="' | append: value.id | append: '"'
+    endcapture
+
+    assign swatch_vi_img = nil
+    assign swatch_img = nil
+
+    assign option_disabled = true
+
+    if value.available
+      assign option_disabled = false
+    endif
+
+    comment
+      ------------------------------------------------------------
+      Find variant image for normal Avone color swatches
+      ------------------------------------------------------------
+    endcomment
+
+    if value.variant.image != blank
+
+      assign swatch_vi_img = value.variant.image
+
+    elsif is_color and product.variants.size > 0
+
+      assign opt_pos = option.position
+
+      for v in product.variants
+
+        assign vr_media = false
+
+        if opt_pos == 1 and v.option1 == value
+          assign vr_media = true
+        elsif opt_pos == 2 and v.option2 == value
+          assign vr_media = true
+        elsif opt_pos == 3 and v.option3 == value
+          assign vr_media = true
+        endif
+
+        if vr_media and v.image != blank
+          assign swatch_vi_img = v.image
+          break
+        endif
+
+      endfor
+
+    endif
+
+    assign clr_name = value | handle
+    assign swatch_clr = value.swatch.color | default: clr_name
+
+    if value.swatch.image != blank
+      assign swatch_img = value.swatch.image | image_url: width: 70
+      assign swatch_clr = 'url(' | append: swatch_img | append: ')'
+    endif
+  -%}
+
+
+  {%- capture input_id -%}
+    {{ section_id }}-{{ option.position }}-{{ forloop.index0 }}
+  {%- endcapture -%}
+
+
+  {%- capture label_unavailable -%}
+    <span class="hidden label-unavailable">
+      {{- 'products.product.variant_sold_out_or_unavailable' | t -}}
+    </span>
+  {%- endcapture -%}
+
+
+  {%- comment -%}
+  ==================================================================
+  RELATED PRODUCT COLOR SWATCHES
+  ==================================================================
+
+  This uses:
+
+  custom.related_color_swatches
+
+  The metafield is a List of Products.
+
+  Example:
+
+  Heath Black
+  Heath Tan
+  Heath White
+  Heath Silver
+  Heath Blush
+  Heath Brown-White
+  Heath Platino-Gold
+
+  The order stored in the metafield is preserved.
+
+  The current product is NOT moved to the beginning.
+  It simply receives the active border in its existing position.
+
+  ==================================================================
+  {%- endcomment -%}
+
+  {%- if is_color and related_color_products != blank -%}
+
+    {%- if forloop.first -%}
+
+      <div
+        class="avone-related-color-swatches"
+        style="
+          display:flex;
+          flex-wrap:wrap;
+          align-items:center;
+          gap:10px;
+          width:100%;
+          margin-top:8px;
+          margin-bottom:18px;
+        "
+      >
+
+        {%- for related_product in related_color_products -%}
+
+          {%- assign is_current_product = false -%}
+
+          {%- if related_product.handle == product.handle -%}
+            {%- assign is_current_product = true -%}
+          {%- endif -%}
+
+
+          <a
+            href="{{ related_product.url }}"
+            class="avone-related-color-swatch{% if is_current_product %} is-active{% endif %}"
+            title="{{ related_product.title | escape }}"
+            aria-label="{{ related_product.title | escape }}"
+            {% if is_current_product %}
+              aria-current="page"
+            {% endif %}
+            style="
+              position:relative;
+              display:block;
+              flex:0 0 64px;
+              width:64px;
+              height:64px;
+              overflow:hidden;
+              box-sizing:border-box;
+              border:{% if is_current_product %}2px solid #111{% else %}1px solid #ddd{% endif %};
+              background:#fff;
+              text-decoration:none;
+            "
+          >
+
+            {%- if related_product.featured_image != blank -%}
+
+              <img
+                src="{{ related_product.featured_image | image_url: width: 160 }}"
+                alt="{{ related_product.title | escape }}"
+                loading="lazy"
+                width="64"
+                height="64"
+                style="
+                  display:block;
+                  width:100%;
+                  height:100%;
+                  object-fit:cover;
+                "
+              >
+
+            {%- else -%}
+
+              <span
+                style="
+                  display:flex;
+                  align-items:center;
+                  justify-content:center;
+                  width:100%;
+                  height:100%;
+                  padding:5px;
+                  box-sizing:border-box;
+                  color:#555;
+                  font-size:10px;
+                  line-height:12px;
+                  text-align:center;
+                "
+              >
+                {{ related_product.title }}
+              </span>
+
+            {%- endif -%}
+
+
+            <span
+              class="avone-related-color-tooltip"
+              style="
+                position:absolute;
+                left:50%;
+                bottom:-1px;
+                transform:translateX(-50%);
+                background:#111;
+                color:#fff;
+                font-size:10px;
+                line-height:14px;
+                padding:2px 5px;
+                white-space:nowrap;
+                opacity:0;
+                pointer-events:none;
+                z-index:5;
+              "
+            >
+              {{ related_product.title }}
+            </span>
+
+          </a>
+
+        {%- endfor -%}
+
+      </div>
+
+
+      {%- comment -%}
+      Keep Avone's original Color variant input.
+
+      This remains hidden because the visible color selector
+      is now the related-product selector.
+      {%- endcomment -%}
+
+      <input
+        type="radio"
+        id="{{ input_id }}"
+        name="{{ option.name }}"
+        value="{{ value | escape }}"
+        form="{{ product_form_id }}"
+        {% if option.selected_value == value %}
+          checked
+        {% endif %}
+        class="swatch-input clr dn"
+        {{ input_dataset }}
+      >
+
+    {%- endif -%}
+
+
+  {%- elsif is_color -%}
+
+    {%- comment -%}
+    ==================================================================
+    ORIGINAL AVONE COLOR SWATCH SYSTEM
+    ==================================================================
+    Products without related_color_swatches continue using the
+    original Avone behavior.
+    ==================================================================
+    {%- endcomment -%}
+
+    <input
+      type="radio"
+      id="{{ input_id }}"
+      name="{{ option.name }}"
+      value="{{ value | escape }}"
+      form="{{ product_form_id }}"
+      {% if option.selected_value == value %}
+        checked
+      {% endif %}
+      class="swatch-input clr dn{% if option_disabled %} disabled{% endif %}"
+      {{ input_dataset }}
+    >
+
+
+    {%- if cltype == 'cs' -%}
+
+      <label
+        class="swatch-lbl color swatch-{{ value | handle }} {{ sw_size }}"
+        for="{{ input_id }}"
+        style="background:{{ swatch_clr }};"
+      >
+
+        <span class="tooltip-label top">
+          {{ value }}
+          {{ label_unavailable }}
+        </span>
+
+      </label>
+
+
+    {%- elsif cltype == 'vi' -%}
+
+      <label
+        class="swatch-lbl color swatch-{{ value | handle }} {{ sw_size }} pr of-hidden"
+        for="{{ input_id }}"
+      >
+
+        {%- if swatch_vi_img != blank -%}
+
+          {{
+            swatch_vi_img
+            | image_url: width: 200
+            | image_tag:
+              class: 'img-fit',
+              loading: 'lazy',
+              widths: '100, 140, 200',
+              sizes: '70px',
+              alt: value
+          }}
+
+        {%- elsif swatch_img != blank -%}
+
+          {{
+            value.swatch.image
+            | image_url: width: 200
+            | image_tag:
+              class: 'img-fit',
+              loading: 'lazy',
+              widths: '100, 140, 200',
+              sizes: '70px',
+              alt: value
+          }}
+
+        {%- endif -%}
+
+        <span class="tooltip-label top">
+          {{ value }}
+          {{ label_unavailable }}
+        </span>
+
+      </label>
+
+
+    {%- elsif cltype == 'ts' -%}
+
+      <label
+        class="swatch-lbl"
+        for="{{ input_id }}"
+      >
+        {{ value }}
+        {{ label_unavailable }}
+      </label>
+
+
+    {%- elsif cltype == 'tc' -%}
+
+      <label
+        class="swatch-lbl pill fl f-aic"
+        for="{{ input_id }}"
+      >
+
+        <span
+          class="color swatch-{{ value | handle }}"
+          style="background:{{ swatch_clr }};"
+        ></span>
+
+        {{ value }}
+        {{ label_unavailable }}
+
+      </label>
+
+
+    {%- elsif cltype == 'dd' -%}
+
+      <option
+        value="{{ value | escape }}"
+        {% if option.selected_value == value %}
+          selected="selected"
+        {% endif %}
+        class="variant-opt clr{% if option_disabled %} disabled{% endif %}"
+        {{ input_dataset }}
+      >
+        {{- value -}}
+      </option>
+
+    {%- endif -%}
+
+
+  {%- elsif othervr == 'sw' and is_color == false -%}
+
+    {%- comment -%}
+    ==================================================================
+    ORIGINAL AVONE NON-COLOR SWATCH SYSTEM
+    ==================================================================
+    {%- endcomment -%}
+
+    <input
+      type="radio"
+      id="{{ input_id }}"
+      name="{{ option.name }}"
+      value="{{ value | escape }}"
+      form="{{ product_form_id }}"
+      {% if option.selected_value == value %}
+        checked
+      {% endif %}
+      class="swatch-input dn{% if option_disabled %} disabled{% endif %}"
+      {{ input_dataset }}
+    >
+
+    <label
+      class="swatch-lbl"
+      for="{{ input_id }}"
+    >
+      {{ value }}
+      {{ label_unavailable }}
+    </label>
+
+
+  {%- else -%}
+
+    {%- comment -%}
+    ==================================================================
+    ORIGINAL AVONE SELECT SYSTEM
+    ==================================================================
+    {%- endcomment -%}
+
+    <option
+      value="{{ value | escape }}"
+      {% if option.selected_value == value %}
+        selected="selected"
+      {% endif %}
+      class="variant-opt{% if option_disabled %} disabled{% endif %}"
+      {{ input_dataset }}
+    >
+      {{- value -}}
+    </option>
+
+  {%- endif -%}
+
+{%- endfor -%}

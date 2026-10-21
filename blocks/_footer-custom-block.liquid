@@ -1,0 +1,72 @@
+{%- liquid
+  assign block_st = block.settings
+-%}
+<div class="gitem adth-footer__block wd50-md {{ block_st.width }}-lg{% if block_st.hidem %} hide-sm{% endif %}{% if block_st.hide_desk %} hide-md hide-lg{% endif %}{% if block_st.center %} tc{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }}>
+  {%- if block_st.title != blank -%}<p class="head {{ section.settings.tpreset }} fl f-aic f-jcsb mb10">{{ block_st.title }}</p>{%- endif -%}
+  <div class="widget-content mb20">{%- content_for 'blocks' -%}</div>
+  {% content_for 'block', type: 'social-media', id: 'social-media' %}
+</div>
+{% schema %}
+{
+  "name": "Custom block",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title", 
+      "default":"About us"     
+    },    
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Block width",
+      "default": "wd25",    
+      "options": [
+        { "value": "wd20", "label": "20%" },
+        { "value": "wd25", "label": "25%" },
+        { "value": "wd30", "label": "30%" },
+        { "value": "wd33", "label": "33%" },
+        { "value": "wd40", "label": "40%" },
+        { "value": "wd50", "label": "50%" },
+        { "value": "wd60", "label": "60%" },
+        { "value": "wd66", "label": "66%" },
+        { "value": "wd75", "label": "75%" },
+        { "value": "wd100", "label": "100%" }
+      ]
+    },   
+     {
+      "type": "checkbox",
+      "id": "hide_desk",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    } 
+  ],
+  "presets": [
+    {
+      "name": "Custom block",
+      "category": "Footer",
+      "blocks": {        
+        "text": {
+          "type": "text"
+        }
+      },
+      "block_order": ["text"]
+    }
+  ]
+}
+{% endschema %}

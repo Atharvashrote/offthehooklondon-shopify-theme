@@ -1,0 +1,49 @@
+{% liquid
+  assign block_st = block.settings
+%}
+<div id="blk-{{ block.id }}" class="rte mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}" {{ block.shopify_attributes }}>
+  {{- block.settings.liquid -}}
+</div>
+{% schema %}
+{
+  "name": "Custom liquid",
+  "tag": null,
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "liquid",
+      "label": "Liquid code",
+      "info": "Add app snippets or other code to create advanced customizations. [Learn more](https://shopify.dev/docs/api/liquid)"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+        "type": "range",
+        "id": "mb",
+        "label": "Bottom margin",
+        "default":0,
+        "min":0,
+        "max": 50,
+        "step":5,
+        "unit": "px"
+    },
+    {
+        "type": "range",
+        "id": "mbm",
+        "label": "Bottom margin (mobile)",
+        "default":0,
+        "min":0,
+        "max":50,
+        "step":5,
+        "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+     "name": "Custom liquid"     
+    }
+  ]
+}
+{% endschema %}

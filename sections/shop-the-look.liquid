@@ -1,0 +1,425 @@
+{%- capture productslider -%}
+{%- liquid 
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+-%}
+<style>
+  #{{ section.id }} .section-header { padding-bottom:25px;}
+</style>
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" id="{{ section.id }}">        
+        <div class="fl f-jcsb f-col f-aic f-row-md custom-banner">
+            <div class="pr of-hidden {{ section_st.rounded }} mb20 mb0-lg{% if section_st.pos %} order2{% endif %} {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--wd:{{ section_st.bnrwd }}%;--cl:{{section_st.hotspot}};--cl_down:{{section_st.hotspot | color_modify: 'alpha', 0.2 }};" >
+                <div style="{% if section_st.image != blank %}padding-bottom:{{ 1 | divided_by: section_st.image.aspect_ratio | times: 100 }}%;{% endif %}" class="overlay">                     
+                    {%- liquid
+                        assign column = 100.00 | divided_by: section_st.bnrwd | times: 1
+                        assign divide_colunm = 1.00 | divided_by: column | round: 2
+                    %}
+                    {%- if section_st.image != blank -%}
+                        {%- capture bnrsizes -%}
+                            (min-width:1024px) calc(({{ page_width }} - 30px * {{ column | minus: 1 }}) * {{ divide_colunm }}), calc(100vw - 30px)
+                        {%- endcapture -%}
+                        {{ section_st.image | image_url: width: section_st.image.width | image_tag: loading:'lazy', width:section_st.image.width, height:section_st.image.height, class:'img-fit', sizes:bnrsizes, widths:"180,320,400,560,740,900,1200,1600" }}
+                    {%- else -%}
+                        {{ 'collection-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                    {%- endif -%}
+                </div>  
+                {%- for block in section.blocks -%}
+                    {% liquid
+                        assign block_st = block.settings
+                        assign index = forloop.index0
+                        assign product = block_st.product 
+                    -%}
+                    {%- if product != blank -%}
+                        <button type="button" data-index="{{ index }}" data-slider="#swiper{{ section.id }}" class="grid-button btn-shop look-btn pa" style="--top:{{ block_st.top }}%;--left:{{ block_st.left }}%;--top_mobile:{{ block_st.top_mobile }}%;--left_mobile:{{ block_st.left_mobile }}%">.</button>
+                    {%- endif -%} 
+                {%- endfor -%}
+            </div>
+            <div class="pd20 pr f-asc" style="--wd:calc({{ 100 | minus: section_st.bnrwd }}% - 30px);--cwd:{{ section_st.maxwd }}px;">
+                {%- render 'sec-title' -%}                  
+                <slide-section class="grid rwcols-1 grid-products swiper" id="swiper{{ section.id }}" data-swiper='{ "slidesPerView":"auto", "loop":false,"navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+                    <div class="swiper-wrapper">
+                        {%- capture img_sizes -%}
+                            (min-width:1024px) {{ section_st.maxwd }}px,(min-width:768px) calc(100vw - 30px), calc(100vw - 30px }})
+                        {%- endcapture -%}
+                        {%- for block in section.blocks -%}
+                            {%- assign product = block.settings.product -%}
+                            {%- if product.url != blank -%}
+                                <div class="swiper-slide gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %} data-id="{{ block.id }}">{% render 'product-card-grid', product:product, section_st:section_st, sizes:img_sizes %}</div>
+                            {%- else -%}
+                                <div class="gitem">{{ 'collection-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+                            {%-  endif -%}
+                        {%- endfor -%} 
+                    </div>
+                    {%- render 'swiper-navigation', id:section.id, section_st:section_st -%}
+                </slide-section>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endcapture -%}
+{{- productslider | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Shop the look",
+  "class": "shop-the-look",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Shop The Look"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Most-Loved Looks of the Season"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+     {
+      "type": "range",
+      "id": "bnrwd",
+      "min": 20,
+      "max": 70,
+      "step": 1,
+      "label": "Column width",
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Image mobile"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "pos",
+      "label": "Show image on right",
+      "default": false
+    },   
+    {
+      "type": "color",
+      "id": "hotspot",
+      "label": "Hotspot color",
+      "info": "(product pin on image)",
+      "default": "#111"
+    },     
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "range",
+      "id": "maxwd",
+      "label": "Column width",
+      "default": 400,
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "unit": "px"
+    },    
+    {
+      "type": "select",
+      "id": "prbox_style",
+      "label": "Style",
+      "default": "grid-1",
+      "options": [
+        {
+          "value": "grid-1",
+          "label": "Icons - bottom center"
+        },
+        {
+          "value": "grid-2",
+          "label": "Content on image hover"
+        },
+        {
+          "value": "grid-3",
+          "label": "Icons - bottom Left"
+        },
+        {
+          "value": "grid-4",
+          "label": "Icons - top right"
+        },
+         {
+          "value": "grid-5",
+          "label": "Icons - below image"
+        },
+         {
+          "value": "grid-6",
+          "label": "Text button "
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_swatch",
+      "label": "Show color swatch",
+      "default": true
+    },
+
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Find additional grid options under [theme settings](/editor?context=theme&category=Products grid)"
+    },
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrow",
+      "label": "Show arrows on desktop",
+      "default": true,
+    },
+    {
+      "type": "checkbox",
+      "id": "arrowm",
+      "label": "Show arrows on mobile",
+      "default": false,
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Show dots on desktop",
+      "default": false,
+    },
+    {
+      "type": "checkbox",
+      "id": "dotm",
+      "label": "Show dots on mobile",
+      "default": true,
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": false,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Product",
+      "type": "product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "header",
+          "content": "Hotspot position (desktop)"
+        },
+        {
+          "type": "range",
+          "id": "left",
+          "label": "Horizontal",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "top",
+          "label": "Vertical",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "header",
+          "content": "Hotspot position (mobile)"
+        },
+        {
+          "type": "range",
+          "id": "left_mobile",
+          "label": "Horizontal",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "top_mobile",
+          "label": "Vertical",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop the look",
+      "category": "Products",
+      "blocks": [
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,38 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "cl": "#111111",
+        "bg": "#f9f9f9",
+        "fsz": 13,
+        "case": false,
+        "fullwidth": false,
+        "tc": false,
+        "hidemb": false
+      }
+    },
+    "addresses": {
+      "type": "main-addresses",
+      "settings": {
+        "preset": "h4",
+        "fs": 18,
+        "fsm": 18,
+        "ff": "ft2",
+        "fw": "700",
+        "lh": 1.2,
+        "ls": 0,
+        "btn": "btn1",
+        "btnsz": "btn-md",
+        "sst": 50,
+        "ssb": 50,
+        "sstm": 25,
+        "ssbm": 25
+      }
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "addresses"
+  ]
+}

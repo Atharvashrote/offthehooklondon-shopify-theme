@@ -1,0 +1,667 @@
+{% comment %}
+  ============================================================
+  QUICK LINK ARTICLE
+  ============================================================
+
+  Metaobject fields:
+  - title
+  - featured_image
+  - quicklink_short_description
+  - main_content
+  - seo_title
+  - seo_description
+{% endcomment %}
+
+{% assign quick_link = metaobject %}
+
+{% if quick_link != blank %}
+
+<section
+  id="QuickLinkArticle-{{ section.id }}"
+  class="quick-link-article"
+>
+
+  <div class="quick-link-article__container">
+
+    {% comment %}
+      =========================
+      FEATURED IMAGE
+      =========================
+    {% endcomment %}
+
+    {% assign quick_link_image = quick_link.featured_image.value %}
+
+    {% if quick_link_image != blank %}
+
+      <div class="quick-link-article__image-wrap">
+
+        {{
+          quick_link_image
+          | image_url: width: 2400
+          | image_tag:
+            class: 'quick-link-article__image',
+            loading: 'eager',
+            widths: '750, 1100, 1500, 1800, 2200, 2400',
+            sizes: '(max-width: 767px) 100vw, 1200px',
+            alt: quick_link.title.value
+        }}
+
+      </div>
+
+    {% endif %}
+
+
+    {% comment %}
+      =========================
+      ARTICLE CONTENT
+      =========================
+    {% endcomment %}
+
+    <article class="quick-link-article__content">
+
+      {% assign quick_link_description = quick_link.quicklink_short_description.value %}
+
+      {% if quick_link_description != blank %}
+
+        <div class="quick-link-article__description">
+          {{ quick_link_description }}
+        </div>
+
+      {% endif %}
+
+
+      {% if quick_link.main_content != blank %}
+
+        <div class="quick-link-article__body rte">
+          {{ quick_link.main_content | metafield_tag }}
+        </div>
+
+      {% endif %}
+
+    </article>
+
+  </div>
+
+</section>
+
+
+<style>
+
+/* ============================================================
+   ARTICLE SECTION
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }} {
+  width:100%;
+  background:#ffffff;
+  color:#222222;
+}
+
+
+/* ============================================================
+   MAIN CONTAINER
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__container {
+
+  width:100%;
+
+  max-width:1100px;
+
+  margin:0 auto;
+
+  padding:42px 25px 65px;
+
+  box-sizing:border-box;
+}
+
+
+/* ============================================================
+   FEATURED IMAGE
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__image-wrap {
+
+  width:100%;
+
+  margin:0 auto 38px;
+
+  overflow:hidden;
+}
+
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__image {
+
+  display:block;
+
+  width:100%;
+
+  height:auto;
+
+  max-width:100%;
+
+  object-fit:cover;
+}
+
+
+/* ============================================================
+   CONTENT WIDTH
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__content {
+
+  width:100%;
+
+  max-width:900px;
+
+  margin:0 auto;
+
+  box-sizing:border-box;
+}
+
+
+/* ============================================================
+   SHORT DESCRIPTION
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__description {
+
+  margin:0 0 25px;
+
+  color:#444444;
+
+  font-family:inherit;
+
+  font-size:15px;
+
+  line-height:1.7;
+
+  font-weight:400;
+
+  text-align:justify;
+
+  text-justify:inter-word;
+}
+
+
+/* ============================================================
+   BODY
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body {
+
+  color:#333333;
+
+  font-family:inherit;
+
+  font-size:15px;
+
+  line-height:1.7;
+
+  font-weight:400;
+
+  text-align:justify;
+
+  text-justify:inter-word;
+}
+
+
+/* ============================================================
+   H1
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body h1 {
+
+  margin:0 0 22px;
+
+  padding:0;
+
+  color:#111111;
+
+  font-family:inherit;
+
+  font-size:28px;
+
+  line-height:1.25;
+
+  font-weight:500;
+
+  letter-spacing:-0.2px;
+
+  text-align:left;
+}
+
+
+/* ============================================================
+   H2
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body h2 {
+
+  margin:34px 0 13px;
+
+  padding:0;
+
+  color:#111111;
+
+  font-family:inherit;
+
+  font-size:21px;
+
+  line-height:1.35;
+
+  font-weight:500;
+
+  letter-spacing:0;
+
+  text-align:left;
+}
+
+
+/* ============================================================
+   H3
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body h3 {
+
+  margin:27px 0 10px;
+
+  padding:0;
+
+  color:#111111;
+
+  font-family:inherit;
+
+  font-size:18px;
+
+  line-height:1.4;
+
+  font-weight:500;
+
+  text-align:left;
+}
+
+
+/* ============================================================
+   PARAGRAPHS
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body p {
+
+  margin:0 0 16px;
+
+  padding:0;
+
+  color:#333333;
+
+  font-family:inherit;
+
+  font-size:15px;
+
+  line-height:1.7;
+
+  font-weight:400;
+
+  text-align:justify;
+
+  text-justify:inter-word;
+}
+
+
+/* ============================================================
+   LISTS
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body ul,
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body ol {
+
+  margin:0 0 18px;
+
+  padding-left:23px;
+
+  text-align:left;
+}
+
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body li {
+
+  margin-bottom:6px;
+
+  color:#333333;
+
+  font-size:15px;
+
+  line-height:1.65;
+}
+
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body a {
+
+  color:#c62828;
+
+  text-decoration:underline;
+
+  text-decoration-thickness:1px;
+
+  text-underline-offset:3px;
+}
+
+
+/* ============================================================
+   IMAGES INSIDE CONTENT
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body img {
+
+  display:block;
+
+  width:auto;
+
+  max-width:100%;
+
+  height:auto;
+
+  margin:25px auto;
+}
+
+
+/* ============================================================
+   BLOCKQUOTE
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body blockquote {
+
+  margin:25px 0;
+
+  padding:16px 20px;
+
+  border-left:3px solid #222222;
+
+  background:#f7f7f7;
+
+  color:#444444;
+
+  font-size:15px;
+
+  line-height:1.65;
+
+  text-align:justify;
+}
+
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body table {
+
+  width:100%;
+
+  margin:25px 0;
+
+  border-collapse:collapse;
+}
+
+
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body th,
+#QuickLinkArticle-{{ section.id }}
+.quick-link-article__body td {
+
+  padding:10px 13px;
+
+  border:1px solid #dddddd;
+
+  text-align:left;
+
+  font-size:14px;
+
+  line-height:1.5;
+}
+
+
+/* ============================================================
+   DESKTOP
+   ============================================================ */
+
+@media screen and (min-width:768px) {
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__container {
+
+    padding-top:42px;
+
+    padding-bottom:65px;
+  }
+
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media screen and (max-width:767px) {
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__container {
+
+    padding:25px 18px 45px;
+  }
+
+
+  /* FEATURED IMAGE */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__image-wrap {
+
+    margin-bottom:28px;
+  }
+
+
+  /* CONTENT */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__content {
+
+    max-width:100%;
+  }
+
+
+  /* DESCRIPTION */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__description {
+
+    margin-bottom:20px;
+
+    font-size:14px;
+
+    line-height:1.65;
+
+    text-align:justify;
+  }
+
+
+  /* BODY */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__body {
+
+    font-size:14px;
+
+    line-height:1.7;
+
+    text-align:justify;
+  }
+
+
+  /* H1 */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__body h1 {
+
+    margin-bottom:18px;
+
+    font-size:24px;
+
+    line-height:1.3;
+
+    font-weight:500;
+
+    text-align:left;
+  }
+
+
+  /* H2 */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__body h2 {
+
+    margin-top:29px;
+
+    margin-bottom:11px;
+
+    font-size:20px;
+
+    line-height:1.35;
+
+    font-weight:500;
+
+    text-align:left;
+  }
+
+
+  /* H3 */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__body h3 {
+
+    margin-top:24px;
+
+    margin-bottom:9px;
+
+    font-size:18px;
+
+    line-height:1.4;
+
+    font-weight:500;
+
+    text-align:left;
+  }
+
+
+  /* PARAGRAPH */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__body p {
+
+    margin-bottom:15px;
+
+    font-size:14px;
+
+    line-height:1.7;
+
+    text-align:justify;
+  }
+
+
+  /* LIST */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__body li {
+
+    font-size:14px;
+
+    line-height:1.65;
+  }
+
+
+  /* BLOCKQUOTE */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__body blockquote {
+
+    margin:22px 0;
+
+    padding:14px 16px;
+
+    font-size:14px;
+
+    line-height:1.65;
+  }
+
+
+  /* TABLE */
+
+  #QuickLinkArticle-{{ section.id }}
+  .quick-link-article__body table {
+
+    display:block;
+
+    overflow-x:auto;
+
+    white-space:nowrap;
+  }
+
+}
+
+</style>
+
+
+{% else %}
+
+<div
+  style="
+    max-width:1100px;
+    margin:60px auto;
+    padding:40px 20px;
+    text-align:center;
+  "
+>
+  <p>Quick Link content is not available.</p>
+</div>
+
+{% endif %}
+
+
+{% schema %}
+
+{
+  "name": "Quick Link Article",
+
+  "tag": "section",
+
+  "class": "section-quick-link-article",
+
+  "settings": [],
+
+  "presets": [
+    {
+      "name": "Quick Link Article"
+    }
+  ]
+}
+
+{% endschema %}

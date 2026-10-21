@@ -1,0 +1,522 @@
+{%- capture video_banner -%}
+{%- assign section_st = section.settings -%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}">
+        <div class="video_bnr pr of-hidden {% render 'animate-data', css:true, text:true %}{% if section_st.npd == false or section_st.fullwidth == false %} {{ section_st.rounded }}{% endif %}">
+        {%- if section_st.video_url == blank and section_st.mp4url != nil -%}
+            {%- liquid
+                if section_st.mp4urlm != nil 
+                    assign desktop = 'db w-100 hide-sm'
+                    assign mobile = 'db w-100 hide-md hide-lg'
+                else
+                    assign desktop = 'db w-100'
+                    assign mobile = 'db w-100 hide'
+                endif
+            -%}                                 
+            {{- section_st.mp4url | video_tag :loop:true, autoplay:true, muted:'muted', class:desktop -}}
+            {%- if section_st.mp4urlm != nil -%}
+              {{- section_st.mp4urlm | video_tag :loop:true, autoplay:true, muted:'muted', class:mobile -}}
+            {%- endif -%}
+        {%- else -%}              
+          {% capture current %}{% cycle 1, 2 %}{% endcapture %}{{ 'hero-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+
+          <div class="content-wraper fl {{section_st.ovr-direction}}" style="--page-width:{{ section_st.contwd }}px;--overlay:{{ section_st.ovr }};--overlay-down:{{ section_st.ovr | color_to_hex }}00;">
+              <div class="page-width fl w-100 {{ section_st.txtpos }} {{ section_st.txtposm }} {% render 'animate-data', css:true %}">
+                    <div class="group-bk fl f-col gap {{ section_st.box_rounded }} t-{{ section_st.alignm }} t-{{ section_st.align }}-md {% render 'group-settings', section_st:section_st, class: true %}" style="{% render 'group-settings', section_st:section_st, styles:true %}">
+                        {%- content_for 'blocks' -%}
+                    </div>
+              </div>
+          </div>
+        </div>
+    </div>
+</div>
+{%- endcapture -%}
+{{- video_banner | strip_newlines | replace: '  ', ' ' | replace: '  ', ' ' -}}
+{% schema %}
+{
+  "name": "Background video",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Video play in background. To play video with sound, use Popup video section."
+    },
+    {
+      "type": "video",
+      "id": "mp4url",
+      "label": "Video",
+      "info": "Supported file type -mp4, .mov. video will play in loop"
+    },
+    {
+      "type": "video",
+      "id": "mp4urlm",
+      "label": "Video (mobile)",
+      "info": "Optional."
+    },
+    {
+      "type": "color",
+      "id": "ovr",
+      "label": "Overlay color",
+      "alpha": true,
+      "default": "#00000060"
+    },
+      {
+          "type": "select",
+          "id": "ovr-direction",
+          "label": "Overlay direction",
+          "default": "bottom",
+          "options": [
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" },
+            { "value": "full", "label": "Full" }
+          ]
+        },
+    {
+      "type": "header",
+      "content": "Caption"
+    },
+    {
+      "type": "range",
+      "id": "contwd",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "label": "Container width",
+      "unit": "px",
+      "default": 1200,
+      "info": "Apply for desktop only"
+    },
+    {
+      "type": "select",
+      "id": "txtpos",
+      "label": "Position",
+      "default": "f-aie-md f-jcc-md",
+      "options": [
+        { "label": "Top left", "value": "f-ais-md f-jcs-md" },
+        { "label": "Top center", "value": "f-ais-md f-jcc-md" },
+        { "label": "Top right", "value": "f-ais-md f-jce-md" },
+        { "label": "Left", "value": "f-aic-md f-jcs-md" },
+        { "label": "Center", "value": "f-aic-md f-jcc-md" },
+        { "label": "Right", "value": "f-aic-md f-jce-md" },
+        { "label": "Bottom left", "value": "f-aie-md f-jcs-md" },
+        { "label": "Bottom center", "value": "f-aie-md f-jcc-md" },
+        { "label": "Bottom right", "value": "f-aie-md f-jce-md" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "txtposm",
+      "label": "Position (mobile)",
+      "default": "f-aie f-jcc",
+      "options": [
+        { "label": "Top left", "value": "f-ais f-jcs" },
+        { "label": "Top center", "value": "f-ais f-jcc" },
+        { "label": "Top right", "value": "f-ais f-jce" },
+        { "label": "Left", "value": "f-aic f-jcs" },
+        { "label": "Center", "value": "f-aic f-jcc" },
+        { "label": "Right", "value": "f-aic f-jce" },
+        { "label": "Bottom left", "value": "f-aie f-jcs" },
+        { "label": "Bottom center", "value": "f-aie f-jcc" },
+        { "label": "Bottom right", "value": "f-aie f-jce" }
+      ]
+    },
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Alignment",
+      "default": "center"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignm",
+      "label": "Alignment (mobile)",
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Content box"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "custom",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ct_width",
+      "min": 300,
+      "max": 1300,
+      "step": 10,
+      "label": "Custom width",
+      "unit": "px",
+      "default": 600,
+      "visible_if": "{{ section.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "widthm",
+      "label": "Width (mobile)",
+      "default": "fit",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ct_widthm",
+      "min": 100,
+      "max": 600,
+      "step": 5,
+      "label": "Custom width",
+      "unit": "px",
+      "default": 300,
+      "visible_if": "{{ section.settings.widthm == 'custom' }}"
+    },    
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "box_bg",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#fff",
+      "visible_if": "{{ section.settings.isbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "box_bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.isbg }}"
+    },
+    {
+      "type": "select",
+      "id": "bdr",
+      "label": "Borders",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "visible_if": "{{ section.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "brd_sz",
+      "label": "Border thickness",
+      "default": 1,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.isbg and section.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "alpha": true,
+      "visible_if": "{{ section.settings.isbg and section.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "box_rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ section.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "gapm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap (mobile)",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Text padding"
+    },
+    {
+      "type": "checkbox",
+      "id": "ispd",
+      "label": "Add padding",
+      "default": false
+    },   
+    {
+      "type": "range",
+      "id": "pd-lr",
+      "label": "Horizontal",
+      "default": 30,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.ispd }}"
+    },    
+     {
+      "type": "range",
+      "id": "pd-tb",
+      "label": "Vertical",
+      "default": 30,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.ispd }}"
+    },
+     {
+      "type": "range",
+      "id": "pd-lrm",
+      "label": "Horizontal (mobile)",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pd-tbm",
+      "label": "Vertical (mobile)",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.ispd }}"
+    },   
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ],
+      "visible_if": "{{ section.settings.npd == false or section.settings.fullwidth == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video in background",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "text": "AVONE - THE BEST SELLING SHOPIFY THEME",
+            "preset": "h1",
+            "cl":"#fff",
+
+          }
+        },
+        {
+          "type": "button",
+          "settings": {
+              "btn-style":"btn5"
+          }          
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,151 @@
+{% liquid
+    assign block_st = block.settings
+
+    capture classes
+        if block_st.direction == 'f-row-md' and block_st.wrap
+            echo "f-wrap "
+        endif
+    endcapture
+-%}
+
+<div
+    id="{{ block.id }}"
+    class="group-bk fl gap {{ block_st.direction_mobile }} {{ block_st.direction }} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md {{ classes }}"
+    style="--gap:{{ block_st.gap }}px;--gapm:{{ block_st.gapm }}px;--fs:{{ block_st.fs }}px;--fw:{{ block_st.fw }}"
+    {{ block.shopify_attributes }}
+>
+    {%- content_for 'blocks' -%}
+</div>
+
+{% schema %}
+{
+    "name": "Product meta",
+    "tag": null,
+    "blocks": [
+        { "type": "_product-sku" },
+        { "type": "_product-shot-description" },
+        { "type": "_product-tags" },
+        { "type": "_product-collections" },
+        { "type": "_product-vendor" },
+        { "type": "_product-type" }
+    ],
+    "settings": [
+        {
+            "type": "header",
+            "content": "Layout"
+        },
+        {
+            "type": "select",
+            "id": "direction",
+            "label": "Direction",
+            "default": "f-col-md",
+            "options": [
+                { "label": "Horizontal", "value": "f-row-md" },
+                { "label": "Vertical", "value": "f-col-md" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "wrap",
+            "label": "Wrap items",
+            "default": false,
+            "visible_if": "{{ block.settings.direction == 'f-row-md' }}"
+        },
+        {
+            "type": "range",
+            "id": "gap",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "label": "Gap",
+            "default": 15
+        },
+        {
+            "type": "range",
+            "id": "fs",
+            "min": 10,
+            "max": 60,
+            "step": 1,
+            "label": "Font size",
+            "unit": "px",
+            "default": 14
+        },
+        {
+            "type": "select",
+            "id": "fw",
+            "label": "Font weight",
+            "default": "400",
+            "options": [
+                { "value": "300", "label": "Light" },
+                { "value": "400", "label": "Regular" },
+                { "value": "500", "label": "Medium" },
+                { "value": "600", "label": "Semi bold" },
+                { "value": "700", "label": "Bold" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Mobile layout"
+        },
+        {
+            "type": "select",
+            "id": "direction_mobile",
+            "label": "Direction",
+            "default": "f-col",
+            "options": [
+                { "label": "Horizontal", "value": "f-row" },
+                { "label": "Vertical", "value": "f-col" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "wrapm",
+            "label": "Wrap Items",
+            "default": false,
+            "visible_if": "{{ block.settings.direction_mobile == 'f-row' }}"
+        },
+        {
+            "type": "range",
+            "id": "gapm",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "label": "Gap (mobile)",
+            "default": 10
+        },
+        {
+            "type": "paragraph",
+            "content": "-----------------------------------------------"
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Bottom margin",
+            "default": 20,
+            "min": 0,
+            "max": 50,
+            "step": 5,
+            "unit": "px"
+        },
+        {
+            "type": "range",
+            "id": "mbm",
+            "label": "Bottom margin (mobile)",
+            "default": 15,
+            "min": 0,
+            "max": 50,
+            "step": 5,
+            "unit": "px"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Product meta",
+            "category": "Product",
+            "blocks": []
+        }
+    ]
+}
+{% endschema %}

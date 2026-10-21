@@ -1,0 +1,134 @@
+{%- assign section_st = section.settings -%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+  <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}">
+      {% content_for 'blocks' %}
+  </div>
+</div>
+{%- schema -%}
+{
+  "name": "Apps",
+  "tag": "section",
+  "class": "appSec",
+  "settings": [
+		{
+            "type": "header",
+            "content": "Section Design ==="
+        },
+       {
+            "type":"checkbox",
+            "id":"fullwidth",
+            "label":"Full width",
+            "default": false           
+        },	
+        {
+        "type": "checkbox",
+        "id": "npd",
+        "label": "Remove side margins",
+        "default": true,
+        "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+        "visible_if": "{{ section.settings.fullwidth }}"            
+      },
+        {
+            "type": "checkbox",
+            "id": "addbg",
+            "label": "Add background",
+            "default": false
+        },
+        {
+            "type": "color",
+            "id": "bg",
+            "label": "Background",
+            "default":"#fff",
+            "visible_if": "{{ section.settings.addbg }}"
+        },
+        {
+            "type": "color_background",
+            "id": "bgg",
+            "label": "Background gradient",
+            "visible_if": "{{ section.settings.addbg }}"
+        },	
+        {
+            "type": "image_picker",
+            "id": "bg-image",
+            "label": "Background image",
+            "visible_if": "{{ section.settings.addbg }}"
+          }, 
+        {
+            "type": "color",
+            "id": "overlay",
+            "label": "Image overlay",
+            "default": "#00000050",
+            "alpha": true,
+            "visible_if": "{{ section.settings.addbg }}"
+        },
+       {
+            "type": "color",
+            "id": "headings_cl",
+            "label": "Text",
+            "visible_if": "{{ section.settings.addbg }}"
+        },
+		{
+			"type": "range",
+			"id": "sst",
+			"min": 0,
+			"max": 100,
+			"step": 5,
+			"label": "Spacing top",
+			"unit": "px",
+			"default":30
+        },
+		{
+			"type": "range",
+			"id": "ssb",
+			"min": 0,
+			"max": 100,
+			"step": 5,
+			"label": "Spacing bottom",
+			"unit": "px",
+			"default":30
+        },		
+		{
+			"type": "range",
+			"id": "sstm",
+			"min": 0,
+			"max": 100,
+			"step": 5,
+			"label": "Spacing top (mobile)",
+			"unit": "px",
+			"default":15
+        },
+		{
+			"type": "range",
+			"id": "ssbm",
+			"min": 0,
+			"max": 100,
+			"step": 5,
+			"label": "Spacing bottom (mobile)",
+			"unit": "px",
+			"default":15
+        },
+         {
+            "type": "checkbox",
+            "id": "hidem",
+            "label": "Hide on mobile",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "hided",
+            "label": "Hide on desktop",
+            "default": false
+        }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.apps.presets.name"
+    }
+  ]
+}
+{%- endschema -%}

@@ -1,0 +1,1967 @@
+{%- liquid
+    assign section_st = section.settings
+    assign block_st = block.settings
+	assign drower = ''
+	assign flclass = 'f-wrap col-gap'
+	assign bgttl = ''
+	if section_st.sbpos != 'top'
+		assign drower = 'open'
+		assign flclass = 'f-col w-100'
+		assign bgttl = 'hide'
+	endif
+	assign pageurl = canonical_url | split: '?type=' | last
+-%}
+
+<form id="CollectionFiltersForm" class="flForm{% unless section_st.sbpos == 'top' %} fl f-col f-ais f-row-md{% endunless %}" {{ block.shopify_attributes }}>
+
+	{%- if request.page_type == 'search' -%}
+		<input type="hidden" name="q" value="{{ search.terms }}">
+		<input name="options[prefix]" type="hidden" value="last">
+	{%- endif -%}
+
+	{%- assign total_active_values = 0 -%}
+
+	{% if section_st.filters %}
+
+		<div class="closeFilter{% if section_st.sbpos != 'popup' %} hide-lg{% endif %}">
+			<svg class="at-icon">
+				<use xlink:href="#icon-close"></use>
+			</svg>
+		</div>
+
+		<div class="filters-item__wrapper fl gap {{ flclass }}" data-url="{{ shop.url }}{{ collection.url | split: "?" | first }}">
+
+			{%- liquid
+                assign section_st = section.settings
+                assign block_st = block.settings
+
+				assign drower = ''
+				assign bgttl = 'hide-sm'
+
+				if section_st.sbpos != 'top'
+					assign drower = 'open'
+					assign bgttl = 'hide'
+				endif
+
+				assign clropt = block_st.clopt | downcase | replace:", ","," | replace:" , ","," | replace:" ,","," | split: ","
+			-%}
+
+			{%- if block_st.title != blank -%}
+				<label class="{{ section_st.tff }} flby mb20 {{ section_st.bx_ttlw }}{% if section_st.sbpos != 'top' %} col-1{% else %} f-asc mr10{% endif %}">
+					{{ block_st.title }}
+				</label>
+			{%- endif -%}
+
+
+			{%- liquid
+                if request.page_type == 'search'
+                    assign filters = search.filters
+                else
+                    assign filters = collection.filters
+                endif
+            -%}
+
+
+
+			<!-- =========================================
+			     OFF THE HOOK - DEPARTMENT CONTEXT
+			     Category filtering is handled by the native
+			     Shopify Search & Discovery filter below.
+			     Required source:
+			     product.metafields.custom.collection_categories
+			 ========================================= -->
+
+			{%- assign category_group = '' -%}
+
+			{%- case collection.handle -%}
+
+				{%- when 'men', 'men-loafers', 'men-boots', 'men-formals', 'men-casual-shoes', 'mens-sneaker', 'boat-shoes' -%}
+					{%- assign category_group = 'men' -%}
+
+				{%- when 'women', 'women-chunky-chelsea-leather-boots-london', 'women-ankle-boots', 'women-mid-calf-boots', 'women-knee-high-boots', 'women-combat-boots', 'women-chelsea-boots', 'women-plaform-boots', 'women-smart-casual-shoes', 'women-sandals-store-london', 'women-loafers', 'ballerina' -%}
+					{%- assign category_group = 'women' -%}
+
+				{%- when 'boys', 'sneakers', 'boots', 'loafers', 'casual-shoe', 'formal-shoes', 'school-shoes' -%}
+					{%- assign category_group = 'boys' -%}
+
+				{%- when 'girls', 'girl-boots', 'girls-sandals', 'girls-loafers', 'girl-school-shoes', 'girls-formal', 'girls-casual' -%}
+					{%- assign category_group = 'girls' -%}
+
+			{%- endcase -%}
+
+			<!-- =========================================================
+			     OFF THE HOOK - DEPARTMENT CATEGORY NAVIGATION/FILTER
+			     =========================================================
+			     Shows ALL categories belonging to the current department,
+			     even when the customer is already inside a sub-collection.
+
+			     The category checkboxes use the same Shopify Search &
+			     Discovery parameter as:
+			     product.metafields.custom.collection_categories
+
+			     When a category is selected from a sub-collection
+			     (for example Women Knee High Boots), JavaScript moves
+			     the customer to /collections/women and keeps the selected
+			     category filter applied.
+			     ========================================================= -->
+
+			{%- assign category_filter_param = '' -%}
+			{%- assign category_filter_operator = 'OR' -%}
+			{%- assign category_filter = blank -%}
+
+			{%- for category_filter_candidate in filters -%}
+				{%- if category_filter_candidate.param_name contains 'custom.collection_categories' -%}
+					{%- assign category_filter = category_filter_candidate -%}
+					{%- assign category_filter_param = category_filter_candidate.param_name -%}
+					{%- assign category_filter_operator = category_filter_candidate.operator | default: 'OR' -%}
+					{%- break -%}
+				{%- elsif category_filter_candidate.id contains 'custom.collection_categories' -%}
+					{%- assign category_filter = category_filter_candidate -%}
+					{%- assign category_filter_param = category_filter_candidate.param_name -%}
+					{%- assign category_filter_operator = category_filter_candidate.operator | default: 'OR' -%}
+					{%- break -%}
+				{%- endif -%}
+			{%- endfor -%}
+
+			{%- assign current_category_value = '' -%}
+			{%- case collection.handle -%}
+
+				{%- comment -%} WOMEN {%- endcomment -%}
+				{%- when 'women-chunky-chelsea-leather-boots-london' -%}
+					{%- assign current_category_value = 'Boots' -%}
+				{%- when 'women-ankle-boots' -%}
+					{%- assign current_category_value = 'Ankle Boots' -%}
+				{%- when 'women-mid-calf-boots' -%}
+					{%- assign current_category_value = 'Mid-Calf Boots' -%}
+				{%- when 'women-knee-high-boots' -%}
+					{%- assign current_category_value = 'Knee High Boots' -%}
+				{%- when 'women-combat-boots' -%}
+					{%- assign current_category_value = 'Combat Boots' -%}
+				{%- when 'women-chelsea-boots' -%}
+					{%- assign current_category_value = 'Chelsea Boots' -%}
+				{%- when 'women-plaform-boots' -%}
+					{%- assign current_category_value = 'Platform Boots' -%}
+				{%- when 'women-smart-casual-shoes' -%}
+					{%- assign current_category_value = 'Casual Shoes' -%}
+				{%- when 'women-sandals-store-london' -%}
+					{%- assign current_category_value = 'Sandals' -%}
+				{%- when 'women-loafers' -%}
+					{%- assign current_category_value = 'Loafers' -%}
+				{%- when 'ballerina' -%}
+					{%- assign current_category_value = 'Ballerina' -%}
+
+				{%- comment -%} MEN {%- endcomment -%}
+				{%- when 'men-loafers' -%}
+					{%- assign current_category_value = 'Loafers' -%}
+				{%- when 'men-boots' -%}
+					{%- assign current_category_value = 'Boots' -%}
+				{%- when 'men-formals' -%}
+					{%- assign current_category_value = 'Formal Shoes' -%}
+				{%- when 'men-casual-shoes' -%}
+					{%- assign current_category_value = 'Casual Shoes' -%}
+				{%- when 'mens-sneaker' -%}
+					{%- assign current_category_value = 'Sneakers/Trainers' -%}
+				{%- when 'boat-shoes' -%}
+					{%- assign current_category_value = 'Boat Shoes' -%}
+
+				{%- comment -%} BOYS {%- endcomment -%}
+				{%- when 'sneakers' -%}
+					{%- assign current_category_value = 'Sneakers/Trainers' -%}
+				{%- when 'boots' -%}
+					{%- assign current_category_value = 'Boots' -%}
+				{%- when 'loafers' -%}
+					{%- assign current_category_value = 'Loafers' -%}
+				{%- when 'casual-shoe' -%}
+					{%- assign current_category_value = 'Casual Shoes' -%}
+				{%- when 'formal-shoes' -%}
+					{%- assign current_category_value = 'Formal Shoes' -%}
+				{%- when 'school-shoes' -%}
+					{%- assign current_category_value = 'Back to School' -%}
+
+				{%- comment -%} GIRLS {%- endcomment -%}
+				{%- when 'girl-boots' -%}
+					{%- assign current_category_value = 'Boots' -%}
+				{%- when 'girls-sandals' -%}
+					{%- assign current_category_value = 'Sandals' -%}
+				{%- when 'girls-loafers' -%}
+					{%- assign current_category_value = 'Loafers' -%}
+				{%- when 'girl-school-shoes' -%}
+					{%- assign current_category_value = 'Back to School' -%}
+				{%- when 'girls-formal' -%}
+					{%- assign current_category_value = 'Formal Shoes' -%}
+				{%- when 'girls-casual' -%}
+					{%- assign current_category_value = 'Casual Shoes' -%}
+
+			{%- endcase -%}
+
+			{%- if category_group != blank and category_filter_param != blank -%}
+				<details
+					class="sidebar-widget filters-item pr js-filter category-filter-first collection-category-checkbox-filter collection-category-global-filter"
+					open
+					data-category-filter-param="{{ category_filter_param | escape }}"
+					data-category-filter-operator="{{ category_filter_operator | escape }}"
+					data-department="{{ category_group | escape }}"
+					data-parent-collection-handle="{{ category_group }}"
+					data-current-category="{{ current_category_value | escape }}"
+				>
+					<div class="global-category-url-state" data-global-category-url-state aria-hidden="true"></div>
+					<summary class="widget-title filters-title head {{ section_st.ttlpreset }} fl f-jcsb f-aic{% if section_st.bottom_border %} border-bottom mb15{% endif %}">
+						<span class="{{ section_st.bx_ttlw }} {{ section_st.text_case }} {{ section_st.tff }}">CATEGORIES</span>
+
+						{% if section_st.show_toggle_icon %}
+							<svg class="at-icon plus"><use xlink:href="#icon-plus"></use></svg>
+							<svg class="at-icon minus"><use xlink:href="#icon-minus"></use></svg>
+						{% endif %}
+					</summary>
+
+					<div class="filters-select collection-category-list">
+						<ul class="filters-select__list {{ section_st.opt_text_case }}" role="list">
+
+							{%- if category_group == 'women' -%}
+								{%- assign department_categories = 'Boots|Boots,Ankle Boots|Ankle Boots,Mid-Calf Boots|Mid-Calf Boots,Knee High Boots|Knee High Boots,Combat Boots|Combat Boots,Chelsea Boots|Chelsea Boots,Platform Boots|Platform Boots,Casual Shoes|Casual Shoes,Sandals|Sandals,Loafers|Loafers,Ballerina|Ballerina' | split: ',' -%}
+							{%- elsif category_group == 'men' -%}
+								{%- assign department_categories = 'Loafers|Loafers,Boots|Boots,Formal Shoes|Formal Shoes,Casual Shoes|Casual Shoes,Sneakers/Trainers|Sneakers/Trainers,Boat Shoes|Boat Shoes' | split: ',' -%}
+							{%- elsif category_group == 'boys' -%}
+								{%- assign department_categories = 'Sneakers/Trainers|Sneakers/Trainers,Boots|Boots,Loafers|Loafers,Casual Shoes|Casual Shoes,Formal Shoes|Formal Shoes,Back to School|Back to School' | split: ',' -%}
+							{%- elsif category_group == 'girls' -%}
+								{%- assign department_categories = 'Boots|Boots,Sandals|Sandals,Loafers|Loafers,Formal Shoes|Formal Shoes,Casual Shoes|Casual Shoes,Back to School|Back to School' | split: ',' -%}
+							{%- endif -%}
+
+							{%- for category_pair in department_categories -%}
+								{%- assign category_parts = category_pair | split: '|' -%}
+								{%- assign category_label = category_parts[0] -%}
+								{%- assign category_value = category_parts[1] -%}
+
+								{%- assign category_active = false -%}
+								{%- if category_filter != blank -%}
+									{%- for active_value in category_filter.active_values -%}
+										{%- if active_value.value == category_value -%}
+											{%- assign category_active = true -%}
+											{%- break -%}
+										{%- endif -%}
+									{%- endfor -%}
+								{%- endif -%}
+
+								{%- comment -%}
+									When a customer opens a sub-collection directly, its
+									category is checked by default. Once URL filters exist,
+									URL state becomes authoritative.
+								{%- endcomment -%}
+								{%- if category_filter.active_values.size == 0 and current_category_value == category_value -%}
+									{%- assign category_active = true -%}
+								{%- endif -%}
+
+								<li data-global-category-value="{{ category_value | escape }}" data-filter-value="{{ category_label | escape }}">
+									<label for="GlobalCategory-{{ category_group }}-{{ category_value | handleize }}" class="m0 fl-checkbox">
+										<input
+											type="checkbox"
+											name="{{ category_filter_param }}"
+											value="{{ category_value | escape }}"
+											id="GlobalCategory-{{ category_group }}-{{ category_value | handleize }}"
+											class="custCheck global-category-check"
+											data-category-value="{{ category_value | escape }}"
+											{% if category_active %}checked{% endif %}
+										>
+										<span class="checkbox" aria-hidden="true"></span>
+										<span class="global-category-label">{{ category_label | escape }}</span>
+									</label>
+								</li>
+							{%- endfor -%}
+
+						</ul>
+					</div>
+				</details>
+			{%- endif -%}
+
+			<!-- =========================================
+			     EXISTING DYNAMIC FILTERS
+			     DO NOT MODIFY
+			     ========================================= -->
+
+			{%- for filter in filters -%}
+
+    {%- comment -%}
+        OFF THE HOOK - Gender filter is displayed ONLY on the
+        /collections/new-summer-styles-20-off collection.
+        All other filters and existing functionality remain unchanged.
+    {%- endcomment -%}
+    {%- assign is_gender_filter = false -%}
+    {%- if filter.label == 'GENDER' or filter.label == 'Gender' -%}
+        {%- assign is_gender_filter = true -%}
+    {%- endif -%}
+
+    {%- if is_gender_filter and collection.handle != 'new-summer-styles-20-off' -%}
+        {%- continue -%}
+    {%- endif -%}
+
+    {%- assign is_category_filter = false -%}
+    {%- assign is_collection_category_filter = false -%}
+
+    {%- comment -%}
+      This must be the Shopify Search & Discovery filter whose source is:
+      product.metafields.custom.collection_categories
+
+      It is intentionally rendered as a normal list filter so the
+      customer can tick multiple category values at the same time.
+    {%- endcomment -%}
+    {%- if filter.param_name contains 'custom.collection_categories' -%}
+        {%- assign is_collection_category_filter = true -%}
+        {%- assign is_category_filter = true -%}
+    {%- elsif filter.id contains 'custom.collection_categories' -%}
+        {%- assign is_collection_category_filter = true -%}
+        {%- assign is_category_filter = true -%}
+    {%- elsif filter.label == 'Categories' or filter.label == 'CATEGORIES' or filter.label == 'Category' or filter.label == 'CATEGORY' -%}
+        {%- assign is_category_filter = true -%}
+    {%- endif -%}
+
+    {%- comment -%}
+      The custom collection-category filter is rendered above as the
+      global department filter. Skip Shopify's native version here so
+      the customer sees ALL department categories, not only values
+      available inside the current sub-collection.
+    {%- endcomment -%}
+
+    {%- if is_collection_category_filter -%}
+        {%- assign total_active_values = total_active_values | plus: filter.active_values.size -%}
+        {%- continue -%}
+    {%- endif -%}
+
+    {%- assign total_active_values = total_active_values | plus: filter.active_values.size -%}
+				{%- case filter.type -%}
+
+					{%- when 'boolean', 'list' -%}
+
+						<details class="sidebar-widget filters-item pr js-filter{% if is_category_filter %} category-filter-first{% endif %}{% if is_collection_category_filter %} collection-category-checkbox-filter{% endif %}" data-index="{{ forloop.index }}"{% if is_collection_category_filter %} data-category-filter-operator="{{ filter.operator | default: 'OR' }}"{% endif %} {{ drower }}> 
+
+							<summary class="widget-title filters-title head {{ section_st.ttlpreset }} fl f-jcsb f-aic{% if section_st.bottom_border %} border-bottom mb15{% endif %}">
+
+								<span class="{{ section_st.bx_ttlw }} {{ section_st.text_case }} {{ section_st.tff }}">
+										{%- if is_collection_category_filter -%}
+											CATEGORIES
+										{%- else -%}
+											{{- filter.label | escape -}}
+										{%- endif -%}
+									</span>
+
+								{% if section_st.show_toggle_icon %}
+
+									<svg class="at-icon plus">
+										<use xlink:href="#icon-plus"></use>
+									</svg>
+
+									<svg class="at-icon minus">
+										<use xlink:href="#icon-minus"></use>
+									</svg>
+
+								{% endif %}
+
+							</summary>
+
+
+							{%- liquid
+								assign twocol = false
+								assign iscolors = false
+								assign ispill = false
+
+								assign col_options = block_st.flcolumn | downcase | replace:", ","," | replace:" , ","," | replace:" ,","," | split: ","
+								assign pill_options = block_st.flpill | downcase | replace:", ","," | replace:" , ","," | replace:" ,","," | split: ","
+
+							assign fname = filter.label | downcase | strip
+
+if col_options contains fname
+    assign twocol = true
+endif
+
+if fname == 'color' or fname == 'colour'
+    assign iscolors = true
+elsif filter.presentation == 'swatch' or clropt contains fname
+    assign iscolors = true
+endif
+
+if pill_options contains fname
+    assign ispill = true
+endif
+							-%}
+
+
+							<div class="filters-select{% if iscolors %} filters-colors{% endif %}{% if section_st.bottom_border %} mt20{% endif %}">
+
+								<div class="filters-select__count fl f-jcsb {{ bgttl }}">
+
+									<span class="facets__selected no-js-hidden">
+										{{ 'collections.general.filters_selected' | t: count: filter.active_values.size }}
+									</span>
+
+									<a href="{{ filter.url_to_remove }}" class="facets__reset link underlined-link js-facet-remove">
+										{{ 'collections.general.reset' | t }}
+									</a>
+
+								</div>
+
+
+								<ul class="filters-select__list {{ section_st.opt_text_case }}{% if iscolors or ispill %} fl f-wrap gap{% endif %}"
+									role="list"
+									style="{% if iscolors or ispill %}--gap:8px;--gapm:8px;{% endif %}{% if twocol %}column-count:2{% endif %}">
+
+
+									{%- for value in filter.values -%}
+
+							{%- if iscolors -%}
+
+								{%- liquid
+									assign color_handle = value.value | handleize
+									assign swatch_value = ''
+
+									case color_handle
+										when 'spain-white'
+										assign swatch_value = '#eee7d3'
+										when 'light-beige'
+										assign swatch_value = '#ead9ad'
+										when 'tan-4'
+										assign swatch_value = '#c79b4a'
+										when 'grey'
+										assign swatch_value = '#888888'
+										when 'multi'
+										assign swatch_value = 'linear-gradient(135deg,#7b0010 0%,#d39b4a 50%,#1d3557 100%)'
+										when 'off-white'
+										assign swatch_value = '#f3f3f3'
+										when 'beige-1'
+										assign swatch_value = '#ead8a8'
+										when 'universe-suede'
+										assign swatch_value = '#11105b'
+										when 'cow-print'
+										assign swatch_value = '#70442d'
+										when 'khaki'
+										assign swatch_value = '#415d28'
+										when 'python'
+										assign swatch_value = '#888888'
+										when 'cognac'
+										assign swatch_value = '#a94b40'
+										when 'olive'
+										assign swatch_value = '#858b00'
+										when 'black-grey'
+										assign swatch_value = '#292727'
+										when 'animal'
+										assign swatch_value = '#a0a0a0'
+										when 'wine'
+										assign swatch_value = '#7a3039'
+										when 'yellow-lemon'
+										assign swatch_value = '#ffe500'
+										when 'multicolor'
+										assign swatch_value = 'linear-gradient(135deg,#111 0%,#d33 33%,#e4c300 66%,#244a8f 100%)'
+										when 'brown-6'
+										assign swatch_value = '#a55a2a'
+										when 'gray'
+										assign swatch_value = '#888888'
+										when 'taupe-suede'
+										assign swatch_value = '#96784f'
+										when 'universe'
+										assign swatch_value = '#15120f'
+										when 'dk-taupe'
+										assign swatch_value = '#70471f'
+										when 'musk'
+										assign swatch_value = '#33271f'
+										when 'tan-3'
+										assign swatch_value = '#6d2508'
+										when 'black'
+										assign swatch_value = '#050505'
+										when 'tobacco'
+										assign swatch_value = '#855029'
+										when 'navy'
+										assign swatch_value = '#09090a'
+										when 'lemon-yellow-1'
+										assign swatch_value = '#ffe500'
+										when 'sabia-suede'
+										assign swatch_value = '#a17f4f'
+										when 'brown-suede-3'
+										assign swatch_value = '#402400'
+										when 'brown-suede-2'
+										assign swatch_value = '#773c17'
+										when 'brown-suede-1'
+										assign swatch_value = '#8a471d'
+										when 'iceberg-suede'
+										assign swatch_value = '#d6a681'
+										when 'navy-blue'
+										assign swatch_value = '#090d43'
+										when 'wood'
+										assign swatch_value = '#4b261d'
+										when 'brown-suede'
+										assign swatch_value = '#7d4b2e'
+										when 'mink-suede'
+										assign swatch_value = '#7c4d31'
+										when 'lemon-yellow'
+										assign swatch_value = '#fff0a6'
+										when 'yellow'
+										assign swatch_value = '#e4c600'
+										when 'cognac-suede'
+										assign swatch_value = '#a84a3f'
+										when 'bordo'
+										assign swatch_value = '#7d001d'
+										when 'taupe-1'
+										assign swatch_value = '#918e8e'
+										when 'brown-5'
+										assign swatch_value = '#c22b2b'
+										when 'dark-brown'
+										assign swatch_value = '#3d2117'
+										when 'brown-4'
+										assign swatch_value = '#9b6435'
+										when 'chocolate'
+										assign swatch_value = '#6f2b0c'
+										when 'almond'
+										assign swatch_value = '#b52c00'
+										when 'brown-3'
+										assign swatch_value = '#382000'
+										when 'patent-black'
+										assign swatch_value = '#030303'
+										when 'patent-brown'
+										assign swatch_value = '#b52c2c'
+										when 'yellow-1'
+										assign swatch_value = '#ffe500'
+										when 'red-1'
+										assign swatch_value = '#402700'
+										when 'military-green-suede'
+										assign swatch_value = '#30291f'
+										when 'dk-taupe-suede'
+										assign swatch_value = '#665951'
+										when 'mamba-1'
+										assign swatch_value = '#ffd49c'
+										when 'mamba'
+										assign swatch_value = '#f5f4b4'
+										when 'taupe'
+										assign swatch_value = '#918e8e'
+										when 'brown-1'
+										assign swatch_value = '#76240f'
+										when 'nude'
+										assign swatch_value = '#e1b18f'
+										when 'cuoio'
+										assign swatch_value = '#b18400'
+										when 'leopard'
+										assign swatch_value = '#dcb33b'
+										when 'tan-2'
+										assign swatch_value = '#b48789'
+										when 'tan-1'
+										assign swatch_value = '#7c4c2e'
+										when 'tan'
+										assign swatch_value = '#d3b083'
+										when 'sand'
+										assign swatch_value = '#dda057'
+										when 'patent-wine'
+										assign swatch_value = '#7a0029'
+										when 'pink'
+										assign swatch_value = '#ffb4c1'
+										when 'white-black'
+										assign swatch_value = 'linear-gradient(135deg,#fff 0 50%,#111 50% 100%)'
+										when 'white-lamb-gum'
+										assign swatch_value = '#e6a5a1'
+										when 'white-lamb-santorini'
+										assign swatch_value = '#a9dce9'
+										when 'white-pink'
+										assign swatch_value = 'linear-gradient(135deg,#fff 0 50%,#e28d9e 50% 100%)'
+										when 'blue'
+										assign swatch_value = '#91a8c8'
+										when 'zebra'
+										assign swatch_value = 'linear-gradient(135deg,#111 0 50%,#fff 50% 100%)'
+										when 'bronze'
+										assign swatch_value = '#ca7a29'
+										when 'silver'
+										assign swatch_value = '#bdbdbd'
+										when 'gold'
+										assign swatch_value = '#ffd500'
+										when 'beige'
+										assign swatch_value = '#f2f1d9'
+										when 'brown'
+										assign swatch_value = '#7a461e'
+										when 'red'
+										assign swatch_value = '#d90808'
+										when 'white'
+										assign swatch_value = '#ffffff'
+										else
+										assign swatch_value = '#e5e5e5'
+									endcase
+								-%}
+
+								<li class="color" data-filter-value="{{ value.label | escape }}" data-filter-param="{{ value.param_name | escape }}">
+									<label for="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="m0 fl-checkbox">
+										<input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}" id="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="custCheck dyfl" {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+										<span class="filter-swatch clrbox" title="{{ value.label | escape }}" style="background: {{ swatch_value }} !important; background-image: {{ swatch_value }} !important;">
+											{% if value.active %}<svg class="at-icon"><use xlink:href="#icon-tick"></use></svg>{% endif %}
+										</span>
+									</label>
+								</li>
+
+							{%- elsif ispill -%}
+
+								<li class="pill" data-filter-value="{{ value.label | escape }}" data-filter-param="{{ value.param_name | escape }}">
+									<label for="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="m0 fl-checkbox{% if value.count == 0 and value.active == false %} disabled{% endif %}">
+										<input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}" id="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="custCheck dyfl" {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+										<span class="filter-swatch">{{ value.label | escape }}</span>
+									</label>
+								</li>
+
+							{%- else -%}
+
+								<li data-filter-value="{{ value.label | escape }}" data-filter-param="{{ value.param_name | escape }}">
+									<label for="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="m0 fl-checkbox{% if value.count == 0 and value.active == false %} disabled{% endif %}">
+										<input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}" id="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="custCheck dyfl" {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+										<span class="checkbox"></span>
+										{{ value.label | escape }}
+										{% if block_st.flpcnt %}<span class="prcnt">&nbsp;({{ value.count }})</span>{% endif %}
+									</label>
+								</li>
+
+							{%- endif -%}
+
+						{%- endfor -%}
+
+								</ul>
+
+							</div>
+
+						</details>
+
+
+					{%- when 'price_range' -%}
+
+						{% liquid
+							assign currencies_using_comma_decimals = 'ANG,ARS,BRL,BYN,BYR,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VES,VND' | split: ','
+							assign uses_comma_decimals = false
+
+							if currencies_using_comma_decimals contains cart.currency.iso_code
+								assign uses_comma_decimals = true
+							endif
+						%}
+
+
+						<details class="sidebar-widget filters-item pr{% if section_st.flbg and section_st.optbg %} bxBg{% endif %}"
+							data-index="{{ forloop.index }}"
+							{{ drower }}
+						>
+
+							<summary class="widget-title filters-title head {{ section_st.ttlpreset }}{% if section_st.bottom_border %} border-bottom mb15{% endif %}">
+
+								<span class="fl f-jcsb f-aic {{ section_st.text_case }}">
+
+									{{- filter.label | escape -}}
+
+									{% comment %} <span class="count-bubble{% if filter.min_value.value or filter.max_value.value %}{{ filter.active_values.size }}{% endif %}">
+									</span> {% endcomment %}
+
+									{% if section_st.show_toggle_icon %}
+
+										<svg class="at-icon plus">
+											<use xlink:href="#icon-plus"></use>
+										</svg>
+
+										<svg class="at-icon minus">
+											<use xlink:href="#icon-minus"></use>
+										</svg>
+
+									{% endif %}
+
+								</span>
+
+							</summary>
+
+
+							<div class="filters-select price-slider pr{% if section_st.bottom_border %} mt20{% endif %}">
+
+								<div class="filters-select__count fl f-jcsb {{ bgttl }}">
+
+									{%- assign max_price_amount = filter.range_max | money -%}
+
+									<span class="facets__selected">
+										{{ "collections.general.max_price_html" | t: price: max_price_amount }}
+									</span>
+
+									<a href="{{ filter.url_to_remove }}" class="facets__reset link underlined-link js-facet-remove">
+										{{ 'collections.general.reset' | t }}
+									</a>
+
+								</div>
+
+
+								<price-range class="fl f-jcsb f-aic filters-select__list mb20 {{ section_st.opt_text_case }}">
+
+									{%- liquid
+
+										assign last_two = filter.range_max | modulo: 100
+										assign difference = 100 | minus: last_two
+										assign min_value = 0
+
+										assign max_price = filter.range_max | plus: difference | money_without_currency | remove:',' | round
+
+										assign max_value = max_price
+
+
+										if filter.min_value.value
+
+											assign min_value = filter.min_value.value | money_without_currency | remove:',' | round
+
+										endif
+
+
+										if filter.max_value.value
+
+											assign max_value = filter.max_value.value | money_without_currency | remove:',' | round
+
+										endif
+
+
+										if uses_comma_decimals
+
+											assign max_price = filter.range_max | plus: difference | money_without_currency | remove:'.' | replace:",","." | round
+
+											assign max_value = max_price
+
+
+											if filter.min_value.value
+
+												assign min_value = filter.min_value.value | money_without_currency | remove:'.' | replace:",","." | round
+
+											endif
+
+
+											if filter.max_value.value
+
+												assign max_value = filter.max_value.value | money_without_currency | remove:'.' | replace:",","." | round
+
+											endif
+
+										endif
+
+									-%}
+
+
+									<div class="field pr">
+
+										<label
+											for="Filter-{{ filter.label | escape }}-GTE"
+											class="hidden_txt"
+										>
+											{{ filter.label | escape }}-GTE
+										</label>
+
+										<input
+											class="price-range w-100"
+											name="{{ filter.min_value.param_name }}"
+											id="Filter-{{ filter.label | escape }}-GTE"
+											type="number"
+											placeholder="0"
+											min="0"
+											value="{% if filter.min_value.value %}{{ min_value }}{% endif %}"
+											max="{{ max_price }}"
+										/>
+
+									</div>
+
+
+									<span class="ml20 mr20">
+										-
+									</span>
+
+
+									<div class="field pr">
+
+										<label
+											for="Filter-{{ filter.label | escape }}-LTE"
+											class="hidden_txt"
+										>
+											{{ filter.label | escape }}-LTE
+										</label>
+
+										<input
+											class="price-range w-100"
+											name="{{ filter.max_value.param_name }}"
+											id="Filter-{{ filter.label | escape }}-LTE"
+											type="number"
+											placeholder="{{ max_price }}"
+											min="0"
+											value="{% if filter.max_value.value %}{{ max_value }}{% endif %}"
+											max="{{ max_price }}"
+										/>
+
+									</div>
+
+								</price-range>
+
+
+								<tc-range-slider
+									min="0"
+									max="{{ max_price }}"
+									value1="{{ min_value }}"
+									value2="{{ max_value }}"
+									round="0"
+									mousewheel-disabled="true"
+									slider-width="100%"
+									slider-bg="{{ block_st.bar }}"
+									slider-bg-fill="{{ block_st.bara }}"
+									id="priceSlider"
+								></tc-range-slider>
+
+							</div>
+
+						</details>
+
+
+				{%- endcase -%}
+
+			{%- endfor -%}
+
+
+		</div>
+
+	{%- endif -%}
+
+
+	{%- if collection.current_vendor or collection.current_type -%}
+
+		<input
+			type="hidden"
+			name="q"
+			value="{{ collection.current_vendor }}{{ collection.current_type }}"
+		>
+
+	{%- endif -%}
+
+
+	<div class="hide">
+
+		<input
+			type="hidden"
+			class="pageView dyfl"
+			name="type"
+			value="{% if pageurl == 'list' %}list{% else %}grid{% endif %}"
+		>
+
+		<noscript>
+			<button type="submit" class="button button--small">
+				{{ 'collections.general.sort_button' | t }}
+			</button>
+		</noscript>
+
+	</div>
+
+</form>
+
+
+
+<script>
+/* =========================================================
+   OFF THE HOOK - GLOBAL DEPARTMENT CATEGORY FILTER
+   Persistent multi-select + preserves every other filter
+   ========================================================= */
+(function () {
+  'use strict';
+
+  var navigating = false;
+  var observerTimer = null;
+
+  function rootPath() {
+    return (window.Shopify && window.Shopify.routes && window.Shopify.routes.root)
+      ? window.Shopify.routes.root
+      : '/';
+  }
+
+  function getWidget() {
+    return document.querySelector('.collection-category-global-filter');
+  }
+
+  function getState(widget) {
+    var paramName = widget.getAttribute('data-category-filter-param') || '';
+    var url = new URL(window.location.href);
+    return {
+      paramName: paramName,
+      values: paramName ? url.searchParams.getAll(paramName) : [],
+      currentCategory: widget.getAttribute('data-current-category') || '',
+      department: widget.getAttribute('data-department') || '',
+      parentHandle: widget.getAttribute('data-parent-collection-handle') || ''
+    };
+  }
+
+  /*
+   * IMPORTANT:
+   * The visible category checkboxes are intentionally NOT class="dyfl".
+   * Avone must not treat them as ordinary filters when another filter
+   * (Color, Size, Availability, Price, etc.) is clicked.
+   *
+   * These hidden inputs are the only category values submitted with the
+   * normal Shopify/Avone filter form. They contain ONLY real URL-selected
+   * categories, never the visual default category of a sub-collection.
+   */
+  function syncHiddenCategoryInputs(widget, values) {
+    var form = document.querySelector('#CollectionFiltersForm');
+    if (!form) return;
+
+    form.querySelectorAll('input.global-category-url-value').forEach(function (input) {
+      input.remove();
+    });
+
+    var paramName = widget.getAttribute('data-category-filter-param') || '';
+    if (!paramName) return;
+
+    var stateBox = widget.querySelector('[data-global-category-url-state]');
+    var target = stateBox || form;
+
+    (values || []).forEach(function (value) {
+      var hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = paramName;
+      hidden.value = value;
+      hidden.className = 'global-category-url-value';
+      target.appendChild(hidden);
+    });
+  }
+
+  function setVisualState(widget) {
+    var state = getState(widget);
+    var checks = Array.prototype.slice.call(
+      widget.querySelectorAll('input.global-category-check')
+    );
+
+    var hasUrlCategory = state.values.length > 0;
+
+    checks.forEach(function (input) {
+      var checked = state.values.indexOf(input.value) !== -1;
+
+      /* A sub-collection's category is visual only on a clean URL. */
+      if (!hasUrlCategory && state.currentCategory) {
+        checked = input.value === state.currentCategory;
+      }
+
+      input.checked = checked;
+      input.setAttribute('aria-checked', checked ? 'true' : 'false');
+    });
+
+    syncHiddenCategoryInputs(widget, state.values);
+  }
+
+  function buildCategoryValues(widget, changedInput) {
+    var state = getState(widget);
+    var values = state.values.slice();
+    var clickedValue = changedInput ? changedInput.value : '';
+
+    /*
+     * IMPORTANT: on a clean sub-collection page the current category
+     * is visually checked, but it is not yet present in the URL.
+     * If the customer selects another category, the current category
+     * must become a real filter as well.
+     *
+     * Example:
+     *   /collections/women-ankle-boots
+     *   Ankle Boots = visually checked
+     *   Customer selects Mid-Calf Boots
+     *
+     * Result:
+     *   /collections/women?filter...=Ankle%20Boots&filter...=Mid-Calf%20Boots
+     *
+     * This preserves the first category instead of replacing it with
+     * only the newly selected category.
+     */
+    if (!values.length && state.currentCategory && changedInput) {
+      if (clickedValue !== state.currentCategory && changedInput.checked) {
+        values.push(state.currentCategory);
+      }
+    }
+
+    var exists = values.indexOf(clickedValue) !== -1;
+
+    if (changedInput && changedInput.checked && !exists) {
+      values.push(clickedValue);
+    } else if (changedInput && !changedInput.checked) {
+      values = values.filter(function (value) {
+        return value !== clickedValue;
+      });
+    }
+
+    return values;
+  }
+
+  function shouldGoToDepartment(widget, values) {
+    var state = getState(widget);
+    var currentPath = window.location.pathname.replace(/\/+$/, '');
+    var parentPath = (
+      rootPath() + 'collections/' + state.parentHandle
+    ).replace(/\/+$/, '');
+
+    if (currentPath === parentPath) return false;
+    if (!state.currentCategory) return false;
+
+    return values.some(function (value) {
+      return value !== state.currentCategory;
+    });
+  }
+
+  function buildNextUrl(widget, values) {
+    var state = getState(widget);
+    var nextUrl = new URL(window.location.href);
+
+    /* Change ONLY the category filter parameter. */
+    nextUrl.searchParams.delete(state.paramName);
+
+    values.forEach(function (value) {
+      nextUrl.searchParams.append(state.paramName, value);
+    });
+
+    /* Keep all other filters exactly as they are. */
+    nextUrl.searchParams.delete('page');
+
+    return nextUrl;
+  }
+
+  function showImmediateState(widget, values) {
+    /*
+     * Paint the FINAL category state before navigation starts.
+     * This is important because the MutationObserver below can run
+     * after hidden inputs are changed, while the browser URL is still
+     * the old URL. Without this, setVisualState() can briefly restore
+     * the old checkbox state during the loading/navigation frame.
+     */
+    var selected = values || [];
+
+    widget.querySelectorAll('input.global-category-check').forEach(function (input) {
+      var checked = selected.indexOf(input.value) !== -1;
+      input.checked = checked;
+      input.setAttribute('aria-checked', checked ? 'true' : 'false');
+      input.disabled = true;
+      input.setAttribute('aria-disabled', 'true');
+    });
+
+    widget.classList.add('category-filter-loading');
+  }
+
+  function bindWidget(widget) {
+    if (!widget) return;
+
+    setVisualState(widget);
+
+    widget.querySelectorAll('input.global-category-check').forEach(function (input) {
+      if (input.dataset.globalCategoryBound === 'true') return;
+      input.dataset.globalCategoryBound = 'true';
+
+      input.addEventListener('change', function (event) {
+        if (navigating) return;
+
+        var values = buildCategoryValues(widget, input);
+        var moveToDepartment = shouldGoToDepartment(widget, values);
+
+        /*
+         * Category filter is always handled here. This prevents Avone's
+         * generic dyfl handler from replacing the existing selections.
+         */
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+
+        navigating = true;
+
+        /* Paint the selected checkbox(es) immediately, before any DOM
+         * mutation or navigation can cause the theme to rebuild filters. */
+        showImmediateState(widget, values);
+
+        syncHiddenCategoryInputs(widget, values);
+
+        var nextUrl = buildNextUrl(widget, values);
+
+        if (moveToDepartment) {
+          nextUrl.pathname = (
+            rootPath() + 'collections/' + getState(widget).parentHandle
+          ).replace(/\/+$/, '');
+        }
+
+        /*
+         * This URL contains:
+         * - every previously selected native filter
+         * - every selected category
+         * - the new category selection/removal
+         * Nothing else is discarded.
+         */
+        window.location.assign(nextUrl.toString());
+      }, true);
+    });
+  }
+
+  function init() {
+    /* Never re-apply the old URL state while a category navigation is
+     * already in progress. The URL has not changed yet at this moment,
+     * so doing so would visually uncheck the user's new selection. */
+    if (navigating) return;
+
+    var widget = getWidget();
+    if (!widget) return;
+    bindWidget(widget);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+
+  /* Avone may replace filter markup through AJAX. */
+  var observer = new MutationObserver(function () {
+    /*
+     * IMPORTANT: while a category click is navigating, the browser URL
+     * still contains the OLD category state for a short moment. Avone can
+     * mutate/rebuild the filter DOM during that window. Never repaint from
+     * the old URL here, otherwise the newly clicked checkbox briefly loses
+     * its tick until the new page finishes loading.
+     */
+    if (navigating) return;
+
+    clearTimeout(observerTimer);
+    observerTimer = setTimeout(function () {
+      /* The navigation may have started while this timer was waiting. */
+      if (navigating) return;
+
+      var widget = getWidget();
+      if (widget) {
+        setVisualState(widget);
+        bindWidget(widget);
+      }
+    }, 40);
+  });
+
+  function startObserver() {
+    if (!document.body) return;
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startObserver, { once: true });
+  } else {
+    startObserver();
+  }
+
+  window.addEventListener('popstate', function () {
+    navigating = false;
+    var widget = getWidget();
+    if (!widget) return;
+
+    widget.classList.remove('category-filter-loading');
+    widget.querySelectorAll('input.global-category-check').forEach(function (input) {
+      input.disabled = false;
+      input.removeAttribute('aria-disabled');
+    });
+    setVisualState(widget);
+  });
+})();
+</script>
+
+<script>
+/* OFF THE HOOK - OPTIMIZED INVENTORY-AWARE COLOR & SIZE FILTERS
+ *
+ * Performance changes:
+ * 1. /products.json is requested only once per collection, not after every filter click.
+ * 2. The result is cached in sessionStorage, so AJAX filter refreshes reuse the data.
+ * 3. DOM updates use the cached Set; no network request is triggered by filter changes.
+ */
+(function () {
+  'use strict';
+
+  var collectionHandle = {{ collection.handle | json }};
+  if (!collectionHandle) return;
+
+  var CACHE_KEY = 'oth_inventory_' + collectionHandle;
+  var cache = null;
+  var requestPromise = null;
+
+  function normalize(value) {
+    return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  }
+
+  function buildAvailable(data) {
+    var available = {
+      size: {},
+      color: {},
+      colour: {}
+    };
+
+    (data.products || []).forEach(function (product) {
+      var optionNames = product.options || [];
+
+      (product.variants || []).forEach(function (variant) {
+        if (!variant.available) return;
+
+        optionNames.forEach(function (optionName, index) {
+          var name = normalize(optionName);
+          var value = normalize(variant['option' + (index + 1)]);
+          if (!value) return;
+
+          if (name === 'size') available.size[value] = true;
+          if (name === 'color' || name === 'colour') {
+            available.color[value] = true;
+            available.colour[value] = true;
+          }
+        });
+      });
+    });
+
+    return available;
+  }
+
+  function readCache() {
+    try {
+      var stored = sessionStorage.getItem(CACHE_KEY);
+      if (!stored) return null;
+      var parsed = JSON.parse(stored);
+      if (!parsed || !parsed.size || !parsed.color || !parsed.colour) return null;
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeCache(data) {
+    try {
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    } catch (e) {
+      /* Storage can be unavailable/full; memory cache still works. */
+    }
+  }
+
+  function applyInventoryFilters(available) {
+    if (!available) return;
+
+    var form = document.querySelector('#CollectionFiltersForm');
+    if (!form) return;
+
+    form.querySelectorAll('.filters-item.js-filter').forEach(function (widget) {
+      var title = widget.querySelector('.filters-title > span, .filters-title span');
+      if (!title) return;
+
+      var filterName = normalize(title.textContent);
+      if (filterName !== 'size' && filterName !== 'color' && filterName !== 'colour') return;
+
+      var availableSet = available[filterName];
+      if (!availableSet || !Object.keys(availableSet).length) return;
+
+      var visibleCount = 0;
+
+      widget.querySelectorAll('[data-filter-value]').forEach(function (item) {
+        var value = normalize(item.getAttribute('data-filter-value'));
+        var input = item.querySelector('input.custCheck');
+        var keepVisible = !!(input && input.checked) || !!availableSet[value];
+
+        item.style.display = keepVisible ? '' : 'none';
+        if (keepVisible) visibleCount++;
+      });
+
+      widget.style.display = visibleCount ? '' : 'none';
+    });
+  }
+
+  function fetchInventory() {
+    if (requestPromise) return requestPromise;
+
+    var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root)
+      ? window.Shopify.routes.root
+      : '/';
+
+    var url = root + 'collections/' + encodeURIComponent(collectionHandle) + '/products.json?limit=250';
+
+    requestPromise = fetch(url, {
+      credentials: 'same-origin',
+      headers: { 'Accept': 'application/json' }
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error('Collection products request failed');
+        return response.json();
+      })
+      .then(function (data) {
+        cache = buildAvailable(data);
+        writeCache(cache);
+        applyInventoryFilters(cache);
+        return cache;
+      })
+      .catch(function (error) {
+        requestPromise = null;
+        console.warn('Inventory-aware filters:', error);
+        return null;
+      });
+
+    return requestPromise;
+  }
+
+  function init() {
+    if (!document.querySelector('#CollectionFiltersForm')) return;
+
+    cache = cache || readCache();
+
+    if (cache) {
+      applyInventoryFilters(cache);
+      return;
+    }
+
+    fetchInventory();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+
+  /*
+   * Avone may replace only the filter HTML through AJAX. Re-apply the
+   * already-cached inventory data without making another network request.
+   */
+  var observerTimer;
+  var formObserver = new MutationObserver(function () {
+    if (!cache) return;
+    clearTimeout(observerTimer);
+    observerTimer = setTimeout(function () {
+      applyInventoryFilters(cache);
+    }, 80);
+  });
+
+  function observeForm() {
+    var form = document.querySelector('#CollectionFiltersForm');
+    if (!form) return;
+    formObserver.observe(form, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', observeForm, { once: true });
+  } else {
+    observeForm();
+  }
+})();
+</script>
+
+<style>
+/* =========================================================
+   OFF THE HOOK - FINAL COLLECTION FILTER UI
+   ========================================================= */
+
+/* =========================================================
+   CATEGORIES FILTER - ALWAYS FIRST
+   Uses the native Shopify/Search & Discovery filter.
+   ========================================================= */
+
+.filters-item__wrapper > .category-filter-first {
+    order: -1 !important;
+}
+
+/* General filter sections */
+.filters-item__wrapper > .sidebar-widget {
+    margin: 0 !important;
+    padding: 18px 0 !important;
+    border-bottom: 1px solid #e5e5e5 !important;
+}
+
+.filters-item__wrapper > .sidebar-widget:last-child {
+    border-bottom: 0 !important;
+}
+
+.filters-item__wrapper .filters-title {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.filters-item__wrapper .filters-title > span {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.filters-item__wrapper .count-bubble {
+    display: none !important;
+}
+
+.filters-item__wrapper .filters-select__count {
+    min-height: 0 !important;
+    margin-bottom: 10px !important;
+}
+
+.filters-item__wrapper .filters-select__count .facets__selected:empty {
+    display: none !important;
+}
+
+/* Normal checkbox filters */
+.filters-item__wrapper .filters-select__list > li:not(.color):not(.pill) {
+    margin: 0 !important;
+    padding: 4px 0 !important;
+}
+
+.filters-item__wrapper .filters-select__list > li:not(.color):not(.pill) .fl-checkbox {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+}
+
+/* =========================================================
+   GLOBAL DEPARTMENT CATEGORY FILTER
+   ========================================================= */
+.collection-category-global-filter .filters-select {
+    margin-top: 0 !important;
+}
+
+.collection-category-global-filter .filters-select__list {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    column-count: initial !important;
+}
+
+.collection-category-global-filter .filters-select__list > li {
+    margin: 0 !important;
+    padding: 5px 0 !important;
+    list-style: none !important;
+}
+
+.collection-category-global-filter .filters-select__list > li .fl-checkbox {
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+}
+
+.collection-category-global-filter .filters-select__list > li .custCheck {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.collection-category-global-filter .filters-select__list > li .checkbox {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    border: 1px solid #bdbdbd !important;
+    border-radius: 2px !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+}
+
+.collection-category-global-filter .filters-select__list > li .custCheck:checked + .checkbox {
+    background: #111 !important;
+    border-color: #111 !important;
+}
+
+.collection-category-global-filter .filters-select__list > li .custCheck:checked + .checkbox::after {
+    content: '✓' !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+}
+
+.collection-category-global-filter .filters-select__list > li .fl-checkbox:hover .checkbox {
+    border-color: #111 !important;
+}
+
+/* =========================================================
+   GLOBAL CATEGORY CHECKBOX - CLEAN UI
+   ========================================================= */
+
+.collection-category-global-filter .filters-select__list > li {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 5px 0 !important;
+    list-style: none !important;
+}
+
+.collection-category-global-filter .filters-select__list > li .fl-checkbox {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-height: 22px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+}
+
+/* Hide the real input but keep it accessible/clickable through the label. */
+.collection-category-global-filter .filters-select__list > li .custCheck {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* One single visual checkbox. */
+.collection-category-global-filter .filters-select__list > li .checkbox {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 22px !important;
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #c8c8c8 !important;
+    border-radius: 2px !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    transition: none !important;
+}
+
+/* IMPORTANT: remove Avone/theme-generated check marks. */
+.collection-category-global-filter .filters-select__list > li .checkbox::before,
+.collection-category-global-filter .filters-select__list > li .checkbox::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Selected state: one clean white tick drawn as a background SVG. */
+.collection-category-global-filter .filters-select__list > li .custCheck:checked + .checkbox {
+    border-color: #111 !important;
+    background-color: #111 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M3.5 9.2 7.2 13 14.5 5.5' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: 17px 17px !important;
+}
+
+.collection-category-global-filter .global-category-label {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 22px !important;
+    font-size: inherit !important;
+    font-weight: 400 !important;
+    color: inherit !important;
+}
+
+.collection-category-global-filter .filters-select__list > li .fl-checkbox:hover .checkbox {
+    border-color: #111 !important;
+}
+
+.collection-category-global-filter .custCheck:focus-visible + .checkbox {
+    outline: 2px solid #111 !important;
+    outline-offset: 2px !important;
+}
+
+.collection-category-global-filter.category-filter-loading .custCheck:checked + .checkbox {
+    border-color: #111 !important;
+    background-color: #111 !important;
+}
+
+.collection-category-global-filter.category-filter-loading .fl-checkbox {
+    cursor: wait !important;
+}
+
+
+/* =========================================================
+   COLOR FILTER - PROFESSIONAL SWATCH GRID
+   ========================================================= */
+
+.filters-item__wrapper .filters-colors {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.filters-item__wrapper .filters-colors > .filters-select__list {
+    display: grid !important;
+    grid-template-columns: repeat(8, 28px) !important;
+    grid-auto-rows: 28px !important;
+    gap: 14px 12px !important;
+    align-items: center !important;
+    justify-content: start !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    column-count: initial !important;
+}
+
+.filters-item__wrapper .filters-colors > .filters-select__list > li.color {
+    display: block !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    list-style: none !important;
+    position: relative !important;
+}
+
+/* The LI itself carries the actual color from Liquid */
+.filters-item__wrapper .filters-colors > .filters-select__list > li.color::before,
+.filters-item__wrapper .filters-colors > .filters-select__list > li.color::after {
+    content: none !important;
+    display: none !important;
+}
+
+.filters-item__wrapper .filters-colors li.color > label {
+    display: block !important;
+    position: relative !important;
+    width: 28px !important;
+    height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+}
+
+.filters-item__wrapper .filters-colors li.color > label > input.custCheck {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Transparent native swatch lets the LI's real color show through */
+.filters-item__wrapper .filters-colors li.color .filter-swatch.clrbox {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    max-width: 28px !important;
+    max-height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid rgba(0,0,0,.16) !important;
+    border-radius: 50% !important;
+    box-sizing: border-box !important;
+    background: inherit !important;
+    background-image: inherit !important;
+    box-shadow: none !important;
+    outline: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: hidden !important;
+}
+
+/* Subtle hover */
+.filters-item__wrapper .filters-colors li.color:hover .filter-swatch.clrbox {
+    transform: scale(1.08);
+}
+
+/* Selected state */
+.filters-item__wrapper .filters-colors li.color input.custCheck:checked + .filter-swatch.clrbox {
+    outline: 2px solid #111 !important;
+    outline-offset: 3px !important;
+    box-shadow: none !important;
+}
+
+/* Tick */
+.filters-item__wrapper .filters-colors li.color .filter-swatch.clrbox .at-icon {
+    display: block !important;
+    width: 10px !important;
+    height: 10px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #fff !important;
+    fill: #fff !important;
+    stroke: #fff !important;
+}
+
+/* =========================================================
+   SIZE FILTER - CLEAN PILLS
+   ========================================================= */
+
+.filters-item__wrapper .filters-select__list > li.pill {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.filters-item__wrapper .pill > label {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.filters-item__wrapper .pill input.custCheck {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.filters-item__wrapper .pill .filter-swatch {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 48px !important;
+    min-width: 48px !important;
+    height: 38px !important;
+    margin: 0 !important;
+    padding: 0 5px !important;
+    border: 1px solid #d7d7d7 !important;
+    border-radius: 3px !important;
+    background: #fff !important;
+    color: #222 !important;
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+    box-sizing: border-box !important;
+}
+
+.filters-item__wrapper .pill input.custCheck:checked + .filter-swatch {
+    background: #111 !important;
+    border-color: #111 !important;
+    color: #fff !important;
+}
+
+.filters-item__wrapper .pill .prcnt {
+    display: none !important;
+}
+
+/* Prevent the theme's inline two-column rule from breaking swatches */
+.filters-item__wrapper .filters-colors .filters-select__list[style*="column-count"] {
+    column-count: initial !important;
+}
+
+/* Responsive color grid */
+@media (max-width: 1100px) {
+    .filters-item__wrapper .filters-colors > .filters-select__list {
+        grid-template-columns: repeat(7, 28px) !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .filters-item__wrapper .filters-colors > .filters-select__list {
+        grid-template-columns: repeat(6, 28px) !important;
+    }
+}
+
+/* =========================================================
+   FINAL COLOR SWATCH - TRUE CIRCLE
+   The visible span owns the actual color.
+   ========================================================= */
+.filters-item__wrapper .filters-colors > .filters-select__list {
+    display: grid !important;
+    grid-template-columns: repeat(8, 28px) !important;
+    grid-auto-rows: 28px !important;
+    gap: 14px 12px !important;
+    align-items: center !important;
+    justify-content: start !important;
+    column-count: initial !important;
+}
+
+.filters-item__wrapper .filters-colors,
+.filters-item__wrapper .filters-colors > .filters-select__list {
+    overflow: visible !important;
+}
+
+.filters-item__wrapper .filters-colors > .filters-select__list > li.color {
+    display: block !important;
+    position: relative !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    aspect-ratio: 1 / 1 !important;
+}
+
+.filters-item__wrapper .filters-colors li.color > label {
+    display: block !important;
+    position: absolute !important;
+    inset: 0 !important;
+    width: 28px !important;
+    height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+}
+
+.filters-item__wrapper .filters-colors li.color > label > input.custCheck {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.filters-item__wrapper .filters-colors li.color .filter-swatch.clrbox {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid rgba(0,0,0,.18) !important;
+    border-radius: 50% !important;
+    box-sizing: border-box !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: cover !important;
+    overflow: hidden !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.filters-item__wrapper .filters-colors li.color:hover .filter-swatch.clrbox {
+    transform: scale(1.08);
+}
+
+.filters-item__wrapper .filters-colors li.color input.custCheck:checked + .filter-swatch.clrbox {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: inset 0 0 0 2px #111 !important;
+    transform: none !important;
+}
+
+.filters-item__wrapper .filters-colors li.color .filter-swatch.clrbox .at-icon {
+    width: 10px !important;
+    height: 10px !important;
+    color: #fff !important;
+    fill: #fff !important;
+    stroke: #fff !important;
+}
+
+@media (max-width: 1100px) {
+    .filters-item__wrapper .filters-colors > .filters-select__list {
+        grid-template-columns: repeat(7, 28px) !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .filters-item__wrapper .filters-colors > .filters-select__list {
+        grid-template-columns: repeat(6, 28px) !important;
+    }
+}
+
+/* FINAL SELECTED SWATCH: keep the selection completely inside the circle */
+.filters-item__wrapper .filters-colors li.color,
+.filters-item__wrapper .filters-colors li.color > label,
+.filters-item__wrapper .filters-colors li.color .filter-swatch.clrbox {
+    overflow: visible !important;
+}
+
+.filters-item__wrapper .filters-colors li.color .filter-swatch.clrbox {
+    overflow: hidden !important;
+    transform-origin: center center !important;
+}
+
+.filters-item__wrapper .filters-colors li.color > label {
+    overflow: visible !important;
+}
+
+</style>
+
+{% schema %}
+
+{
+  "name": "Dynamic filters",
+  "tag": null,
+
+  "settings": [
+
+    {
+      "type":"paragraph",
+      "content":"We recommend using Dynamic Product Filters on the collection page."
+    },
+
+    {
+      "type": "checkbox",
+      "id": "flpcnt",
+      "label": "Show product count in filters",
+      "default": false
+    },
+
+    {
+      "type": "text",
+      "id": "clopt",
+      "label": "Option name to show color swatch",
+      "default": "Color, Colour",
+      "info": "Add option names separated by comma(,)"
+    },
+
+    {
+      "type": "text",
+      "id": "flpill",
+      "label": "Add filter title names to Show in pill style.",
+      "default": "Size",
+      "info": "Each name must be separated by a comma."
+    },
+
+    {
+      "type": "text",
+      "id": "flcolumn",
+      "label": "Add filter title names to show in two columns.",
+      "default": "Size, Brand, Product type",
+      "info": "Each name must be separated by a comma."
+    },
+
+    {
+      "type": "header",
+      "content": "Price slider"
+    },
+
+    {
+      "type": "color",
+      "id": "bar",
+      "label": "Slider bar",
+      "default": "#d4d4d4"
+    },
+
+    {
+      "type": "color",
+      "id": "bara",
+      "label": "Slider bar (active)",
+      "default": "#111"
+    }
+
+  ],
+
+  "presets": [
+
+    {
+      "name": "Dynamic filters",
+      "category": "Sidebar"
+    }
+
+  ]
+}
+
+{% endschema %}

@@ -1,0 +1,460 @@
+{%- liquid
+    assign block_st = block.settings
+    capture acc_icon
+        if block_st.icon == '1'
+            echo '<svg class="at-icon ml-auto arw"><use xlink:href="#icon-arrow"></use></svg>'
+        else
+            echo '<svg class="at-icon ml-auto" style="--icns:13px"><use class="plus" xlink:href="#icon-plus"></use><use class="minus" xlink:href="#icon-minus"></use></svg>'
+        endif
+    endcapture
+    capture classes
+        if block_st.isbg
+          echo "group-bk bg-custom pd-custom " | append: block_st.rounded
+        endif
+    endcapture
+-%}
+{%- capture styles -%}
+    --hdcl:{{ block_st.ttl_cl }};--icns:{{ block_st.ttl_icn }}px;--cl:{{ block_st.tex_cl }};
+    {%- if block_st.dividers -%}
+        --divider:1px solid {{ block_st.bdr_cl }};
+    {%- else -%}
+        --divider:0;
+    {%- endif -%}
+    {%- if block_st.preset == 'custom' -%}
+        --fs:{{ block_st.fs }}px;--fsm:{{ block_st.fsm }}px;--lh:{{ block_st.lh }};
+    {%- endif -%}
+    {%- if block_st.isbg -%}
+        --gr_bg:{% if block_st.bgg != blank %}{{ block_st.bgg }}{% else %}{{ block_st.bg }}{% endif %};
+        --gr_bd:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+        --gr_pd:{{ block_st.pd-tb }}px {{ block_st.pd-lr }}px;--gr_pdm:{{ block_st.pd-tbm }}px {{ block_st.pd-lrm }}px;
+    {%- endif -%}
+{%- endcapture -%}
+<style>
+    {%- if block_st.ttl_preset == 'custom-hd' -%}
+        #blk-{{ block.id }} .head { --fs:{{ block_st.ttl_fs }}px;--fsm:{{ block_st.ttl_fsm }}px;--ff:var(--{{ block_st.ttl_ff }});--fw:{{ block_st.ttl_fw }};--lh:{{ block_st.ttl_lh }}; }
+    {%- endif -%}
+</style>
+<div id="blk-{{ block.id }}" class="accordions wd100{% if block_st.preset == 'custom' %} reg-text {{ block_st.preset }}{% endif %} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md {{ classes }} {% render 'animate-data', css:true %}" {% render 'animate-data' %} {{ block.shopify_attributes }} style="{{ styles }}">
+    {%- capture blocks_content -%}
+        {%- content_for 'blocks' -%}
+    {%- endcapture -%}
+    {{- blocks_content | replace: '[icon]', acc_icon | replace: '[ttl-preset]', block_st.ttl_preset -}}
+</div>
+{% schema %}
+{
+  "name": "Accordion",
+  "tag": null,
+  "blocks": [
+    { "type": "_accordion-tab" },
+    { "type": "_accordion-size-chart" }
+  ],   
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "Caret"
+        },
+        {
+          "value": "2",
+          "label": "Plus"
+        }
+      ]
+    },
+    {
+        "type": "checkbox",
+        "id": "dividers",
+        "label": "Show dividers between tabs",
+        "default": true
+    },
+    {
+        "type": "color",
+        "id": "bdr_cl",
+        "label": "Divider color",
+        "default": "#eeeeee",
+        "visible_if": "{{ block.settings.dividers }}"
+    },
+    {
+        "type": "header",
+        "content": "Tab title"
+    },
+    {
+      "type": "color",
+      "id": "ttl_cl",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "ttl_preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "custom-hd",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },        
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+     {
+      "type": "select",
+      "id": "ttl_ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ block.settings.ttl_preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ttl_fs",
+      "label": "Font size",
+      "default": 13,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ttl_preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ttl_fsm",
+      "label": "Font size (mobile)",
+      "default": 13,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ttl_preset == 'custom-hd' }}"
+    },   
+    {
+      "type": "select",
+      "id": "ttl_fw",
+      "label": "Font weight",
+      "default": "500",
+      "visible_if": "{{ block.settings.ttl_preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "ttl_lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,     
+      "visible_if": "{{ block.settings.ttl_preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "ttl_icn",
+      "label": "Icon size",
+      "default": 16,
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+        "type": "header",
+        "content": "Tab details"
+    },
+     {
+      "type": "color",
+      "id": "tex_cl",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+        "type": "range",
+        "id": "fs",
+        "label": "Font size",
+        "default": 13,
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "visible_if": "{{ block.settings.preset == 'custom' }}"
+    }, 
+  {
+        "type": "range",
+        "id": "fsm",
+        "label": "Font size (mobile)",
+        "default": 13,
+        "min": 10,
+        "max": 60,
+        "step": 1,
+        "unit": "px",
+        "visible_if": "{{ block.settings.preset == 'custom' }}"
+    }, 	
+    {
+        "type": "range",
+        "id": "lh",
+        "label": "Line height",
+        "default": 1.5,
+        "min": 0.7,
+        "max": 2.0,
+        "step": 0.1,       
+        "visible_if": "{{ block.settings.preset == 'custom' }}"
+    },
+      {
+        "type": "header",
+        "content": "Appearance"
+      },
+        {
+            "type": "checkbox",
+            "id": "isbg",
+            "label": "Add background",
+            "default": false
+        },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background",
+        "alpha": true,
+        "default":"#f5f5f5",
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+          "type": "color_background",
+          "id": "bgg",
+          "label": "Background gradient",
+          "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+        "type": "select",
+        "id": "bdr",
+        "label": "Borders",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "solid",
+            "label": "Solid"
+          }
+        ],
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+            "type": "range",
+            "id": "brd_sz",
+            "label": "Border thickness",
+            "default":1,
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "color",
+        "id": "bdr-cl",
+        "label": "Border color",
+        "alpha": true,
+        "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+      },
+      {
+        "type": "select",
+        "id": "rounded",
+        "label": "Corner radius",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "round-xs",
+            "label": "Extra small"
+          },
+          {
+            "value": "round-sm",
+            "label": "Small"
+          },
+          {
+            "value": "round-md",
+            "label": "Medium"
+          },
+          {
+            "value": "round-lg",
+            "label": "Large"
+          },
+          {
+            "value": "round-full",
+            "label": "Full"
+          }
+        ],
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+        "type": "header",
+        "content": "Padding",
+        "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+            "type": "range",
+            "id": "pd-lr",
+            "label": "Horizontal",
+            "default":20,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+            "type": "range",
+            "id": "pd-tb",
+            "label": "Vertical",
+            "default":0,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.isbg }}"
+      },      
+      {
+            "type": "range",
+            "id": "pd-lrm",
+            "label": "Horizontal (mobile)",
+            "default":15,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.isbg }}"
+      },
+      {
+            "type": "range",
+            "id": "pd-tbm",
+            "label": "Vertical (mobile)",
+            "default":0,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit":"px",
+            "visible_if": "{{ block.settings.isbg }}"
+      },
+    {
+        "type": "paragraph",
+       "content": "-----------------------------------------------"
+    },
+    {
+        "type": "range",
+        "id": "mb",
+        "label": "Bottom margin",
+        "default":0,
+        "min":0,
+        "max": 50,
+        "step":5,
+        "unit": "px"
+    },
+    {
+        "type": "range",
+        "id": "mbm",
+        "label": "Bottom margin (mobile)",
+        "default":0,
+        "min":0,
+        "max":50,
+        "step":5,
+        "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Accordion",
+      "category": "Layout"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,386 @@
+{% liquid
+    assign block_st = block.settings
+    assign link_class = 'btn-link'
+    if block_st.lstyle == 'button'
+        assign link_class = 'btn'
+    elsif block_st.lstyle == 'none'
+        assign link_class = 'btn-link btn-reset anim'
+    endif   
+-%}
+{%- capture styles -%}
+    --icns:{{ block_st.fs | plus: 1 }}px;   
+    {%- if block_st.lstyle == 'button' -%}
+        --btn_cl:{{ block_st.cl }};--btn_clh:{{ block_st.clh }};--btn_fs:{{ block_st.fs }}px;--btn_fsm:{{ block_st.fsm }}px;--btn_fw:{{ block_st.fw }};
+        --btn_bg:{{ block_st.bg }};--btn_bgh:{{ block_st.bgh }};--btn_radius:{{ block_st.brad }}px;--btn_bd_sz:0;
+    {%- else -%}
+        --btn_link:{{ block_st.cl }};
+    {%- endif -%}    
+{%- endcapture -%}
+<div class="poplink fl mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" style="{{ styles }}" {{ block.shopify_attributes }}>
+    <a href="#lp{{ block.id }}" class="fl f-aic popup-link {{ link_class }}" data-popup="lp{{ block.id }}" aria-haspopup="dialog">
+       {% if block_st.image != blank and block_st.icon == 'custom' -%}
+        <img loading="lazy" class="at-icon" src="{{ block_st.image | image_url: width: '60' }}" width="18" height="18" alt="" >
+      {%- else -%}
+        {%- render 'icons', icon: block_st.icon %}
+      {% endif %}
+        {{ block_st.text }}
+    </a>
+    <div id="lp{{ block.id }}" class="tinglebox pp-hide cm">
+        {%  if block_st.opt == "page" %}{{ pages[block_st.page].content }}{%  else %}{{ block_st.poptext }}{%  endif %}
+    </div>
+</div>
+{% schema %}
+{
+  "name": "Popup links",
+  "tag": null,
+  "settings": [
+   {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "info",
+      "options": [
+         {
+              "value": "none",
+              "label": "None"
+        },
+        {
+          "value": "custom",
+          "label": "Custom icon"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check2",
+          "label": "Check 2"
+        },
+        {
+          "value": "truck",
+          "label": "Truck"
+        },
+        {
+          "value": "email",
+          "label": "Email"
+        },
+        {
+          "value": "phone",
+          "label": "Phone"
+        },
+        {
+          "value": "phone2",
+          "label": "Phone 2"
+        },
+        {
+          "value": "comment",
+          "label": "Comment"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "dollar",
+          "label": "Dollar"
+        },
+        {
+          "value": "package",
+          "label": "Package"
+        },
+        {
+          "value": "return",
+          "label": "Return"
+        },
+         {
+                    "value": "return2",
+                    "label": "Return 2"
+                    },  
+        {
+          "value": "rocket",
+          "label": "Rocket"
+        },
+        {
+          "value": "plan",
+          "label": "Plane"
+        },
+        {
+          "value": "measure",
+          "label": "Measure"
+        },
+        {
+          "value": "file",
+          "label": "File"
+        },
+        {
+          "value": "shield",
+          "label": "Shield"
+        },
+        {
+          "value": "lock",
+          "label": "Lock"
+        },
+        {
+          "value": "payment",
+          "label": "Payment"
+        },
+        {
+          "value": "progress",
+          "label": "Progress"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "like",
+          "label": "Like"
+        },
+        {
+          "value": "tag",
+          "label": "Tag"
+        },
+        {
+          "value": "tag2",
+          "label": "Tag"
+        },
+        {
+          "value": "info",
+          "label": "Info."
+        },
+        {
+          "value": "question",
+          "label": "Question"
+        },
+        {
+          "value": "globe",
+          "label": "Globe"
+        },
+        {
+          "value": "earth",
+          "label": "Earth"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "location",
+          "label": "Location"
+        },
+        {
+          "value": "shop",
+          "label": "Shop"
+        },
+        {
+          "value": "rain",
+          "label": "Rain"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "cloud",
+          "label": "Cloud"
+        },
+        {
+          "value": "leaf",
+          "label": "Leaf"
+        },
+        {
+          "value": "care2",
+          "label": "Care"
+        },
+        {
+          "value": "rabit",
+          "label": "Rabbit"
+        },
+        {
+          "value": "paraben",
+          "label": "Paraben"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Custom icon",
+      "visible_if": "{{ block.settings.icon == 'custom' }}"
+    },
+    {
+        "type": "text",
+        "id": "text",
+        "label": "Link label",
+        "default": "Popup Link"
+    },
+    {
+        "type": "select",
+        "id": "opt",
+        "label": "Popup source",
+        "default": "richtext",
+        "options": [
+            {
+                "value": "richtext",
+                "label": "Rich text"
+            },
+            {
+                "value": "page",
+                "label": "From page"
+            }
+        ]
+    },
+    { 
+        "type":"richtext",
+        "id":"poptext",
+        "label":"Rich text",
+        "visible_if": "{{ block.settings.opt == 'richtext' }}"
+    },
+    {
+        "id": "page",
+        "type": "page",
+        "label": "Page",
+        "info": "Select page for display type page"
+    }, 
+    {
+        "type": "select",
+        "id": "lstyle",
+        "label": "Links design",
+        "default": "button",
+        "options": [
+            {
+                "value": "button",
+                "label": "Button"
+            },
+            {
+                "value": "bottom_bdr",
+                "label": "Border bottom"
+            },
+            {
+                "value": "none",
+                "label": "None"
+            }
+        ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "label": "Font size (mobile)",
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "400",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text",
+      "default": "#555"
+    },
+    {
+      "type": "color",
+      "id": "clh",
+      "label": "Text (hover)",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f5f5f5",
+      "visible_if": "{{ block.settings.lstyle == 'button' }}"
+    },
+    {
+      "type": "color",
+      "id": "bgh",
+      "label": "Background (hover)",
+      "default": "#eeeeee",
+      "visible_if": "{{ block.settings.lstyle == 'button' }}"
+    },
+    {
+      "type": "range",
+      "id": "brad",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "label": "Corner radius",
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.lstyle == 'button' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Popup links",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,24 @@
+{%- liquid
+    assign product_url = product.url | within: collection
+    if settings.clurl
+        assign product_url = product.url
+    endif
+-%}
+<div class="fl f-aic of-hidden gap mb15" style="--gap:15px;--gapm:15px;">
+  <div class="mini-products__img">    
+    <a class="grid-image" href="{{ product_url }}" aria-label="{{ product.title }}">
+        {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:'lazy', width:product.featured_image.width, height:product.featured_image.height, class:'img-fit', sizes:'80px', widths:"100,200,320" }}
+    </a>
+  </div>
+  <div class="fl1">
+    {% if settings.show_vendor %}<div class="mini-products__vendor mb5">{{ product.vendor }}</div>{% endif %}
+    <div class="product-title mb5"><a href="{{ product_url }}" class="{% if settings.gttl_case %}text-upper{% endif %}">{{ product.title }}</a></div>
+    {%- unless settings.hide-price -%}<div class="grid-price mb10">{% render 'product-price', product: product %}</div>{%- endunless -%}        
+    {% if settings.show_product_review %}<div class="product-review mb5">{% render 'ratings', product: product %}</div>{% endif %}
+    {%- if showbtn -%}
+      <product-card>
+        <button type="button" data-url="{{ product.url | split: "?" | first }}?section_id=quick-view" class="btn btn-link border-0 btn-options pr quick-view {{ ctrecom }}"><span class="txt">{{ 'products.product.quick_add' | t}}</span><svg class="at-icon at-spin"><use xlink:href="#icon-loading"></use></svg></button>
+      </product-card>
+    {%- endif -%}
+  </div>
+</div>

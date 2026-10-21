@@ -1,0 +1,171 @@
+{%- capture breadcrumb -%}
+{%- assign section_st = section.settings -%}
+{%- unless template == 'index' -%}
+<style>.bc-wrapper { --cl:{{ section_st.cl }};--bg:{{ section_st.bg }};--fs:{{ section_st.fsz }}px; }</style>
+<nav class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %} breadcrumb fl f-wrap f-aic{% if section_st.tc %} tc f-jcc{% endif %}{% if section_st.hidemb %} hide-sm{% endif %}{% if section_st.case %} text-upper{% endif %}" role="navigation" aria-label="breadcrumbs">
+    {%- render 'breadcrumb' -%}
+</nav>
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "item": {
+                "@id": "{{ routes.root_url }}",
+                "name": "{{ 'general.breadcrumbs.home' | t }}"
+            }
+        }
+        {% if template contains 'product' %}
+            {% if collection and collection.handle %}
+            ,{
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "{{ routes.collections_url }}/{{ collection.handle }}",
+                    "name": "{{ collection.title }}"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                    "@id": "{{ product.url | within: collection }}",
+                    "name": "{{ product.title }}"
+                }
+            }
+            {% endif %}
+        {% elsif template == 'list-collections' %}
+            ,{
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "{{ routes.collections_url }}/{{ collection.handle }}",
+                    "name": "{{ 'collections.general.all' | t }}"
+                }
+            }
+        {% elsif template contains 'collection' and collection.handle %}
+            ,{
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "{{ routes.collections_url }}/{{ collection.handle }}",
+                    "name": "{{ collection.title }}"
+                }
+            }
+        {% elsif template == 'blog' %}
+            ,{
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "{{ blog.url }}",
+                    "name": "{{ blog.title }}"
+                }
+            }
+            {% if current_tags %}
+            ,{
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                    "@id": "{{ blog.url }}",
+                    "name": "{{ current_tags | join: " + " }}"
+                }
+            }
+            {% endif %}
+        {% elsif template == 'article' %}
+            ,{
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "{{ blog.url }}",
+                    "name": "{{ blog.title }}"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                    "@id": "{{ article.url }}",
+                    "name": "{{ article.title }}"
+                }
+            }
+        {% elsif template contains 'page' %}
+            ,{
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "{{ page.url }}",
+                    "name": "{{ page.title }}"
+                }
+            }
+        {% else %}
+            ,{
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "{{ page.url }}",
+                    "name": "{{ page.title }}"
+                }
+            }
+        {% endif %}
+    ]
+}
+</script>
+{% endunless %}
+{%- endcapture -%}
+{{- breadcrumb | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Breadcrumb",
+  "class": "bc-wrapper",
+  "settings": [
+    {
+      "type": "color",
+      "id": "cl",
+      "label": "Text",
+      "default": "#111"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "range",
+      "id": "fsz",
+      "label": "Font size",
+      "default": 13,
+      "min": 8,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "case",
+      "label": "Use uppercase text"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "tc",
+      "label": "Center text",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hidemb",
+      "label": "Hide on mobile",
+      "default": false
+    }   
+  ]
+}
+{% endschema %}

@@ -1,0 +1,277 @@
+{%- liquid
+    assign block_st = block.settings
+    assign product = closest.product
+    assign current_variant = product.selected_or_first_available_variant
+    assign cart_qty = cart | item_count_for_variant: current_variant.id
+
+    if current_variant.available and current_variant.inventory_quantity < 1 and current_variant.inventory_management == "shopify"
+        assign classes = 'preorder'
+        assign bgclr = block_st.instock
+        assign qty_msg = 'products.product.pre_order' | t
+    elsif current_variant.available and current_variant.inventory_quantity < block_st.maxqty and current_variant.inventory_quantity > 0
+        assign classes = 'lowstock'
+        assign bgclr = block_st.lstock
+        assign qty_msg = 'products.product.quantity_message' | t: items: current_variant.inventory_quantity
+    elsif current_variant.available
+        assign classes = 'instock'
+        assign bgclr = block_st.instock
+        assign qty_msg = 'products.product.available' | t
+    else
+        assign classes = 'outstock'
+        assign bgclr = block_st.ostock
+        assign qty_msg = 'products.product.unavailable' | t
+    endif
+-%}
+<div id="Inventory-{{ section.id }}" class="fl f-aic {{ classes }}{% if block_st.fcase %} text-upper{% endif %} mb{{ block_st.mbm }} mb{{ block_st.mb }}-md" role="status">
+    <span class="fl f-aic stock-lbl {{ block_st.rounded }}{% if block_st.add-bg %} bg{% endif %}" style="--cl:{{ block_st.cl }};--bg:{{ bgclr }};--stockf:{{ block_st.fs }}px;--font-style:{{ block_st.font-style }};">      
+        <span>{{ qty_msg }}</span>
+    </span>
+</div>
+
+<div id="Quantity-Form-{{ section.id }}" class="product-form__quantity mb{{ block_st.mbm }} mb{{ block_st.mb }}-md">
+    {%- liquid
+        assign volume_pricing_array = current_variant.quantity_price_breaks | sort: 'quantity' | reverse
+        assign current_qty_for_volume_pricing = cart_qty | plus: current_variant.quantity_rule.min
+        if cart_qty > 0
+            assign current_qty_for_volume_pricing = cart_qty | plus: current_variant.quantity_rule.increment
+        endif
+    -%}
+    {%- if product.quantity_price_breaks_configured? -%}
+        <div class="price-per-item__container">
+            <price-per-item class="no-js-hidden" id="Price-Per-Item-{{ section.id }}" data-section-id="{{ section.id }}" data-variant-id="{{ current_variant.id }}">
+                {%- if current_variant.quantity_price_breaks.size > 0 -%}
+                    {%- assign variant_price_compare = current_variant.compare_at_price -%}
+                    <div class="price-per-item">
+                        {%- if variant_price_compare -%}
+                            <dl class="price-per-item--current">
+                                <dt class="visually-hidden">{{ 'products.product.regular_price' | t }}</dt>
+                                <dd><s class="variant-item__old-price">{{ variant_price_compare | money_with_currency }}</s></dd>
+                            </dl>
+                        {%- endif -%}
+                        {%- if current_qty_for_volume_pricing < volume_pricing_array.last.minimum_quantity -%}
+                            {%- assign variant_price = current_variant.price | money_with_currency -%}
+                            <span class="price-per-item--current">{{- 'products.product.volume_pricing.price_at_each' | t: price: variant_price -}}</span>
+                        {%- else -%}
+                            {%- for price_break in volume_pricing_array -%}
+                                {%- if current_qty_for_volume_pricing >= price_break.minimum_quantity -%}
+                                    {%- assign price_break_price = price_break.price | money_with_currency -%}
+                                    <span class="price-per-item--current">{{- 'products.product.volume_pricing.price_at_each' | t: price: price_break_price -}}</span>
+                                    {%- break -%}
+                                {%- endif -%}
+                            {%- endfor -%}
+                        {%- endif -%}
+                    </div>
+                {%- else -%}
+                    {%- assign variant_price = current_variant.price | money_with_currency -%}
+                    {%- assign variant_price_compare = current_variant.compare_at_price -%}
+                    <div class="price-per-item">
+                        {%- if variant_price_compare -%}
+                            <dl class="price-per-item--current">
+                                <dt class="visually-hidden">{{ 'products.product.regular_price' | t }}</dt>
+                                <dd><s class="variant-item__old-price">{{ variant_price_compare | money_with_currency }}</s></dd>
+                                <dt class="visually-hidden">{{ 'products.product.sale_price' | t }}</dt>
+                                <dd><span class="price-per-item--current">{{- 'products.product.volume_pricing.price_at_each' | t: price: variant_price -}}</span></dd>
+                            </dl>
+                        {%- else -%}
+                            <span class="price-per-item--current">{{- 'products.product.volume_pricing.price_at_each' | t: price: variant_price -}}</span>
+                        {%- endif -%}
+                    </div>
+                {%- endif -%}
+            </price-per-item>
+        </div>
+    {%- endif -%}
+
+    <div class="quantity__rules caption no-js-hidden" id="Quantity-Rules-{{ section.id }}">
+        {%- if current_variant.quantity_rule.increment > 1 -%}
+            <span class="divider">{{- 'products.product.quantity.multiples_of' | t: quantity: current_variant.quantity_rule.increment -}}</span>
+        {%- endif -%}
+        {%- if current_variant.quantity_rule.min > 1 -%}
+            <span class="divider">{{- 'products.product.quantity.minimum_of' | t: quantity: current_variant.quantity_rule.min -}}</span>
+        {%- endif -%}
+        {%- if current_variant.quantity_rule.max != null -%}
+            <span class="divider">{{- 'products.product.quantity.maximum_of' | t: quantity: current_variant.quantity_rule.max -}}</span>
+        {%- endif -%}
+    </div>
+    {%- if product.quantity_price_breaks_configured? -%}
+        <volume-pricing class="parent-display no-js-hidden" id="Volume-{{ section.id }}">
+            {%- if current_variant.quantity_price_breaks.size > 0 -%}
+                <span class="caption-large">{{ 'products.product.volume_pricing.title' | t }}</span>
+                <ul class="list-unstyled no-js-hidden">
+                    <li>
+                        <span>{{ current_variant.quantity_rule.min }}+</span>
+                        {%- assign price = current_variant.price | money_with_currency -%}
+                        <span data-text="{{ 'products.product.volume_pricing.price_at_each' | t: price: variant_price }}">{{- 'sections.quick_order_list.each_html' | t: money: price -}}</span>
+                    </li>
+                    {%- for price_break in current_variant.quantity_price_breaks -%}
+                        {%- assign price_break_price = price_break.price | money_with_currency -%}
+                        <li class="{%- if forloop.index >= 3 -%}show-more-item hidden{%- endif -%}">
+                            <span>{{- price_break.minimum_quantity -}}<span aria-hidden="true">+</span></span>
+                            <span data-text="{{ 'products.product.volume_pricing.price_at_each' | t: price: price_break_price }}">{{- 'sections.quick_order_list.each_html' | t: money: price_break_price -}}</span>
+                        </li>
+                    {%- endfor -%}
+                </ul>
+                {%- if current_variant.quantity_price_breaks.size >= 3 -%}
+                    <show-more-button>
+                        <button class="button-show-more link underlined-link" id="Show-More-{{ section.id }}" type="button"><span class="label-show-more label-text"><span aria-hidden="true">+ </span>{{ 'products.product.volume_pricing.show_more' | t }}</span></button>
+                    </show-more-button>
+                {%- endif -%}
+            {%- endif -%}
+        </volume-pricing>
+    {%- endif -%}
+</div>
+{% schema %}
+{
+  "name": "Quantity message",
+  "tag": null,
+  "settings": [
+    {
+        "type": "range",
+        "id": "maxqty",
+        "label": "Low inventory threshold",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 15
+    },
+    {
+        "type": "paragraph",
+        "content": "Show low stock quantity when quantity is below the threshold. Choose 0 to always show 'in stock' message."
+    },				                                
+    {
+        "type": "range",
+        "id": "fs",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "label": "Font size",
+        "unit": "px",
+        "default": 13
+    },               
+    {
+        "type": "checkbox",
+        "id": "fcase",
+        "label": "Use uppercase text",
+        "default": false       
+    }, 
+    {
+        "type": "select",
+        "id": "font-style",
+        "label": "Font style",
+        "default": "italic",
+        "options": [
+            {
+                "value": "italic",
+                "label": "Italic"
+            },
+            {
+                "value": "none",
+                "label": "Normal"
+            }  						
+        ]
+    },				                          
+    {
+        "type": "color",
+        "id": "instock",
+        "label": "In stock",
+        "default": "#54c63a"
+    },      
+    {
+        "type": "color",
+        "id": "lstock",
+        "label": "Low stock",
+        "default": "#f4af29"
+    },      
+    {
+        "type": "color",
+        "id": "ostock",
+        "label": "Out of stock",
+        "default": "#ee1111"
+    },  
+     {
+        "type": "checkbox",
+        "id": "add-bg",
+        "label": "Add background",
+        "default": false       
+    }, 
+     {
+        "type": "color",
+        "id": "cl",
+        "label": "Text color",
+        "default": "#ffffff"
+    }, 
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },  
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quantity message",
+      "category": "Product",
+      "settings": {
+        "maxqty": 15,
+        "cl": "#ffffff",
+        "fs": 13,
+        "instock": "#54c63a",
+        "lstock": "#f4af29",
+        "ostock": "#ee1111",       
+        "rounded": "none",
+        "mb": 20,
+        "mbm": 15
+    }
+    }
+  ]
+}
+{% endschema %}

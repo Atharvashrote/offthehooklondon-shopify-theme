@@ -1,0 +1,435 @@
+{%- capture products_list -%}
+{%- assign section_st = section.settings -%}
+{%- capture styles -%}
+    
+    --hdcl:{{ section_st.tcl }};--grsp:{{ section_st.gspace | divided_by: 2.0 }}px;--grspm:{{ section_st.gspacem | divided_by: 2.0 }}px;--gap:{{ section_st.gap }}px;--bdr:{{ section_st.prbdr }};
+    {%- if section_st.preset == 'custom-hd' -%}--fs:{{ section_st.fs }}px;--fsm:{{ section_st.fsm }}px;--ff:var(--{{ section_st.ff }});--fw:{{ section_st.fw }};--lh:{{ section_st.lh }};{%- endif -%}
+{%- endcapture -%}
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}"> 
+        <div class="grid gspace" style="{{ styles }};">
+            {% for block in section.blocks limit: section.blocks.size %}
+                {%- assign block_st = block.settings -%}
+                <div class="gitem {{ block_st.width }}-md mb20">
+                    {%- assign collection = collections[block_st.collection] -%}
+
+                    <h2 class="head {{ section_st.preset }} mb20 t-{{ section_st.align }}">{{ block_st.title }}</h2>
+                    <div class="grid gspace rwcols-{{ block_st.gridmb }} rwcols-md-{{ block_st.gridtb }} rwcols-lg-{{ block_st.grid }}" style="--grsp:{{ section_st.gap | divided_by: 2.0 }}px;">
+                        {%- if block_st.collection != blank -%}
+                            {%- for product in collection.products limit:block_st.rows -%}
+                                <div class="gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>
+                                   <div class="mini-products__wrapper"> {%- render 'product-card-columns', product: product, block: block.settings, section_st: section_st -%} </div>
+                                </div>
+                            {%- endfor -%}
+                        {%- else -%}
+                            {%- for i in (1..block_st.rows) -%}
+                                <div class="gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>
+                                    <div class="mini-products__wrapper">
+                                        <div class="fl f-aic of-hidden b1">
+                                            <div class="mini-products__img mr15">
+                                                <a class="grid-image" href="#">{% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}{% capture pl_class %}placeholder-svg svgcl{{ current }}{% endcapture %}{{ 'product-' | append: current | placeholder_svg_tag: pl_class }}</a>
+                                            </div>
+                                            <div class="fl1">
+                                                <a href="#">{{ 'homepage.onboarding.product_title' | t }}</a>
+                                                <div class="mini-products__meta mt5">{%- render 'product-price' -%}</div>                                                 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {%- endfor -%}
+                        {%- endif -%}
+                    </div>
+                </div>
+            {%- endfor -%}
+        </div>		
+    </div>
+</div>
+{%- endcapture -%}
+{{- products_list | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Products: Listing",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Grid gap",
+      "default": 15,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Grid gap (mobile)",
+      "default": 10,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Rows gap",
+      "default": 10,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "prbdr",
+      "label": "Box border",
+      "default": "#eee"
+    },   
+    {
+      "type": "header",
+      "content": "Title appearance"
+    },
+    {
+      "type": "color",
+      "id": "tcl",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "h4",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "text-1",
+          "label": "Text 1"
+        },
+        {
+          "value": "text-2",
+          "label": "Text 2"
+        },        
+        {
+          "value": "custom-hd",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "ff",
+      "label": "Font",
+      "default": "ft2",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "ft1",
+          "label": "Body font"
+        },
+        {
+          "value": "ft2",
+          "label": "Heading font"
+        },
+        {
+          "value": "ft3",
+          "label": "Accent font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fs",
+      "label": "Font size",
+      "default": 20,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "fsm",
+      "label": "Font size (mobile)",
+      "default": 18,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },    
+    {
+      "type": "select",
+      "id": "fw",
+      "label": "Font weight",
+      "default": "600",
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "lh",
+      "label": "Line height",
+      "default": 1.2,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,     
+      "visible_if": "{{ section.settings.preset == 'custom-hd' }}"
+    },
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Title align",
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    }, 
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 25
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_column",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Column title",
+          "default": "Title"
+        },
+        {
+          "id": "collection",
+          "type": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Column width",
+          "default": "wd25",      
+          "options": [
+            { "value": "wd20", "label": "20%" },
+            { "value": "wd25", "label": "25%" },
+            { "value": "wd33", "label": "33%" },
+            { "value": "wd40", "label": "40%" },
+            { "value": "wd50", "label": "50%" },
+            { "value": "wd60", "label": "60%" },
+            { "value": "wd66", "label": "66%" },
+            { "value": "wd75", "label": "75%" },
+            { "value": "wd80", "label": "80%" },
+            { "value": "wd100", "label": "100%" }
+          ]
+        },       
+        {
+          "type": "range",
+          "id": "grid",
+          "label": "Columns (desktop)",
+          "default": 1,
+          "min": 1,
+          "max": 4,
+          "step": 1
+        },
+        {
+          "type": "range",
+          "id": "gridtb",
+          "label": "Columns (tablet)",
+          "default": 1,
+          "min": 1,
+          "max": 3,
+          "step": 1
+        },
+        {
+          "type": "range",
+          "id": "gridmb",
+          "label": "Columns (mobile)",
+          "default": 1,
+          "min": 1,
+          "max": 3,
+          "step": 1
+        },
+        {
+          "type": "range",
+          "id": "rows",
+          "label": "Products limit",
+          "default": 4,
+          "min": 1,
+          "max": 50,
+          "step": 1
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Products: Listing",
+      "category": "Products",
+      "blocks": [
+        {
+          "type": "collection_column"
+        },
+        {
+          "type": "collection_column"
+        },
+        {
+          "type": "collection_column"
+        },
+        {
+          "type": "collection_column"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

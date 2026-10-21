@@ -1,0 +1,589 @@
+{%- capture lookbook -%}
+{%- liquid
+    assign section_st = section.settings
+    assign page_width = settings.cntwd | append: 'px'
+    if section_st.sw
+        assign page_width = '100vw'
+    endif
+-%}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+   <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" id="{{ section.id }}">        
+       {%- render 'sec-title' -%}
+       <grid-masonary class="grid grid-masonary gspace" style="--grsp:{{ section_st.gspace | divided_by: 2.0 }}px;--grspm:{{ section_st.gspacem | divided_by: 2.0 }}px;--mob_col:{{ section_st.col-m }};">         
+        <div class="grid-sizer col-{{ section_st.col }} pa"></div>        
+          {%- for block in section.blocks limit: section.blocks.size -%}
+              {%- assign block_st = block.settings -%}
+              {%- capture sizes -%}
+                        {%- if block_st.width == 'wd20' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:4 }}px) / 5),(min-width:768px) calc((100vw - {{ section_st.gspace | times:4 }}px) / 5), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd25' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:3 }}px) / 4),(min-width:768px) calc((100vw - {{ section_st.gspace | times:3 }}px) / 4), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd33' -%}
+                            (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace | times:2 }}px) / 3),(min-width:768px) calc((100vw - {{ section_st.gspace | times:2 }}px) / 3), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd50' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 2),(min-width:768px) calc((100vw - {{ section_st.gspace }}px) / 2), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd66' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 3 * 2), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'wd75' -%}
+                          (min-width:1024px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3),(min-width:768px) calc(({{ page_width }} - {{ section_st.gspace }}px) / 5 * 3), calc((100vw - 15px) / {{ section_st.col-m }})
+                        {%- elsif block_st.width == 'w-100' -%}
+                          (min-width:1024px) {{ page_width }}, 100vw
+                        {%- endif -%}
+                    {%- endcapture -%}	       
+            {% if block_st.image != blank %}
+                <div class="msitem gitem {{ section_st.col-m }} {{ block_st.width }}-md {% render 'animate-data', css:true %}" {% render 'animate-data' %} id="{{ block.id }}" {{ block.shopify_attributes }}>
+                  <a class="db igshop popup-link pr of-hidden {{ section_st.rounded }}" href="#igpp{{ block.id }}" data-popup="igpp{{ block.id }}" title="{{ block_st.title | escape}}">
+                    <span class="insta-shop pa fl f-aic f-jcc"> <svg class="at-icon" style="--icns:14px;"><use xlink:href="#icon-cart"></use></svg></span>                                                                                
+                    {{ block_st.image | image_url: width: block_st.image.width | image_tag: loading:'lazy', width:block_st.image.width, height:block_st.image.height, class:'img-auto m-auto', sizes:sizes, widths:"320,400,560,780" }}
+                  </a>
+                </div>
+            {% else %}
+                <div class="msitem gitem {{ section_st.col-m }} {{ block_st.width }}-md {% render 'animate-data', css:true %}" {% render 'animate-data' %} id="{{ block.id }}" {{ block.shopify_attributes }}>
+                  {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'collection-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+            {% endif %}
+        {%- endfor -%}                      
+    </grid-masonary>
+  </div>
+</div>
+  {%- for block in section.blocks -%}
+    {%- assign block_st = block.settings -%}
+    {%- if block_st.image != blank -%}
+            <div id="igpp{{ block.id }}" class="tinglebox pp-hide cm">
+                <div class="grid">
+                    <div class="gitem wd60-md">
+                        <div class="pr lookbook of-hidden {{ section_st.rounded }}" style="--icns:14px;--cl:{{section_st.hotspot}};--cl_down:{{section_st.hotspot | color_modify: 'alpha', 0.2 }};">
+                        {%- assign imgsizes = '(min-width:1024px) calc((840px / 5) * 3), calc((100vw / 5) * 3)' -%}
+                        {{ block_st.image | image_url: width: block_st.image.width | image_tag: loading:'lazy', width:block_st.image.width, height:block_st.image.height, class:'img-auto m-auto', sizes:imgsizes, widths:"330,400,540,660,800" }}
+                            {%- if block_st.product1 != blank -%}
+                                <a class="pa products" href="{{block_st.product1.url}}" target="_blank" style="top:{{ block_st.p1_top}}%;left:{{ block_st.p1_left}}%;" title="{{ block_st.product1.title | escape }}"><span class="fl f-jcc f-aic btn-shop db"></span></a>
+                            {%- endif -%}
+                            {%- if block_st.product2 != blank -%}
+                                <a class="pa products" href="{{block_st.product2.url}}" target="_blank" style="top:{{ block_st.p2_top}}%;left:{{ block_st.p2_left}}%;" title="{{ block_st.product2.title | escape }}"><span class="fl f-jcc f-aic btn-shop db"></span></a>
+                            {%- endif -%}
+                            {%- if block_st.product3 != blank -%}
+                                <a class="pa products" href="{{block_st.product3.url}}" target="_blank" style="top:{{ block_st.p3_top}}%;left:{{ block_st.p3_left}}%;" title="{{ block_st.product3.title | escape }}"><span class="fl f-jcc f-aic btn-shop db"></span></a>
+                            {%- endif -%}
+                            {% if block_st.product4 != blank -%}
+                                <a class="pa products" href="{{block_st.product4.url}}" target="_blank" style="top:{{ block_st.p4_top}}%;left:{{ block_st.p4_left}}%;" title="{{ block_st.product4.title | escape }}"><span class="fl f-jcc f-aic btn-shop db"></span></a>
+                            {%- endif -%}
+                        </div>
+                    </div>
+                    <div class="gitem wd40-md">
+                        {%- if block_st.title != blank -%}
+                            <div class="fs16 fw-500 mb10">
+                                {%- if block_st.url != blank -%}
+                                <a href="{{ block_st.url }}" class="db fl f-aic" target="_blank">                                    
+                                     {{ block_st.title }}<svg id="elink" class="ml10 at-icon" style="--icns:16px" enable-background="new 0 0 128 128" height="512" viewBox="0 0 128 128" width="512" xmlns="http://www.w3.org/2000/svg"><path id="External_Link" d="m124 8v36c0 2.211-1.789 4-4 4s-4-1.789-4-4v-26.344l-57.172 57.172c-.781.781-1.805 1.172-2.828 1.172s-2.047-.391-2.828-1.172c-1.563-1.563-1.563-4.094 0-5.656l57.172-57.172h-26.344c-2.211 0-4-1.789-4-4s1.789-4 4-4h36c2.211 0 4 1.789 4 4zm-16 104v-48c0-2.211-1.789-4-4-4s-4 1.789-4 4v48c0 2.207-1.793 4-4 4h-80c-2.207 0-4-1.793-4-4v-80c0-2.207 1.793-4 4-4h48c2.211 0 4-1.789 4-4s-1.789-4-4-4h-48c-6.617 0-12 5.383-12 12v80c0 6.617 5.383 12 12 12h80c6.617 0 12-5.383 12-12z"/></svg>
+                                </a>
+                                 {%- else -%}   
+                                    {{ block_st.title }}
+                                 {%- endif -%}
+                            </div>
+                        {%- endif -%}
+                        {%- if block_st.cpt != blank -%}<div class="mb20">{{ block_st.cpt }}</div>{%- endif -%}                      
+                        <div class="fl f-col row-gap" style="--gap:10px">
+                            {% if block_st.product1 != blank %}{% render 'product-card-columns', product: block_st.product1, postion: block_st.dis-pstn1 %}{% endif %}
+                            {% if block_st.product2 != blank %}{% render 'product-card-columns', product:block_st.product2, postion: block_st.dis-pstn2 %}{% endif %}
+                            {% if block_st.product3 != blank %}{% render 'product-card-columns', product:block_st.product3, postion: block_st.dis-pstn3 %}{% endif %}
+                            {% if block_st.product4 != blank %}{% render 'product-card-columns', product:block_st.product4, postion: block_st.dis-pstn4 %}{% endif %}
+                        </div>
+                        {% if section_st.btn != blank and block_st.url != blank %}
+                          <p class="mt30">  <a href="{{ block_st.url }}" class="btn {{section_st.btn-size-desk}} {{section_st.btn-style}}" target="_blank">{{ section_st.btn }}</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+    {%- endif -%}
+{%- endfor -%}
+{%- endcapture -%}
+{{- lookbook | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Instagram shop",
+  "max_blocks": 50,
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Subheading"
+    },
+      {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Instagram Shop"
+    },
+     {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>This feature enable seamless users' browsing experiences</p>"
+    },              
+    {
+      "type": "header",
+      "content": "Grid appearance"
+    },
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Grid gap",
+      "default": 30,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Grid gap (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "col",
+      "label": "Grid columns",
+      "default": 4,
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "info": "[Column selection guide](https://www.adornthemes.com/masonry-column-selection/)"
+    },
+    {
+      "type": "select",
+      "id": "col-m",
+      "label": "Grid columns (mobile)",
+      "default": "wd50",
+      "options": [
+        {
+          "value": "wd100",
+          "label": "1"
+        },
+        {
+          "value": "wd50",
+          "label": "2"
+        },
+        {
+          "value": "wd33",
+          "label": "3"
+        },
+        {
+          "value": "wd25",
+          "label": "4"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Image corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+     {
+      "type": "color",
+      "id": "hotspot",
+      "label": "Hotspot color",
+      "info": "(product pin on image)",
+      "default": "#111"
+    },   
+    {
+        "type": "paragraph",
+        "content": "-----------------------------------------------"
+    },
+    {
+      "type": "text",
+      "id": "btn",
+      "label": "Button label",
+      "default": "View on Instagram",
+      "info": "display button in popup. keep empty to hide"
+    },
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ],
+      "visible_if": "{{ section.settings.btn != blank }}"
+    },
+    {
+      "type": "select",
+      "id": "btn-size-desk",
+      "label": "Button size",
+      "default": "btn-sm",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ],
+      "visible_if": "{{ section.settings.btn != blank }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+     "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"            
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#f7f7f7",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg-image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay",
+      "label": "Image overlay",
+      "alpha": true,
+      "visible_if": "{{ section.settings.addbg and section.settings.bg-image != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+     {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Image",
+      "type": "img",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Instagram title"
+        },
+        {
+          "type": "richtext",
+          "id": "cpt",
+          "label": "Instagram caption"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Instagram link"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Column width",
+          "default": "wd25",
+          "options": [
+            { "value": "wd20", "label": "20%" },
+            { "value": "wd25", "label": "25%" },
+            { "value": "wd33", "label": "33%" },
+            { "value": "wd40", "label": "40%" },
+            { "value": "wd50", "label": "50%" },
+            { "value": "wd60", "label": "60%" },
+            { "value": "wd66", "label": "66%" },
+            { "value": "wd75", "label": "75%" },
+            { "value": "wd80", "label": "80%" },
+            { "value": "w-100", "label": "100%" }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Products"
+        },
+        {
+          "type": "product",
+          "id": "product1",
+          "label": "Product 1"
+        },        
+        {
+          "type": "range",
+          "id": "p1_left",
+          "label": "Position X",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "p1_top",
+          "label": "Position Y",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+        "type": "paragraph",
+        "content": "-----------------------------------------------"
+        },
+        {
+          "type": "product",
+          "id": "product2",
+          "label": "Product 2"
+        },       
+        {
+          "type": "range",
+          "id": "p2_left",
+          "label": "Position X",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+         {
+          "type": "range",
+          "id": "p2_top",
+          "label": "Position Y",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+        "type": "paragraph",
+        "content": "-----------------------------------------------"
+        },
+        {
+          "type": "product",
+          "id": "product3",
+          "label": "Product 3"
+        },        
+        {
+          "type": "range",
+          "id": "p3_left",
+          "label": "Position X",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "p3_top",
+          "label": "Position Y",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+        "type": "paragraph",
+        "content": "-----------------------------------------------"
+        },
+        {
+          "type": "product",
+          "id": "product4",
+          "label": "Product 4"
+        },       
+        {
+          "type": "range",
+          "id": "p4_left",
+          "label": "Position X",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+         {
+          "type": "range",
+          "id": "p4_top",
+          "label": "Position Y",
+          "default": 1,
+          "min": 1,
+          "max": 90,
+          "step": 1,
+          "unit": "%"
+        },
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram shop",
+      "category": "Products",
+      "blocks": [
+        {
+          "type": "img"
+        },
+        {
+          "type": "img"
+        },
+        {
+          "type": "img"
+        },
+        {
+          "type": "img"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

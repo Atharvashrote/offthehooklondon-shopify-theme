@@ -1,0 +1,377 @@
+{%- capture richtext -%}
+{%- assign section_st = section.settings -%}
+{% capture image_main %}
+  {% if section_st.image1 != blank %}
+       {{ section_st.image1 | image_url: width:section_st.image1.width | image_tag: loading:'lazy', class:'img-fit anim', widths:"180,320,400,560,740,900,1200" }}
+  {% else %}
+      {{ 'detailed-apparel-1' | placeholder_svg_tag: 'placeholder-svg img-fit' }}
+  {%- endif -%}
+{% endcapture %}
+{% capture image_sec %}
+  {% if section_st.image2 != blank %}
+     {{ section_st.image2 | image_url: width:section_st.image2.width | image_tag: loading:'lazy', class:'img-fit anim', widths:"180,320,400,560,740,900,1200" }}
+  {% else %}
+     {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder-svg img-fit' }}
+  {%- endif -%}
+{% endcapture %}
+{% capture image_third %}
+  {% if section_st.image3 != blank %}
+     {{ section_st.image3 | image_url: width:section_st.image3.width | image_tag: loading:'lazy', class:'img-fit anim', widths:"180,320,400,560,740,900,1200" }}
+  {% else %}
+     {{ 'collection-apparel-1' | placeholder_svg_tag: 'placeholder-svg img-fit' }}
+  {%- endif -%}
+{% endcapture %}
+<div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>  
+	 <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}"> 		
+     <div class="fl f-col f-row-md image-text__row images_text">
+        {%- capture images_styles -%}
+          --wd:{{ section_st.img_width }}%;--rounded:{{ section_st.brad }}px;
+          {%- if section_st.style == '3' -%}
+            --row:10;--gap:25px;
+          {%- elsif section_st.style == '6' -%}
+            --row:11;
+          {%- elsif section_st.style == '8' or section_st.style == '10' -%}
+            --row:10;--gap:25px;
+          {%- endif -%}
+        {%- endcapture -%}
+        <div class="image-text__image img-collage gap zoom {{ section_st.order }}-md" style="{{ images_styles }}">
+           {%- if section_st.style == '1' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 10;--row:1 / 13">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:7 / 13;--row:4 / 10">{{ image_sec }}</div>
+           {%- elsif section_st.style == '2' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 10;--row:1 / 12">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:7 / 13;--row:7 / 13">{{ image_sec }}</div>
+           {%- elsif section_st.style == '3' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 7;--row:1 / 9">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:7 / 13;--row:3 / 11">{{ image_sec }}</div>
+           {%- elsif section_st.style == '4' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:5 / 13;--row:3 / 13">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 7;--row:2 / 10">{{ image_sec }}</div>
+           {%- elsif section_st.style == '4' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:4 / 13;--row:3 / 13">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 7;--row:1 / 7">{{ image_sec }}</div>
+           {%- elsif section_st.style == '5' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:4 / 13;--row:1 / 13">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 6;--row:4 / 11">{{ image_sec }}</div>
+           {%- elsif section_st.style == '6' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:3 / 11;--row:1 / 13">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 5;--row:2 / 7">{{ image_sec }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img3 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:8 / 13;--row:7 / 11">{{ image_third }}</div>
+           {%- elsif section_st.style == '7' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:3 / 11;--row:3 / 11">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 5;--row:1 / 5">{{ image_sec }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img3 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:8 / 13;--row:8 / 13">{{ image_third }}</div>
+           {%- elsif section_st.style == '8' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 7;--row:2 / 10">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:7 / 13;--row:1 / 5">{{ image_sec }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img3 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:7 / 13;--row:5 / 11">{{ image_third }}</div>
+           {%- elsif section_st.style == '9' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:3 / 11;--row:2 / 12">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:9 / 13;--row:3 / 7">{{ image_sec }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img3 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 6;--row:7 / 13">{{ image_third }}</div>
+           {%- elsif section_st.style == '10' -%}
+             <div class="img pr of-hidden {{ section_st.rounded }} img1 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:4 / 13;--row:2 / 10">{{ image_main }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img2 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:1 / 7;--row:1 / 6">{{ image_sec }}</div>
+             <div class="img pr of-hidden {{ section_st.rounded }} img3 {% render 'animate-data', css:true %}" {% render 'animate-data' %} style="--col:3 / 8;--row:8 / 11">{{ image_third }}</div>
+           {%- endif -%}
+        </div>  
+        <div class="image-text__content fl fl1 {{ section_st.v_pos }}{% if section_st.hided %} d-n{% endif %}{% if section_st.hidem %} m-n{% endif %}{% if section_st.npd and section_st.fullwidth %} npd{% endif %} pd0-md" style="--wd:{{ section_st.img_width }}%;--text-width:60ch">
+    		  <div class="image-text__content-inner wd100 fl f-col t-{{ section_st.align }}{% if section_st.align == 'center' %} f-aic{%  elsif section_st.align == 'right' %} f-aie{% endif %} nobg {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% content_for 'blocks' %}</div>
+       </div>
+	</div> 
+      
+  </div>
+</div> 
+{%- endcapture -%}
+{{- richtext | strip_newlines | remove: '  ' | remove: '	' -}}
+{% schema %}
+{
+  "name": "Layered images with text",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Design",
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "2 Images (1)"
+        },
+        {
+          "value": "2",
+          "label": "2 Images (2)"
+        },
+        {
+          "value": "3",
+          "label": "2 Images (3)"
+        },
+        {
+          "value": "4",
+          "label": "2 Images (4)"
+        },
+        {
+          "value": "5",
+          "label": "2 Images (5)"
+        },
+        {
+          "value": "6",
+          "label": "3 Images (1)"
+        },
+        {
+          "value": "7",
+          "label": "3 Images (2)"
+        },
+        {
+          "value": "8",
+          "label": "3 Images (3)"
+        },
+        {
+          "value": "9",
+          "label": "3 Images (4)"
+        },
+        {
+          "value": "10",
+          "label": "3 Images (5)"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image1",
+      "label": "Image 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image2",
+      "label": "Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image3",
+      "label": "Image 3",
+      "visible_if": "{{ section.settings.style == '6' or section.settings.style == '7' or section.settings.style == '8' or section.settings.style == '9' or section.settings.style == '10' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "img_width",
+      "min": 20,
+      "max": 70,
+      "step": 1,
+      "label": "Column width",
+      "default": 60,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "order",
+      "label": "Position",
+      "default": "order0",
+      "options": [
+        {
+          "value": "order0",
+          "label": "Left"
+        },
+        {
+          "value": "order1",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },    
+    {
+      "type": "text_alignment",
+      "id": "align",
+      "label": "Text alignment",
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "v_pos",
+      "label": "Position",
+      "default": "f-aic",
+      "options": [
+        {
+          "value": "f-ais",
+          "label": "Top"
+        },
+        {
+          "value": "f-aic",
+          "label": "Middle"
+        },
+        {
+          "value": "f-aie",
+          "label": "Bottom"
+        }
+      ]
+    },   
+    {
+          "type": "header",
+          "content": "Layout"
+      },
+      {
+          "type": "checkbox",
+        "id": "fullwidth",
+          "label": "Full width",
+          "default": false
+      },
+      {
+          "type": "checkbox",
+          "id": "npd",
+          "label": "Remove side margins",
+          "default": false,
+          "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+          "visible_if": "{{ section.settings.fullwidth }}"            
+      },      
+      {
+          "type": "checkbox",
+          "id": "addbg",
+          "label": "Add background",
+          "default": false
+      },
+      {
+          "type": "color",
+          "id": "bg",
+          "label": "Background",
+          "default": "#f7f7f7",
+          "visible_if": "{{ section.settings.addbg }}"
+      },                   
+      {
+          "type": "checkbox",
+          "id": "hidem",
+          "label": "Hide on mobile",
+          "default": false
+      },
+      {
+          "type": "checkbox",
+          "id": "hided",
+          "label": "Hide on desktop",
+          "default": false
+      },
+      {
+          "type": "header",
+          "content": "Section padding"
+      },
+      {
+          "type": "range",
+          "id": "sst",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Top padding",
+          "unit": "px",
+          "default": 40
+      },
+      {
+          "type": "range",
+          "id": "ssb",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Bottom padding",
+          "unit": "px",
+          "default": 40
+      },
+      {
+          "type": "range",
+          "id": "sstm",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Top padding (mobile)",
+          "unit": "px",
+          "default": 20
+      },
+      {
+          "type": "range",
+          "id": "ssbm",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": "Bottom padding (mobile)",
+          "unit": "px",
+          "default": 20
+      }  	
+  ],
+  "presets": [
+    {
+      "name": "Layered images with text",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "text": "TALK ABOUT YOUR BRAND",
+            "htag": "h3",
+            "mb": 15,
+            "mbm": 10,
+            "preset":"h2"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>",
+            "mb": 25,
+            "mbm":20
+          }
+        },
+        {
+          "type": "button"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

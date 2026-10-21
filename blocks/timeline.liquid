@@ -1,0 +1,606 @@
+{{ 'timeline.css' | asset_url | stylesheet_tag: preload: true }}
+{%- liquid
+  assign block_st = block.settings
+
+  capture inner_classes
+    if block_st.isbg
+      echo 'bg-custom '
+    endif
+    if block_st.ispd
+      echo 'pd-custom '
+    endif
+    echo block_st.rounded
+  endcapture
+-%}
+{%- capture inner_styles -%}
+  {%- if block_st.isbg -%}
+    --gr_bg:{% if block_st.bgg != blank %}{{ block_st.bgg }}{% else %}{{ block_st.bg }}{% endif %};
+    --gr_bd:{% if block_st.bdr == 'solid' %}{{ block_st.brd_sz }}px solid {{ block_st.bdr-cl }}{% else %}0{% endif %};
+  {%- endif -%}
+  {%- if block_st.ispd -%}
+    --gr_pd:{{ block_st.pd-tb }}px {{ block_st.pd-lr }}px;--gr_pdm:{{ block_st.pd-tbm }}px {{ block_st.pd-lrm }}px;
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture connector_line -%}
+--y_pos:{{ block_st.icon_size | divided_by: 2 }}px;--x_pos:{{ block_st.icon_size | divided_by: 2 }}px;--cl:{{ block_st.connector_color }};--line_width:{{ block_st.line_width }}px;--height:calc(100% - {{ block_st.icon_size }}px);
+{%- endcapture -%}
+
+<div id="timeline-block" class="wd100 reg-text db pd0 mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}" {{ block.shopify_attributes }}>
+  <timeline-progress class="db" style="--cl-progress: {{ block_st.progress_color }};">
+    <div class="timeline-inner {{ inner_classes }}" style="{{ inner_styles | strip_newlines }}">
+      <div class="timeline-steps fl f-col pr gap" style="--gap:50px;--gapm:40px">
+        <div class="timeline-connector pa" style="{{ connector_line | strip_newlines }}"></div>
+        {%- for i in (1..4) -%}
+          {%- liquid
+            assign step_title_key = 'step_' | append: i | append: '_title'
+            assign step_description_key = 'step_' | append: i | append: '_description'
+            assign step_title = block.settings[step_title_key]
+            assign step_description = block.settings[step_description_key]
+          -%}
+          <div class="timeline-step fl f-ais pr zi1 gap {% render 'animate-data', css: true %}" data-step="{{ i }}" {% render 'animate-data' %} style="--gap:25px;--gapm:20px;">
+            <div class="timeline-icon pr round-full anim" style="--icon_size:{{ block_st.icon_size }}px;--icon_bg:{{ block_st.icon_bg_color }};--icon-bd:{{ block_st.icon_border_width }}px;--icon-bd-cl:{{ block_st.icon_border_color }};--progress-text-cl:{{ block_st.progress_text_color }};">
+              <span class="timeline-icon__number pa fl f-aic f-jcc fw-600" style="--number-size:{{ block_st.icon_size | times: 0.4 }}px;--number-cl:{{ block_st.icon_color }}">{{ i }}</span>
+              <span class="timeline-icon__check pa left-50 top-50" aria-hidden="true" style="--icon-check-w:{{ block_st.icon_size | times: 0.32 }}px;--icon-check-h:{{ block_st.icon_size | times: 0.18 }}px;"></span>
+            </div>
+            <div class="timeline-step-content">
+              {%- if step_title != blank -%}
+                <h3 class="head {{ block_st.step_ttl_preset }} timeline-step-title mb10" style="{%- if block_st.step_ttl_preset == 'custom-hd' -%}--fs:{{ block_st.step_ttl_fs }}px;--fsm:{{ block_st.step_ttl_fsm }}px;--ff:var(--{{ block_st.step_ttl_ff }});--fw:{{ block_st.step_ttl_fw }};--lh:{{ block_st.step_ttl_lh }};--hdcl:{{ block_st.step_title_color }};{% else %}--hdcl:{{ block_st.step_title_color }};{% endif %}">
+                  {{- step_title -}}
+                </h3>
+              {%- endif -%}
+              {%- if step_description != blank -%}
+                <div class="reg-text {{ block_st.step_txt_preset }} timeline-step-description"  style="{%- if block_st.step_txt_preset == 'custom' -%}--fs:{{ block_st.step_txt_fs }}px;--fsm:{{ block_st.step_txt_fsm }}px;--lh:{{ block_st.step_txt_lh }};--fw:{{ block_st.step_txt_fw }};{% endif %}--cl:{{ block_st.step_description_color }};">
+                  {{ step_description | newline_to_br }}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </timeline-progress>
+</div>
+
+<script>
+  (function () {
+    if (customElements.get('timeline-progress')) return;
+    class TimelineProgress extends HTMLElement {
+      connectedCallback() {
+        this._steps = Array.from(this.querySelectorAll('.timeline-step'));
+        this._connector = this.querySelector('.timeline-connector');
+        this._raf = null;
+        this._onScroll = this._onScroll.bind(this);
+        this._onResize = this._onResize.bind(this);
+        this._recompute = this._recompute.bind(this);
+
+        this._stepCenters = [];
+        this._startY = 0;
+        this._endY = 0;
+
+        window.addEventListener('scroll', this._onScroll, { passive: true });
+        window.addEventListener('resize', this._onResize, { passive: true });
+        this._recompute();
+        this._update();
+      }
+
+      disconnectedCallback() {
+        window.removeEventListener('scroll', this._onScroll);
+        window.removeEventListener('resize', this._onResize);
+        if (this._raf) cancelAnimationFrame(this._raf);
+      }
+
+      _onScroll() {
+        if (this._raf) return;
+        this._raf = requestAnimationFrame(() => {
+          this._raf = null;
+          this._update();
+        });
+      }
+
+      _onResize() {
+        this._recompute();
+        this._update();
+      }
+
+      _recompute() {
+        if (!this._steps || this._steps.length === 0) return;
+        const viewportH = Math.max(window.innerHeight || 0, 1);
+        const anchorY = window.scrollY + viewportH * 0.45;
+
+        this._stepCenters = this._steps.map((step) => {
+          const rect = step.getBoundingClientRect();
+          return window.scrollY + rect.top + rect.height * 0.5;
+        });
+
+        this._startY = this._stepCenters[0];
+        this._endY = this._stepCenters[this._stepCenters.length - 1];
+
+        if (this._endY <= this._startY) this._endY = this._startY + 1;
+        this._anchorRatio = anchorY;
+      }
+
+      _update() {
+        if (!this._steps || this._steps.length === 0) return;
+        const viewportH = Math.max(window.innerHeight || 0, 1);
+        const anchorY = window.scrollY + viewportH * 0.45;
+
+        const progress = Math.min(1, Math.max(0, (anchorY - this._startY) / (this._endY - this._startY)));
+
+        const root = this.closest('[id^=\"blk-\"]') || this;
+        root.style.setProperty('--timeline-progress', progress.toFixed(4));
+
+        let activeIndex = 0;
+        for (let i = 0; i < this._stepCenters.length; i++) {
+          if (anchorY >= this._stepCenters[i]) activeIndex = i;
+        }
+
+        this._steps.forEach((step, i) => {
+          step.classList.toggle('is-complete', i < activeIndex);
+          step.classList.toggle('is-active', i === activeIndex);
+          step.classList.toggle('is-upcoming', i > activeIndex);
+        });
+      }
+    }
+    customElements.define('timeline-progress', TimelineProgress);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Timeline",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Step 1"
+    },
+    {
+      "type": "text",
+      "id": "step_1_title",
+      "label": "Title",
+      "default": "Discover"
+    },
+    {
+      "type": "textarea",
+      "id": "step_1_description",
+      "label": "Description",
+      "default": "Explore our products and find what works for you"
+    },
+    {
+      "type": "header",
+      "content": "Step 2"
+    },
+    {
+      "type": "text",
+      "id": "step_2_title",
+      "label": "Title",
+      "default": "Choose"
+    },
+    {
+      "type": "textarea",
+      "id": "step_2_description",
+      "label": "Description",
+      "default": "Select what fits your goals"
+    },
+    {
+      "type": "header",
+      "content": "Step 3"
+    },
+    {
+      "type": "text",
+      "id": "step_3_title",
+      "label": "Title",
+      "default": "Transform"
+    },
+    {
+      "type": "textarea",
+      "id": "step_3_description",
+      "label": "Description",
+      "default": "Build habits with consistent routines"
+    },
+    {
+      "type": "header",
+      "content": "Step 4"
+    },
+    {
+      "type": "text",
+      "id": "step_4_title",
+      "label": "Title",
+      "default": "Thrive"
+    },
+    {
+      "type": "textarea",
+      "id": "step_4_description",
+      "label": "Description",
+      "default": "Enjoy lasting results"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "select",
+      "id": "step_ttl_preset",
+      "label": "Preset",
+      "info": "Edit presets in [theme settings](/editor?context=theme&category=Typography and Colors)",
+      "default": "custom-hd",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "text-1", "label": "Text 1" },
+        { "value": "text-2", "label": "Text 2" },
+        { "value": "custom-hd", "label": "Custom" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "step_ttl_ff",
+      "label": "Font",
+      "default": "ft1",
+      "options": [
+        { "value": "ft1", "label": "Body font" },
+        { "value": "ft2", "label": "Heading font" },
+        { "value": "ft3", "label": "Accent font" }
+      ],
+      "visible_if": "{{ block.settings.step_ttl_preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "step_ttl_fs",
+      "label": "Font size",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.step_ttl_preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "step_ttl_fsm",
+      "label": "Font size (mobile)",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 18,
+      "visible_if": "{{ block.settings.step_ttl_preset == 'custom-hd' }}"
+    },    
+    {
+      "type": "select",
+      "id": "step_ttl_fw",
+      "label": "Font weight",
+      "default": "600",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "visible_if": "{{ block.settings.step_ttl_preset == 'custom-hd' }}"
+    },
+    {
+      "type": "range",
+      "id": "step_ttl_lh",
+      "label": "Line height",
+      "default": 1.3,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ block.settings.step_ttl_preset == 'custom-hd' }}"
+    },
+    {
+      "type": "color",
+      "id": "step_title_color",
+      "label": "Color",
+      "default": "#2E7D32"
+    },    
+    {
+      "type": "header",
+      "content": "Description"
+    },
+    {
+      "type": "select",
+      "id": "step_txt_preset",
+      "label": "Preset",
+      "default": "custom",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "custom", "label": "Custom" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "step_txt_fs",
+      "label": "Font size",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.step_txt_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "step_txt_fsm",
+      "label": "Font size (mobile)",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13,
+      "visible_if": "{{ block.settings.step_txt_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "step_txt_fw",
+      "label": "Font weight",
+      "default": "400",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" }
+      ],
+      "visible_if": "{{ block.settings.step_txt_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "step_txt_lh",
+      "label": "Line height",
+      "default": 1.6,
+      "min": 0.7,
+      "max": 2.0,
+      "step": 0.1,
+      "visible_if": "{{ block.settings.step_txt_preset == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "step_description_color",
+      "label": "Color",
+      "default": "#6D4C41"
+    },
+    {
+      "type": "header",
+      "content": "Number"
+    },
+     {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Color",
+      "default": "#2E7D32"
+    },   
+    {
+      "type": "color",
+      "id": "icon_bg_color",
+      "label": "Background",
+      "default": "#E8F5E9"
+    },
+    {
+      "type": "color",
+      "id": "icon_border_color",
+      "label": "Border",
+      "default": "#81C784"
+    },
+    {
+      "type": "range",
+      "id": "icon_border_width",
+      "label": "Border width",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 3
+    }, 
+     {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Size",
+      "min": 40,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 70
+    },  
+    {
+      "type": "header",
+      "content": "Connector line"
+    },   
+    {
+      "type": "color",
+      "id": "connector_color",
+      "label": "Color",
+      "default": "#C5E1A5"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Progress color",
+      "default": "#2E7D32"
+    },
+    {
+      "type": "color",
+      "id": "progress_text_color",
+      "label": "Progress icon color",
+      "default": "#FFFFFF"
+    },
+     {
+      "type": "range",
+      "id": "line_width",
+      "label": "Line width",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "isbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#fff",
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "select",
+      "id": "bdr",
+      "label": "Borders",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "solid", "label": "Solid" }
+      ],
+      "visible_if": "{{ block.settings.isbg }}"
+    },
+    {
+      "type": "range",
+      "id": "brd_sz",
+      "label": "Border thickness",
+      "default": 1,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "bdr-cl",
+      "label": "Border color",
+      "alpha": true,
+      "visible_if": "{{ block.settings.isbg and block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "round-xs", "label": "Extra small" },
+        { "value": "round-sm", "label": "Small" },
+        { "value": "round-md", "label": "Medium" },
+        { "value": "round-lg", "label": "Large" },
+        { "value": "round-full", "label": "Full" }
+      ],
+      "visible_if": "{{ block.settings.isbg or block.settings.bdr == 'solid' }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "checkbox",
+      "id": "ispd",
+      "label": "Add padding",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "pd-lr",
+      "label": "Horizontal",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pd-tb",
+      "label": "Vertical",
+      "default": 5,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pd-lrm",
+      "label": "Horizontal (mobile)",
+      "default": 15,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },
+    {
+      "type": "range",
+      "id": "pd-tbm",
+      "label": "Vertical (mobile)",
+      "default": 5,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "visible_if": "{{ block.settings.ispd }}"
+    },    
+    {
+      "type": "paragraph",
+      "content": "-----------------------------------------------"
+    },       
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default": 0,
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Timeline"
+    }
+  ]
+}
+{% endschema %}

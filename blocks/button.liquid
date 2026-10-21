@@ -1,0 +1,127 @@
+{%- liquid
+  assign block_st = block.settings
+-%}
+{%- if block_st.text != blank -%}
+  <div id="blk-{{ block.id }}" class="btnWrap wd-fit wd-fit-md mb{{ block_st.mbm }} mb{{ block_st.mb }}-md{% if block_st.hide_mb %} hide-sm{% endif %}{% if block_st.hide_desk %} hide-md hide-lg{% endif %}" {{ block.shopify_attributes }}>
+    <a class="btn {{ block_st.btn-size }} {{ block_st.btn-style }}" href="{{ block_st.url }}"{% if block_st.newtab %} target="_blank"{% endif %}>{{- block_st.text -}}</a>
+  </div>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Button",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Button label",
+      "default": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "newtab",
+      "label": "Open in new tab",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        },       
+        {
+          "label": "Link",
+          "value": "btn-link"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "btn-size",
+      "label": "Buttons size",
+      "default": "btn-md",
+      "options": [
+        {
+          "label": "Small",
+          "value": "btn-sm"
+        },
+        {
+          "label": "Medium",
+          "value": "btn-md"
+        },
+        {
+          "label": "Large",
+          "value": "btn-lg"
+        }
+      ]
+    },
+    {
+        "type": "paragraph",
+        "content": "-----------------------------------------------"
+      },
+       {
+      "type": "checkbox",
+      "id": "hide_desk",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mb",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mb",
+      "label": "Bottom margin",
+      "default":0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mbm",
+      "label": "Bottom margin (mobile)",
+      "default":0,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Button",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}

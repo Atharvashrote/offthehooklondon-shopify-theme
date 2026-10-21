@@ -1,0 +1,239 @@
+{%- liquid
+  assign block_st = block.settings
+-%}
+
+<div class="fl f-aic free-delivery-text">
+  {%- render 'icons', icon: 'truck' -%}
+  <span>Free Delivery</span>
+</div>
+
+
+<div id="pop{{ block.id }}" class="tinglebox pp-hide cm rte">
+  {% if block_st.opt == 'page' %}{{ pages[block_st.page].content }}{% else %}{{ block_st.poptext }}{% endif %}
+</div>
+{% schema %}
+{
+  "name": "Popup link",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "default": "info",
+      "options": [
+         {
+              "value": "none",
+              "label": "None"
+        },
+        {
+          "value": "custom",
+          "label": "Custom icon"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check2",
+          "label": "Check 2"
+        },
+        {
+          "value": "truck",
+          "label": "Truck"
+        },
+        {
+          "value": "email",
+          "label": "Email"
+        },
+        {
+          "value": "phone",
+          "label": "Phone"
+        },
+        {
+          "value": "phone2",
+          "label": "Phone 2"
+        },
+        {
+          "value": "comment",
+          "label": "Comment"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "dollar",
+          "label": "Dollar"
+        },
+        {
+          "value": "package",
+          "label": "Package"
+        },
+        {
+          "value": "return",
+          "label": "Return"
+        },
+         {
+                    "value": "return2",
+                    "label": "Return 2"
+                    },  
+        {
+          "value": "rocket",
+          "label": "Rocket"
+        },
+        {
+          "value": "plan",
+          "label": "Plane"
+        },
+        {
+          "value": "measure",
+          "label": "Measure"
+        },
+        {
+          "value": "file",
+          "label": "File"
+        },
+        {
+          "value": "shield",
+          "label": "Shield"
+        },
+        {
+          "value": "lock",
+          "label": "Lock"
+        },
+        {
+          "value": "payment",
+          "label": "Payment"
+        },
+        {
+          "value": "progress",
+          "label": "Progress"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "like",
+          "label": "Like"
+        },
+        {
+          "value": "tag",
+          "label": "Tag"
+        },
+        {
+          "value": "tag2",
+          "label": "Tag"
+        },
+        {
+          "value": "info",
+          "label": "Info."
+        },
+        {
+          "value": "question",
+          "label": "Question"
+        },
+        {
+          "value": "globe",
+          "label": "Globe"
+        },
+        {
+          "value": "earth",
+          "label": "Earth"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "location",
+          "label": "Location"
+        },
+        {
+          "value": "shop",
+          "label": "Shop"
+        },
+        {
+          "value": "rain",
+          "label": "Rain"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "cloud",
+          "label": "Cloud"
+        },
+        {
+          "value": "leaf",
+          "label": "Leaf"
+        },
+        {
+          "value": "care2",
+          "label": "Care"
+        },
+        {
+          "value": "rabit",
+          "label": "Rabbit"
+        },
+        {
+          "value": "paraben",
+          "label": "Paraben"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Custom icon",
+      "visible_if": "{{ block.settings.icon == 'custom' }}"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Link label",
+      "default": "Popup Link"
+    },
+    {
+      "type": "select",
+      "id": "opt",
+      "label": "Content source",
+      "default": "richtext",
+      "options": [
+        {
+          "value": "richtext",
+          "label": "Rich text"
+        },
+        {
+          "value": "page",
+          "label": "Page"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "poptext",
+      "label": "Rich text",
+      "visible_if": "{{ block.settings.opt == 'richtext' }}"
+    },
+    {
+      "id": "page",
+      "type": "page",
+      "label": "Page",
+      "info": "Select page for display type page"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Popup link",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

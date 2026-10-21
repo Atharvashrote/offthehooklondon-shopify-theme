@@ -1,0 +1,498 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "cl": "#111111",
+        "bg": "#f9f9f9",
+        "fsz": 13,
+        "case": false,
+        "fullwidth": false,
+        "tc": false,
+        "hidemb": false
+      }
+    },
+    "page_banner_RhPPti": {
+      "type": "page-banner",
+      "blocks": {
+        "heading_L6mJJX": {
+          "type": "heading",
+          "name": "Heading",
+          "settings": {
+            "text": "{{ page.title }}",
+            "htag": "h2",
+            "hide_mb": false,
+            "cl": "#000000",
+            "preset": "custom-hd",
+            "fs": 22,
+            "fsm": 18,
+            "ff": "ft2",
+            "fw": "600",
+            "text-upper": false,
+            "lh": 1.2,
+            "ls": 0,
+            "isbg": false,
+            "bg": "",
+            "bgg": "",
+            "bdr": "none",
+            "brd_sz": 1,
+            "bdr-cl": "",
+            "rounded": "none",
+            "ispd": false,
+            "pd-lr": 0,
+            "pd-tb": 0,
+            "pd-lrm": 0,
+            "pd-tbm": 0,
+            "mb": 0,
+            "mbm": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": ["heading_L6mJJX"],
+      "disabled": true,
+      "name": "Page banner",
+      "settings": {
+        "height_desk": 180,
+        "height_tab": 180,
+        "height_mob": 80,      
+        "ovr": "#00000029",
+        "bg": "#f5f5f5",
+        "bgg": "",
+        "contwd": 1400,
+        "gap": 10,
+        "gapm": 10,
+        "txtpos": "f-aic-md f-jcc-md",
+        "txtposm": "f-aic f-jcc",
+        "align": "center",
+        "alignm": "center"
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "hidettl": false,
+        "hide_hdft": false,
+        "maxwd": 1200,
+        "fullwidth": false,
+        "addbg": false,
+        "bg": "",
+        "bgg": "",
+        "overlay": "",
+        "headings_cl": "",
+        "sst": 50,
+        "ssb": 0,
+        "sstm": 30,
+        "ssbm": 0
+      }
+    },
+    "richtext_cY66d8": {
+      "type": "richtext",
+      "blocks": {
+        "text_J8Ua7m": {
+          "type": "text",
+          "settings": {
+            "text": "<p>As a certified Shopify Partner, we have been consistently creating top-performing premium Shopify themes since 2017. With over 15,000 satisfied merchants, our themes are highly praised for their user-friendly interface, strong capabilities, and dependable performance. Our carefully crafted themes provide all the necessary features to ensure the success of your Shopify store in an effortless manner.<\/p>",
+            "hide_br": false,
+            "hide_mb": false,
+            "cl": "#000000",
+            "preset": "custom",
+            "fs": 15,
+            "fsm": 14,
+            "ff": "ft1",
+            "fw": "400",
+            "lh": 1.6,
+            "mb": 0,
+            "mbm": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": ["text_J8Ua7m"],
+      "settings": {
+        "maxwd": 700,
+        "align": "center",
+        "alignm": "center",
+        "fullwidth": false,
+        "addbg": false,
+        "bg": "#ffffff",
+        "bgg": "",
+        "overlay": "#3d4246",
+        "hidem": false,
+        "hided": false,
+        "sst": 0,
+        "ssb": 0,
+        "sstm": 0,
+        "ssbm": 0
+      }
+    },
+    "image_with_text_MMtTAL": {
+      "type": "image-with-text",
+      "blocks": {
+        "image_text_row_e3CWrD": {
+          "type": "_image-text-row",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/our-mission.jpg",
+            "layout": "left",
+            "bnrwd": 50,
+            "rounded": "none",
+            "link": "",
+            "bg": "#f5f5f5",
+            "bgg": "",
+            "align": "left",
+            "txtpd": false
+          },
+          "blocks": {
+            "group_AdAn8W": {
+              "type": "group",
+              "name": "Group",
+              "settings": {
+                "direction": "f-col-md",
+                "wrap": false,
+                "horizontal_position": "f-ais-md",
+                "horizontal_align": "f-jcs-md",
+                "vertical_align": "f-ais-md t-left-md",
+                "width": "fill",
+                "ct_width": "500px",
+                "gap": 20,
+                "hide_group_mobile": false,
+                "direction_mobile": "f-col",
+                "wrapm": false,
+                "horizontal_position_mobile": "f-ais",
+                "horizontal_align_mobile": "f-jcs",
+                "vertical_align_mobile": "f-ais t-left",
+                "widthm": "fill",
+                "ct_widthm": "500px",
+                "gapm": 10,
+                "isbg": false,
+                "bg": "#f5f5f5",
+                "bgg": "",
+                "bdr": "none",
+                "brd_sz": 1,
+                "bdr-cl": "",
+                "rounded": "none",
+                "ispd": false,
+                "pd-lr": 20,
+                "pd-lrm": 20,
+                "pd-tb": 20,
+                "pd-tbm": 20
+              },
+              "blocks": {
+                "heading_hBb8ED": {
+                  "type": "heading",
+                  "name": "Heading",
+                  "settings": {
+                    "text": "Our Mission",
+                    "htag": "h2",
+                    "hide_mb": false,
+                    "cl": "#000000",
+                    "preset": "custom-hd",
+                    "fs": 20,
+                    "fsm": 18,
+                    "ff": "ft2",
+                    "fw": "600",
+                    "text-upper": true,
+                    "lh": 1.2,
+                    "ls": 0,
+                    "isbg": false,
+                    "bg": "#ffffff",
+                    "bgg": "",
+                    "bdr": "none",
+                    "brd_sz": 1,
+                    "bdr-cl": "",
+                    "rounded": "none",
+                    "ispd": false,
+                    "pd-lr": 20,
+                    "pd-tb": 5,
+                    "pd-lrm": 15,
+                    "pd-tbm": 5,
+                    "mb": 0,
+                    "mbm": 0
+                  },
+                  "blocks": {}
+                },
+                "text_48Yk3m": {
+                  "type": "text",
+                  "name": "Text",
+                  "settings": {
+                    "text": "<p>We strive to deliver premium shopify themes that are not only visually appealing but also optimized for driving conversions and maximizing your business's success.<\/p>",
+                    "hide_br": false,
+                    "hide_mb": false,
+                    "cl": "#222222",
+                    "preset": "custom",
+                    "fs": 14,
+                    "fsm": 13,
+                    "ff": "ft1",
+                    "fw": "400",
+                    "lh": 1.7,
+                    "mb": 10,
+                    "mbm": 10
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": ["heading_hBb8ED", "text_48Yk3m"]
+            }
+          },
+          "block_order": ["group_AdAn8W"]
+        },
+        "image_text_row_ffGHtr": {
+          "type": "_image-text-row",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/our-vision.jpg",
+            "layout": "right",
+            "bnrwd": 50,
+            "rounded": "none",
+            "link": "",
+            "bg": "#f5f5f5",
+            "bgg": "",
+            "align": "left",
+            "txtpd": false
+          },
+          "blocks": {
+            "group_DMRjgN": {
+              "type": "group",
+              "name": "Group",
+              "settings": {
+                "direction": "f-col-md",
+                "wrap": false,
+                "horizontal_position": "f-ais-md",
+                "horizontal_align": "f-jcs-md",
+                "vertical_align": "f-ais-md t-left-md",
+                "width": "fill",
+                "ct_width": "500px",
+                "gap": 20,
+                "hide_group_mobile": false,
+                "direction_mobile": "f-col",
+                "wrapm": false,
+                "horizontal_position_mobile": "f-ais",
+                "horizontal_align_mobile": "f-jcs",
+                "vertical_align_mobile": "f-ais t-left",
+                "widthm": "fill",
+                "ct_widthm": "500px",
+                "gapm": 10,
+                "isbg": false,
+                "bg": "#f5f5f5",
+                "bgg": "",
+                "bdr": "none",
+                "brd_sz": 1,
+                "bdr-cl": "",
+                "rounded": "none",
+                "ispd": false,
+                "pd-lr": 20,
+                "pd-lrm": 20,
+                "pd-tb": 20,
+                "pd-tbm": 20
+              },
+              "blocks": {
+                "heading_t7pViz": {
+                  "type": "heading",
+                  "name": "Heading",
+                  "settings": {
+                    "text": "Our Vision",
+                    "htag": "h2",
+                    "hide_mb": false,
+                    "cl": "#000000",
+                    "preset": "custom-hd",
+                    "fs": 20,
+                    "fsm": 18,
+                    "ff": "ft2",
+                    "fw": "600",
+                    "text-upper": true,
+                    "lh": 1.2,
+                    "ls": 0,
+                    "isbg": false,
+                    "bg": "#ffffff",
+                    "bgg": "",
+                    "bdr": "none",
+                    "brd_sz": 1,
+                    "bdr-cl": "",
+                    "rounded": "none",
+                    "ispd": false,
+                    "pd-lr": 20,
+                    "pd-tb": 5,
+                    "pd-lrm": 15,
+                    "pd-tbm": 5,
+                    "mb": 0,
+                    "mbm": 0
+                  },
+                  "blocks": {}
+                },
+                "text_3iHMqb": {
+                  "type": "text",
+                  "name": "Text",
+                  "settings": {
+                    "text": "<p>Our goal is to create top-quality Shopify themes that look great and help your business succeed. We focus on making themes that not only look good but also help you make more sales and grow your business. By using our themes, you can improve the way your online store looks and increase your chances of attracting more customers. We work hard to ensure that our themes are both beautiful and effective, so you can achieve your business goals.<\/p>",
+                    "hide_br": false,
+                    "hide_mb": false,
+                    "cl": "#222222",
+                    "preset": "custom",
+                    "fs": 14,
+                    "fsm": 13,
+                    "ff": "ft1",
+                    "fw": "400",
+                    "lh": 1.7,
+                    "mb": 10,
+                    "mbm": 10
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": ["heading_t7pViz", "text_3iHMqb"]
+            }
+          },
+          "block_order": ["group_DMRjgN"]
+        },
+        "image_text_row_hMDAeN": {
+          "type": "_image-text-row",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/our-vision.jpg",
+            "layout": "left",
+            "bnrwd": 50,
+            "rounded": "none",
+            "link": "",
+            "bg": "#f5f5f5",
+            "bgg": "",
+            "align": "left",
+            "txtpd": false
+          },
+          "blocks": {
+            "group_4YG3Cc": {
+              "type": "group",
+              "name": "Group",
+              "settings": {
+                "direction": "f-col-md",
+                "wrap": false,
+                "horizontal_position": "f-ais-md",
+                "horizontal_align": "f-jcs-md",
+                "vertical_align": "f-ais-md t-left-md",
+                "width": "fill",
+                "ct_width": "500px",
+                "gap": 20,
+                "hide_group_mobile": false,
+                "direction_mobile": "f-col",
+                "wrapm": false,
+                "horizontal_position_mobile": "f-ais",
+                "horizontal_align_mobile": "f-jcs",
+                "vertical_align_mobile": "f-ais t-left",
+                "widthm": "fill",
+                "ct_widthm": "500px",
+                "gapm": 10,
+                "isbg": false,
+                "bg": "#f5f5f5",
+                "bgg": "",
+                "bdr": "none",
+                "brd_sz": 1,
+                "bdr-cl": "",
+                "rounded": "none",
+                "ispd": false,
+                "pd-lr": 20,
+                "pd-lrm": 20,
+                "pd-tb": 20,
+                "pd-tbm": 20
+              },
+              "blocks": {
+                "heading_Neye6R": {
+                  "type": "heading",
+                  "name": "Heading",
+                  "settings": {
+                    "text": "The Founder",
+                    "htag": "h2",
+                    "hide_mb": false,
+                    "cl": "#000000",
+                    "preset": "custom-hd",
+                    "fs": 20,
+                    "fsm": 18,
+                    "ff": "ft2",
+                    "fw": "600",
+                    "text-upper": true,
+                    "lh": 1.2,
+                    "ls": 0,
+                    "isbg": false,
+                    "bg": "#ffffff",
+                    "bgg": "",
+                    "bdr": "none",
+                    "brd_sz": 1,
+                    "bdr-cl": "",
+                    "rounded": "none",
+                    "ispd": false,
+                    "pd-lr": 20,
+                    "pd-tb": 5,
+                    "pd-lrm": 15,
+                    "pd-tbm": 5,
+                    "mb": 0,
+                    "mbm": 0
+                  },
+                  "blocks": {}
+                },
+                "text_3mBeec": {
+                  "type": "text",
+                  "name": "Text",
+                  "settings": {
+                    "text": "<p>As a Shopify theme developer, I am deeply passionate about creating unique and functional designs for online stores. By staying updated on the latest trends and technologies, I strive to deliver high-quality themes that help businesses succeed in the competitive e-commerce landscape. My dedication to this craft drives me to constantly improve and innovate in order to provide the best solutions for my clients' online stores.<\/p>",
+                    "hide_br": false,
+                    "hide_mb": false,
+                    "cl": "#222222",
+                    "preset": "custom",
+                    "fs": 14,
+                    "fsm": 13,
+                    "ff": "ft1",
+                    "fw": "400",
+                    "lh": 1.7,
+                    "mb": 10,
+                    "mbm": 10
+                  },
+                  "blocks": {}
+                },
+                "button_VxnMmV": {
+                  "type": "button",
+                  "name": "Button",
+                  "settings": {
+                    "text": "Read More",
+                    "url": "\/",
+                    "newtab": false,
+                    "btn-style": "btn1",
+                    "btn-size": "btn-md",
+                    "hide_desk": false,
+                    "hide_mb": false,
+                    "mb": 0,
+                    "mbm": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": ["heading_Neye6R", "text_3mBeec", "button_VxnMmV"]
+            }
+          },
+          "block_order": ["group_4YG3Cc"]
+        }
+      },
+      "block_order": ["image_text_row_e3CWrD", "image_text_row_ffGHtr", "image_text_row_hMDAeN"],
+      "name": "Image with text",
+      "settings": {
+        "carousel": false,
+        "autoplay": true,
+        "speed": 5,
+        "fade": false,
+        "arrow": true,
+        "arrowm": false,
+        "dot": false,
+        "dotm": true,
+        "fullwidth": false,
+        "npd": true,
+        "srounded": "none",
+        "addbg": false,
+        "bg": "#f7f7f7",
+        "bgg": "",
+        "overlay": "",
+        "hidem": false,
+        "hided": false,
+        "sst": 50,
+        "ssb": 50,
+        "sstm": 25,
+        "ssbm": 25
+      }
+    }
+  },
+  "order": ["breadcrumb", "page_banner_RhPPti", "main", "richtext_cY66d8", "image_with_text_MMtTAL"]
+}

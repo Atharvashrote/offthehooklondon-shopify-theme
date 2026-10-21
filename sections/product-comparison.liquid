@@ -1,0 +1,585 @@
+{%- liquid
+    assign section_st = section.settings
+
+    assign spec_labels = ''
+    if section_st.show_specs
+        for block in section.blocks
+            assign cmp_product = block.settings.product
+            if cmp_product != blank
+                assign cmp_specs = cmp_product.metafields[section_st.spec_namespace][section_st.spec_key]
+                if cmp_specs != blank
+                    for spec_line in cmp_specs.value
+                        assign spec_label = spec_line | split: ':' | first | strip
+                        unless spec_labels contains spec_label
+                            assign spec_labels = spec_labels | append: spec_label | append: '||split||'
+                        endunless
+                    endfor
+                endif
+            endif
+        endfor
+    endif
+    assign spec_labels = spec_labels | split: '||split||'
+-%}
+{%- capture comparison_vars -%}--cmp-bd:{{ section_st.bd }};--cmp-head-bg:{{ section_st.head_bg }};--cmp-row-bg:{{ section_st.row_bg }};--cmp-hl:{{ section_st.highlight_color }};{%- endcapture -%}
+<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st: section_st, class: true %}" style="{% render 'sec-settings', section_st: section_st, styles: true %}{{ comparison_vars }}" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+    <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}">
+        {%- render 'sec-title' -%}
+
+        {%- if section.blocks.size == 0 -%}
+            <div class="empty-page tc">
+                <p>{{ 'products.comparison.no_products' | t }}</p>
+            </div>
+        {%- else -%}
+            <product-comparison id="ProductComparison-{{ section.id }}" data-max="{{ section_st.max_compare }}" data-add-text="{{ 'products.product.add_to_cart' | t }}" data-sold-text="{{ 'products.product.sold_out' | t }}">
+                <div class="comparison-picker fl f-wrap gap mb20" style="--gap:15px;">
+                    {%- for block in section.blocks -%}
+                        {%- liquid assign cmp_product = block.settings.product -%}
+                        {%- if cmp_product != blank -%}
+                            <label class="comparison-picker__item fl f-aic gap{% if forloop.index0 < section_st.max_compare %} active{% endif %} {{ section_st.rounded }}" style="--gap:8px;" {{ block.shopify_attributes }}>
+                                <input type="checkbox" class="comparison-toggle" data-index="{{ forloop.index0 }}" aria-label="{{ 'products.comparison.add_remove' | t }}: {{ cmp_product.title }}"{% if forloop.index0 < section_st.max_compare %} checked{% endif %}>
+                                <span class="comparison-picker__thumb of-hidden">
+                                    {{ cmp_product.featured_image | image_url: width: 80 | image_tag: loading: 'lazy', width: 80, height: 80, widths: '40,80' }}
+                                </span>
+                                <span class="comparison-picker__title fs14">{{ cmp_product.title }}</span>
+                            </label>
+                        {%- endif -%}
+                    {%- endfor -%}
+                </div>
+
+                <div class="comparison-table-wrap {{ section_st.rounded }} of-hidden">
+                    <table class="comparison-table m0">
+                        <thead>
+                            <tr class="comparison-row comparison-row--head">
+                                <th class="comparison-label zi2" scope="col"><span class="hidden_txt">{{ 'products.comparison.feature' | t }}</span></th>
+                                {%- for block in section.blocks -%}
+                                    {%- liquid assign cmp_product = block.settings.product -%}
+                                    <th class="comparison-col{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %} scope="col">
+                                        {%- if cmp_product != blank -%}
+                                            {%- if block.settings.badge != blank -%}
+                                                <span class="comparison-badge">{{ block.settings.badge }}</span>
+                                            {%- endif -%}
+                                            <button type="button" class="comparison-remove" data-index="{{ forloop.index0 }}" aria-label="{{ 'products.comparison.remove' | t }}">
+                                                <svg class="at-icon"><use xlink:href="#icon-close"></use></svg>
+                                            </button>
+                                            <a href="{{ cmp_product.url }}" class="comparison-col__image fl f-aic f-jcc of-hidden" aria-label="{{ cmp_product.title }}">
+                                                {%- if cmp_product.featured_image != blank -%}
+                                                    {{ cmp_product.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', width: 300, class: 'img-auto', widths: '150,200,300,400' }}
+                                                {%- else -%}
+                                                    {%- capture ph_index -%}{% cycle 1, 2, 3, 4 %}{%- endcapture -%}
+                                                    {{- 'product-apparel-' | append: ph_index | placeholder_svg_tag: 'placeholder-svg' -}}
+                                                {%- endif -%}
+                                            </a>
+                                            <a href="{{ cmp_product.url }}" class="comparison-col__title db mb5 fwsb">{{ cmp_product.title }}</a>
+                                            <div class="comparison-col__price">{% render 'product-price', product: cmp_product %}</div>
+                                        {%- endif -%}
+                                    </th>
+                                {%- endfor -%}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%- if section_st.show_vendor -%}
+                                <tr class="comparison-row">
+                                    <th class="comparison-label fw-600" scope="row">{{ 'products.comparison.brand' | t }}</th>
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid
+                                            assign cmp_product = block.settings.product
+                                            assign cmp_vendor = cmp_product.vendor
+                                            if cmp_vendor == blank
+                                                assign cmp_vendor = 'products.comparison.not_available' | t
+                                            endif
+                                        -%}
+                                        <td class="comparison-col{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %}>{{ cmp_vendor }}</td>
+                                    {%- endfor -%}
+                                </tr>
+                            {%- endif -%}
+                            {%- if section_st.show_type -%}
+                                <tr class="comparison-row">
+                                    <th class="comparison-label" scope="row">{{ 'products.comparison.type' | t }}</th>
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid
+                                            assign cmp_product = block.settings.product
+                                            assign cmp_type = cmp_product.type
+                                            if cmp_type == blank
+                                                assign cmp_type = 'products.comparison.not_available' | t
+                                            endif
+                                        -%}
+                                        <td class="comparison-col{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %}>{{ cmp_type }}</td>
+                                    {%- endfor -%}
+                                </tr>
+                            {%- endif -%}
+                            {%- if section_st.show_sku -%}
+                                <tr class="comparison-row">
+                                    <th class="comparison-label" scope="row">{{ 'products.comparison.sku' | t }}</th>
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid
+                                            assign cmp_product = block.settings.product
+                                            assign cmp_variant = cmp_product.selected_or_first_available_variant
+                                            assign cmp_sku = cmp_variant.sku
+                                            if cmp_sku == blank
+                                                assign cmp_sku = 'products.comparison.not_available' | t
+                                            endif
+                                        -%}
+                                        <td class="comparison-col{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %}>{{ cmp_sku }}</td>
+                                    {%- endfor -%}
+                                </tr>
+                            {%- endif -%}
+                            {%- if section_st.show_availability -%}
+                                <tr class="comparison-row">
+                                    <th class="comparison-label" scope="row">{{ 'products.comparison.availability' | t }}</th>
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid
+                                            assign cmp_product = block.settings.product
+                                            assign cmp_variant = cmp_product.selected_or_first_available_variant
+                                        -%}
+                                        <td class="comparison-col{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %}>
+                                            {%- if cmp_product != blank -%}
+                                                {%- if cmp_variant.available -%}{{ 'products.product.available' | t }}{%- else -%}{{ 'products.product.unavailable' | t }}{%- endif -%}
+                                            {%- endif -%}
+                                        </td>
+                                    {%- endfor -%}
+                                </tr>
+                            {%- endif -%}
+                            {%- if section_st.show_rating and settings.reviews != blank -%}
+                                <tr class="comparison-row">
+                                    <th class="comparison-label" scope="row">{{ 'products.comparison.rating' | t }}</th>
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid assign cmp_product = block.settings.product -%}
+                                        <td class="comparison-col{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %}>
+                                            {%- if cmp_product != blank -%}{% render 'ratings', product: cmp_product %}{%- endif -%}
+                                        </td>
+                                    {%- endfor -%}
+                                </tr>
+                            {%- endif -%}
+                            {%- if section_st.show_description -%}
+                                <tr class="comparison-row">
+                                    <th class="comparison-label" scope="row">{{ 'products.comparison.description' | t }}</th>
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid assign cmp_product = block.settings.product -%}
+                                        <td class="comparison-col tl{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %}>{{ cmp_product.description | strip_html | truncatewords: 20 }}</td>
+                                    {%- endfor -%}
+                                </tr>
+                            {%- endif -%}
+                            {%- for spec_label in spec_labels -%}
+                                <tr class="comparison-row">
+                                    <th class="comparison-label" scope="row">{{ spec_label }}</th>
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid
+                                            assign cmp_product = block.settings.product
+                                            assign spec_value = 'products.comparison.not_available' | t
+                                            assign cmp_specs = cmp_product.metafields[section_st.spec_namespace][section_st.spec_key]
+                                            if cmp_specs != blank
+                                                for spec_line in cmp_specs.value
+                                                    assign line_label = spec_line | split: ':' | first | strip
+                                                    if line_label == spec_label
+                                                        assign spec_value = spec_line | split: ':' | last | strip
+                                                    endif
+                                                endfor
+                                            endif
+                                        -%}
+                                        <td class="comparison-col{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %}>{{ spec_value }}</td>
+                                    {%- endfor -%}
+                                </tr>
+                            {%- endfor -%}
+                            {%- if section_st.show_atc -%}
+                                <tr class="comparison-row comparison-row--atc">
+                                    <th class="comparison-label" scope="row"><span class="hidden_txt">{{ 'products.product.add_to_cart' | t }}</span></th>
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid
+                                            assign cmp_product = block.settings.product
+                                            assign cmp_variant = cmp_product.selected_or_first_available_variant
+                                            assign product_form_id = 'ProductComparisonForm-' | append: section.id | append: '-' | append: forloop.index0
+                                        -%}
+                                        <td class="comparison-col{% if block.settings.highlight %} is-hl{% endif %}" data-index="{{ forloop.index0 }}"{% if forloop.index0 >= section_st.max_compare %} hidden{% endif %}>
+                                            {%- if cmp_product != blank -%}
+                                                {%- unless cmp_product.has_only_default_variant -%}
+                                                    {%- liquid
+                                                        assign cmp_variant_price = cmp_variant.price | money
+                                                        assign cmp_variant_compare = cmp_variant.compare_at_price | money
+                                                        if settings.curCode
+                                                            assign cmp_variant_price = cmp_variant.price | money_with_currency
+                                                            assign cmp_variant_compare = cmp_variant.compare_at_price | money_with_currency
+                                                        endif
+                                                    -%}
+                                                    <p class="comparison-var-price fs14 mb10 tc" data-cmp-price="{{ section.id }}-{{ forloop.index0 }}">
+                                                        {%- if cmp_variant.compare_at_price > cmp_variant.price -%}
+                                                            <span class="product-price sale">{{ cmp_variant_price }}</span> <s class="product-price">{{ cmp_variant_compare }}</s>
+                                                        {%- else -%}
+                                                            <span class="product-price">{{ cmp_variant_price }}</span>
+                                                        {%- endif -%}
+                                                    </p>
+                                                    <select class="fs13 comparison-variant-select w-100 mb10" data-index="{{ forloop.index0 }}" aria-label="{{ cmp_product.title | escape }}">
+                                                        {%- for variant in cmp_product.variants -%}
+                                                            <option value="{{ variant.id }}"{% if variant == cmp_variant %} selected{% endif %}{% unless variant.available %} disabled{% endunless %}>
+                                                                {{ variant.title }}{% unless variant.available %} — {{ 'products.product.sold_out' | t }}{% endunless %}
+                                                            </option>
+                                                        {%- endfor -%}
+                                                    </select>
+                                                {%- endunless -%}
+                                                <product-form class="db product-form" data-hide-errors="true" data-section-id="{{ section.id }}">
+                                                    <div class="product-form__error-message-wrapper ermsg" role="alert" hidden>{{ 'icon-error.svg' | inline_asset_content }} <span class="product-form__error-message"></span></div>
+                                                    {%- form 'product', cmp_product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+                                                        <input type="hidden" name="id" value="{{ cmp_variant.id }}" class="product-variant-id">
+                                                        <button type="submit" name="add" class="btn w-100 {{ section_st.btn-style }}"{% unless cmp_variant.available %} disabled{% endunless %}>
+                                                            <span class="txt">{%- if cmp_variant.available -%}{{ 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}</span>
+                                                            <div class="loading__spinner"><svg class="at-icon at-spin"><use xlink:href="#icon-loading"></use></svg></div>
+                                                        </button>
+                                                    {%- endform -%}
+                                                </product-form>
+                                            {%- endif -%}
+                                        </td>
+                                    {%- endfor -%}
+                                </tr>
+                            {%- endif -%}
+                        </tbody>
+                    </table>
+                </div>
+
+                {%- for block in section.blocks -%}
+                    {%- liquid assign cmp_product = block.settings.product -%}
+                    {%- unless cmp_product == blank or cmp_product.has_only_default_variant -%}
+                        <script type="application/json" class="comparison-variant-json" data-index="{{ forloop.index0 }}">{{ cmp_product.variants | json }}</script>
+                    {%- endunless -%}
+                {%- endfor -%}
+            </product-comparison>
+        {%- endif -%}
+    </div>
+</div>
+<script src="{{ 'product-comparison.js' | asset_url }}" defer="defer"></script>
+{% schema %}
+{
+  "name": "Product comparison",
+  "class": "product-comparison",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Compare & Choose"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Product Comparison"
+    },
+    {
+      "type": "header",
+      "content": "Comparison"
+    },
+    {
+      "type": "range",
+      "id": "max_compare",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Products to compare",
+      "info": "Shoppers can pick which products from the list below to show in the table, up to this limit.",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show brand",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_type",
+      "label": "Show product type",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sku",
+      "label": "Show SKU",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_availability",
+      "label": "Show availability",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating",
+      "default": true,
+      "info": "Requires a product review app selected in Theme settings > Product reviews."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_specs",
+      "label": "Show specifications",
+      "default": true,
+      "info": "Rows are built automatically from every value found in the metafield. [Learn more](https://www.adornthemes.com/knowledge-base/create-metafield-to-show-specifications-for-product-comparison/)"
+    },
+    {
+      "type": "text",
+      "id": "spec_namespace",
+      "label": "Specifications metafield namespace",
+      "default": "custom",
+      "visible_if": "{{ section.settings.show_specs }}"
+    },
+    {
+      "type": "text",
+      "id": "spec_key",
+      "label": "Specifications metafield key",
+      "default": "specifications",
+      "info": "Metafield type must be \"List of single line text\", formatted as \"Label: Value\" per line.",
+      "visible_if": "{{ section.settings.show_specs }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_atc",
+      "label": "Show add to cart button",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "btn-style",
+      "label": "Button design",
+      "default": "btn1",
+      "visible_if": "{{ section.settings.show_atc }}",
+      "options": [
+        {
+          "label": "Button 1",
+          "value": "btn1"
+        },
+        {
+          "label": "Button 2",
+          "value": "btn2"
+        },
+        {
+          "label": "Button 3",
+          "value": "btn3"
+        },
+        {
+          "label": "Outline Button 1",
+          "value": "btn4"
+        },
+        {
+          "label": "Outline Button 2",
+          "value": "btn5"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "head_bg",
+      "label": "Header & label background",
+      "default": "#f7f7f7"
+    },
+    {
+      "type": "color",
+      "id": "row_bg",
+      "label": "Alternate row background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "highlight_color",
+      "label": "Highlight column color",
+      "default": "#5c2d91",
+      "info": "Used for the border, background tint and badge of any column marked \"Highlight this column\" below."
+    },
+    {
+      "type": "color",
+      "id": "bd",
+      "label": "Border color",
+      "default": "#eeeeee"
+    },
+    {
+      "type": "select",
+      "id": "rounded",
+      "label": "Corner radius",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "round-xs",
+          "label": "Extra small"
+        },
+        {
+          "value": "round-sm",
+          "label": "Small"
+        },
+        {
+          "value": "round-md",
+          "label": "Medium"
+        },
+        {
+          "value": "round-lg",
+          "label": "Large"
+        },
+        {
+          "value": "round-full",
+          "label": "Full"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+   {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": true,
+      "info": "Edit margin in [theme settings](/editor?context=theme&category=Layout)",
+      "visible_if": "{{ section.settings.fullwidth }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#ffffff",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Text",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top padding (mobile)",
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom padding (mobile)",
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Product",
+      "type": "product",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge text",
+          "placeholder": "e.g. Best Value, Most Popular"
+        },
+        {
+          "type": "checkbox",
+          "id": "highlight",
+          "label": "Highlight this column",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product comparison",
+      "category": "Products",
+      "blocks": [
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
