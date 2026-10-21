@@ -311,6 +311,40 @@
         line-height: 20px !important;
     }
 
+
+    /* Arrows on the product image. One slide fills the width and .premium-image
+       is a 1:1 box, so the image centre sits at half the slider's width (50cqw). */
+    .premium-slider .premiumSwiper {
+        container-type: inline-size;
+    }
+
+    .premium-slider .swiper-button-prev,
+    .premium-slider .swiper-button-next {
+        display: flex;
+        top: 50vw;
+        top: 50cqw;
+        width: 40px;
+        height: 40px;
+        margin-top: 0;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(17, 17, 17, 0.12);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .premium-slider .swiper-button-prev {
+        left: 12px;
+    }
+
+    .premium-slider .swiper-button-next {
+        right: 12px;
+    }
+
+    .premium-slider .swiper-button-prev::after,
+    .premium-slider .swiper-button-next::after {
+        font-size: 14px;
+    }
+
 }
 
 

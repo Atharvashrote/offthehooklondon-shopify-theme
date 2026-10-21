@@ -17,8 +17,13 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         navigation:{
-            nextEl:".swiper-button-next",
-            prevEl:".swiper-button-prev"
+            nextEl:".premiumSwiper .swiper-button-next",
+            prevEl:".premiumSwiper .swiper-button-prev"
+        },
+
+        a11y:{
+            prevSlideMessage:"Previous products",
+            nextSlideMessage:"Next products"
         },
 
         breakpoints:{

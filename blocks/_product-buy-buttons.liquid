@@ -775,6 +775,19 @@
     box-sizing: border-box !important;
 }
 
+/* Buttons may narrow on small columns so the input keeps room for 3+ digits */
+.product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity .qty-btn {
+    flex: 0 1 42px;
+    min-width: 26px;
+}
+
+.product-form .product-form__buttons > .fl.gap.mb10 > quantity-input.quantity input {
+    flex: 0 1 56px;
+    width: 56px;
+    min-width: calc(3ch + 16px);
+    padding-inline: 6px;
+}
+
 /* Buy Now is always a separate full-width row */
 .product-form .buy-now-button {
     display: flex !important;

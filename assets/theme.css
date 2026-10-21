@@ -6526,7 +6526,6 @@ body.template-product .product-meta__wrapper .color-variant-image{
   }
 }
 
-```css
 /* Avone cart drawer: align quantity and remove icon */
 cart-drawer .cart-item__quantity-wrapper {
   display: flex !important;
@@ -6539,6 +6538,18 @@ cart-drawer .cart-item__quantity-wrapper {
 cart-drawer .cart-item__quantity-wrapper .quantity-popover-container {
   flex: 0 0 auto !important;
   margin: 0 !important;
+}
+
+/* Keep the drawer stepper at its compact size (product-page stepper sizes also match it) */
+cart-drawer .qty-field.sm {
+  height: auto;
+}
+
+cart-drawer .qty-field.sm .qty {
+  width: 44px;
+  min-width: calc(3ch + 12px);
+  height: 32px;
+  padding-inline: 4px;
 }
 
 /* Align the trash icon with the quantity selector */

@@ -1181,3 +1181,190 @@ document.addEventListener('click', function (event) {
   }, 100);
 
 }, true);
+
+/*
+ * Notify Me app ("restock-alerts" SDK): stricter SMS number check.
+ * The app accepts any 2-17 digits and submits "dial code + digits as typed",
+ * so "98989" passes and "07700 900123" with +44 is sent as +4407700900123.
+ * This checks the number in the capture phase, before the app's own
+ * handlers run, normalises it to the national number the app expects,
+ * and blocks the app's submit while the number is invalid.
+ */
+(function () {
+  if (window.othNotifyPhoneGuard) return;
+  window.othNotifyPhoneGuard = true;
+
+  var SMS_INPUT = '.restock-alerts-sms-input';
+  var COUNTRY_SELECT = '.restock-alerts-country-select';
+  var SUBMIT_BUTTON = '.restock-alerts-submit-button';
+  var ERROR_ID = 'oth-sms-phone-error';
+  var MESSAGES = {
+    GB: 'Please enter a valid UK mobile number.',
+    other: 'Please enter a valid mobile number.'
+  };
+  var resubmitting = false;
+
+  /* Default the app's country picker to the UK once. The app keeps the
+     country in these keys and skips its IP-based guess when they are set. */
+  try {
+    if (!localStorage.getItem('othSmsCountryDefaulted')) {
+      localStorage.setItem('clientCountryCode', 'GB');
+      localStorage.setItem('clientCountryPreNumber', '+44');
+      localStorage.setItem('othSmsCountryDefaulted', '1');
+    }
+  } catch (e) {}
+
+  function selectedCountry(input) {
+    var form = input.closest('.restock-alerts-sms-channel-form') || input.parentNode;
+    var select = form && form.querySelector(COUNTRY_SELECT);
+    var option = select && select.options[select.selectedIndex];
+    var dial = option ? (option.textContent.match(/\+(\d+)/) || [])[1] : '';
+    return { code: select ? select.value : '', dial: dial || '' };
+  }
+
+  /* Returns { empty } or { valid, national } where national is the number
+     without the country code or the domestic leading 0. */
+  function checkNumber(raw, country) {
+    var value = String(raw || '').trim();
+    if (!value) return { empty: true };
+    if (!/^\+?[\d\s().-]+$/.test(value)) return { valid: false };
+
+    var digits = value.replace(/\D/g, '');
+    var cc = country.dial;
+
+    if (cc) {
+      if (value.charAt(0) === '+') {
+        if (digits.indexOf(cc) !== 0) return { valid: false };
+        digits = digits.slice(cc.length);
+      } else if (digits.indexOf('00' + cc) === 0) {
+        digits = digits.slice(cc.length + 2);
+      } else if (cc === '44' && digits.length === 12 && digits.indexOf('44') === 0) {
+        digits = digits.slice(2);
+      }
+    }
+
+    /* Domestic trunk prefix, e.g. 07700 900123 or +44 (0)7700 900123 */
+    if (digits.charAt(0) === '0') digits = digits.slice(1);
+
+    if (country.code === 'GB' || cc === '44') {
+      /* UK mobile ranges: 071-075, 07624 and 077-079 (10 digits after the 0) */
+      return { valid: /^7(?:[1-57-9]\d{8}|624\d{6})$/.test(digits), national: digits };
+    }
+
+    /* Other countries: E.164 allows at most 15 digits including the country code */
+    return {
+      valid: digits.length >= 7 && digits.length + cc.length <= 15,
+      national: digits
+    };
+  }
+
+  function messageFor(input) {
+    var country = selectedCountry(input);
+    return country.code === 'GB' || country.dial === '44' ? MESSAGES.GB : MESSAGES.other;
+  }
+
+  function showError(input) {
+    var error = document.getElementById(ERROR_ID);
+    if (!error) {
+      error = document.createElement('p');
+      error.id = ERROR_ID;
+      error.className = 'restock-alerts-sms-error errorStyle';
+      error.setAttribute('role', 'alert');
+    }
+    error.textContent = messageFor(input);
+
+    var anchor = input.closest('.restock-alerts-sms-input-container') || input;
+    if (anchor.nextElementSibling !== error) anchor.insertAdjacentElement('afterend', error);
+
+    input.setAttribute('aria-invalid', 'true');
+    var described = (input.getAttribute('aria-describedby') || '').split(' ').filter(Boolean);
+    if (described.indexOf(ERROR_ID) === -1) described.push(ERROR_ID);
+    input.setAttribute('aria-describedby', described.join(' '));
+  }
+
+  function clearError(input) {
+    var error = document.getElementById(ERROR_ID);
+    if (error) error.remove();
+    if (!input) return;
+    input.removeAttribute('aria-invalid');
+    var described = (input.getAttribute('aria-describedby') || '').split(' ').filter(function (id) {
+      return id && id !== ERROR_ID;
+    });
+    if (described.length) input.setAttribute('aria-describedby', described.join(' '));
+    else input.removeAttribute('aria-describedby');
+  }
+
+  /* Validates the field and, when valid, rewrites it to the national number.
+     The app keeps its own copy of the number and updates it on "input" events
+     (Preact compat maps onChange to oninput), so a rewrite fires one.
+     Returns true when the app may submit it. */
+  function validate(input, showErrors) {
+    var result = checkNumber(input.value, selectedCountry(input));
+    if (result.empty) {
+      clearError(input);
+      return true;
+    }
+    if (!result.valid) {
+      if (showErrors) showError(input);
+      return false;
+    }
+    clearError(input);
+    if (input.value !== result.national) {
+      input.value = result.national;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    return true;
+  }
+
+  /* Leaving the field: validate and normalise the number. */
+  document.addEventListener('change', function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.matches(SMS_INPUT)) {
+      validate(target, true);
+    } else if (target.matches(COUNTRY_SELECT)) {
+      var form = target.closest('.restock-alerts-sms-channel-form');
+      var input = form && form.querySelector(SMS_INPUT);
+      if (input && input.getAttribute('aria-invalid') === 'true') validate(input, true);
+    }
+  }, true);
+
+  /* Remove the error as soon as the number becomes valid while typing. */
+  document.addEventListener('input', function (event) {
+    var target = event.target;
+    if (!(target instanceof Element) || !target.matches(SMS_INPUT)) return;
+    if (target.getAttribute('aria-invalid') !== 'true') return;
+    if (checkNumber(target.value, selectedCountry(target)).valid) clearError(target);
+  }, true);
+
+  /* Submit: block the app's click handler while the number is invalid. */
+  document.addEventListener('click', function (event) {
+    if (resubmitting) return;
+    var button = event.target instanceof Element && event.target.closest(SUBMIT_BUTTON);
+    if (!button) return;
+
+    var root = button.parentElement;
+    while (root && !root.querySelector(SMS_INPUT)) root = root.parentElement;
+    var input = root && root.querySelector(SMS_INPUT);
+    if (!input) return;
+
+    var before = input.value;
+    if (!validate(input, true)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      input.focus();
+      return;
+    }
+
+    /* The number was rewritten: let the app re-render with it, then submit. */
+    if (input.value !== before) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      setTimeout(function () {
+        resubmitting = true;
+        button.click();
+        resubmitting = false;
+      }, 50);
+    }
+  }, true);
+})();
