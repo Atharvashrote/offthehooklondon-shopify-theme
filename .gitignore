@@ -1,0 +1,42 @@
+# Off The Hook London – Avone theme
+# Every theme folder stays tracked, including config/settings_data.json,
+# templates/*.json and sections/*.json.
+
+# Credentials and local environment (never commit)
+.env
+.env.*
+*.pem
+*.key
+*.token
+.shopify-cli-token*
+
+# Shopify CLI local state
+.shopify/
+
+# Local backups taken before deployments (keep outside Git)
+backups/
+*.zip
+
+# Node tooling, if ever added
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs and temp files
+*.log
+*.tmp
+*.bak
+*.orig
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor and assistant local settings
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.claude/settings.local.json

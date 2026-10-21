@@ -1,0 +1,13 @@
+# Shopify CLI theme environments – Off The Hook London (Avone v6.4.0)
+#
+# No credentials are stored in this file. Authenticate with `shopify auth login`,
+# or set SHOPIFY_CLI_THEME_TOKEN in your shell for a Theme Access password.
+#
+# Deliberately NOT set here: live, allow-live, publish, force, only, ignore.
+# Pushes must name their files explicitly with --only, and live pushes stay
+# interactive so the CLI asks for confirmation.
+
+[environments.production]
+store = "zu7vxr-ye.myshopify.com"
+theme = "192466714992"   # Live theme "avone-install-v6-x-x", verified 2026-10-21
+nodelete = true
