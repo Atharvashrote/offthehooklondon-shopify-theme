@@ -1,5 +1,6 @@
 {%- liquid
     assign section_st = section.settings
+    assign nav_blocks = section.blocks | reject: 'type', 'popular_search'
 
     assign cnt_width = settings.cntwd | append: 'px'
     if section_st.sw
@@ -208,7 +209,7 @@
           </div> {% endcomment %}
           <nav id="main-nav__wrapper" class="{% if istrnsparent %}transparent{% endif %} hide-sm hide-md" role="navigation">
     <div class="{% if section_st.fullwidth %} fw-section{% else %} page-width{% endif %}">
-        {%- render 'navigation', section_st:section_st, secblk:section.blocks, cnt_width:cnt_width -%}
+        {%- render 'navigation', section_st:section_st, secblk:nav_blocks, cnt_width:cnt_width -%}
     </div>
 </nav>
     </div>
@@ -280,7 +281,7 @@
         </div>
         {%- liquid
             if search_type == 'inline' 
-                render 'search-drawer', search_type:search_type, cnt_width:cnt_width, is_rtl:is_rtl
+                render 'search-drawer', search_type:search_type, cnt_width:cnt_width, is_rtl:is_rtl, popular_search_blocks:section.blocks
             endif
         -%}
     </div>
@@ -292,12 +293,12 @@
 
 
     <!--mmobile-->
-    {%- render 'mobile-nav', section_st:section_st, secblk:section.blocks -%}
+    {%- render 'mobile-nav', section_st:section_st, secblk:nav_blocks -%}
 {%- endcapture -%}
 {{- site_header | replace: '<!--mmobile-->', '</div>' | strip_newlines | remove: '  ' | remove: '	' -}}
 {%- liquid
   if search_type == 'drawer'
-    render 'search-drawer', search_type: search_type, cnt_width: cnt_width, is_rtl: is_rtl
+    render 'search-drawer', search_type: search_type, cnt_width: cnt_width, is_rtl: is_rtl, popular_search_blocks: section.blocks
   endif
 -%}
 {% schema %}
@@ -1005,6 +1006,23 @@
           "type": "url",
           "id": "url",
           "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "popular_search",
+      "name": "Popular Search",
+      "settings": [
+        {
+          "type": "text",
+          "id": "keyword",
+          "label": "Keyword",
+          "placeholder": "e.g. Men-Formals"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Destination collection"
         }
       ]
     },

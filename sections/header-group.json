@@ -1,1 +1,344 @@
-{"type":"header","name":"Header Group","sections":{"promotion_bar_UEidbw":{"type":"offer-bar","blocks":{"bar_nUeYHL":{"type":"bar","settings":{"title":"28-day easy returns","date":"","btn_txt":"","link":"","new_tab":false,"hdbtn":true}},"bar_cJec9D":{"type":"bar","settings":{"title":"New10 – 10% off your first order","date":"","btn_txt":"","link":"","new_tab":false,"hdbtn":true}},"bar_Q9yYwY":{"type":"bar","settings":{"title":"Free UK shipping on all orders","date":"","btn_txt":"","link":"","new_tab":false,"hdbtn":true}},"bar_NgXjaH":{"type":"bar","settings":{"title":"28-day easy returns","date":"","btn_txt":"","link":"","new_tab":false,"hdbtn":true}},"bar_gKFDAY":{"type":"bar","settings":{"title":"New10 – 10% off your first order","date":"","btn_txt":"","link":"","new_tab":false,"hdbtn":true}},"bar_gjMxHN":{"type":"bar","settings":{"title":"Free UK shipping on all orders","date":"","btn_txt":"","link":"","new_tab":false,"hdbtn":true}}},"block_order":["bar_nUeYHL","bar_cJec9D","bar_Q9yYwY","bar_NgXjaH","bar_gKFDAY","bar_gjMxHN"],"disabled":true,"name":"Promotion bar","settings":{"fontFm":"ft1","fts":12,"ftsm":12,"fw":"500","lh":1.4,"cl":"#ffffff","clhl":"#ffffff","cnt_txt":"#e74646","btn-style":"btn1","btn-size":"btn-md","fade":true,"autoplay":true,"speed":10,"arrow":false,"arrowm":false,"arr_show":"forever","fullwidth":true,"addbg":true,"bg":"#000000","bgg":"","overlay":"#3d4246","hidem":false,"hided":false,"sst":12,"ssb":12,"sstm":10,"ssbm":10}},"top_header_izH78y":{"type":"top-header","blocks":{"text_PVp7xP":{"type":"text","settings":{"txt":"Order on Call +440 0(111) 044 833","icon":"phone","url1":"tel:+440 0(111) 044 833","newtab1":true,"txt1":"","icon2":"email","url2":"mailto:sales@yourstorename.com","newtab2":true,"al":"f-jcc tl f-jcs-md","hdm":true}},"text_GChRVp":{"type":"text","settings":{"txt":"Clearance Sale - Enjoy A Flat 70% Discount!","icon":"none","url1":"","newtab1":false,"txt1":"","icon2":"none","url2":"","newtab2":false,"al":"f-jcc tc f-jcc-md","hdm":false}},"cl_VWnwcW":{"type":"cl","settings":{"sc":false,"menu":"","txt":"","hdm":true,"al":"f-jcc tr f-jce-md"}}},"block_order":["text_PVp7xP","text_GChRVp","cl_VWnwcW"],"disabled":true,"settings":{"fs":13,"fw":"500","tu":false,"cl":"#ffffff","clh":"#fafae9","icns":14,"fullwidth":true,"bg":"#000000","bgg":"","bottom_border":"#000000","hidem":false,"hided":false,"sst":15,"ssb":15,"sstm":10,"ssbm":10}},"header_menu_bottom_MmmTGK":{"type":"header-menu-bottom","blocks":{"home_khq4VH":{"type":"home","settings":{"title":"Home"}},"m1_LwYdRc":{"type":"m1","settings":{"title":"Shop","url":"","menu":"shop-mega-menu","mcol":4,"callPos":"right","colWd":40,"icol":1,"iTtl1":"","imgurl1":"","new_tab":false,"iTtl2":"","imgurl2":"","new_tab2":false,"iTtl3":"","imgurl3":"","new_tab3":false,"iTtl4":"","imgurl4":"","new_tab4":false,"icnbr":0,"overlay_lbl":false,"ttcl":"#111111","ttbg":"#ffffff","ttfs":13,"ttfw":"600","ttla":"tc","cwd":false,"bxwd":"600","mmal":"center","bxsz":true}},"slink_pQy8rC":{"type":"slink","settings":{"title":"Best Seller","url":"shopify:\/\/collections\/best-seller"}},"slink_wCgcPM":{"type":"slink","settings":{"title":"Sale","url":"shopify:\/\/collections\/new-summer-styles-20-off"}},"dd_xgiACE":{"type":"dd","settings":{"title":"New In","url":"shopify:\/\/collections\/new-arrivals","menu":"new-in"}}},"block_order":["home_khq4VH","m1_LwYdRc","slink_pQy8rC","slink_wCgcPM","dd_xgiACE"],"name":"Header - menu bottom","settings":{"ht":80,"logowd":500,"icntyp":"1","icon":20,"fs":10,"cl":"#555555","clh":"#000000","leftcol":"1","pricon":"phone2","icon_size":22,"promo_head":"","prtcl":"#111111","prtfs":13,"prfw":"600","promo_text":"","prcl":"#111111","prfs":12,"sticky_type":"always","sticky_shadow":true,"thcl":"#fffafa","trhead":true,"trheadcl":false,"trheadbg":false,"trheadar":false,"htm":60,"logowdm":90,"cntlogo":false,"spnav":false,"mbmenu":"main-menu","catnav":false,"catmenu":"main-menu","sicnm":true,"icnm":30,"icnrad":30,"help":"","fullwidth":false,"bg":"#ffffff","bgg":"","bgrepeat":"no-repeat","bgposition":"center_center","bgsize":"auto","hdrbd":false,"hdrbd_cl":"#ffffff"}}},"order":["promotion_bar_UEidbw","top_header_izH78y","header_menu_bottom_MmmTGK"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header Group",
+  "sections": {
+    "promotion_bar_UEidbw": {
+      "type": "offer-bar",
+      "blocks": {
+        "bar_nUeYHL": {
+          "type": "bar",
+          "settings": {
+            "title": "28-day easy returns",
+            "date": "",
+            "btn_txt": "",
+            "link": "",
+            "new_tab": false,
+            "hdbtn": true
+          }
+        },
+        "bar_cJec9D": {
+          "type": "bar",
+          "settings": {
+            "title": "New10 – 10% off your first order",
+            "date": "",
+            "btn_txt": "",
+            "link": "",
+            "new_tab": false,
+            "hdbtn": true
+          }
+        },
+        "bar_Q9yYwY": {
+          "type": "bar",
+          "settings": {
+            "title": "Free UK shipping on all orders",
+            "date": "",
+            "btn_txt": "",
+            "link": "",
+            "new_tab": false,
+            "hdbtn": true
+          }
+        },
+        "bar_NgXjaH": {
+          "type": "bar",
+          "settings": {
+            "title": "28-day easy returns",
+            "date": "",
+            "btn_txt": "",
+            "link": "",
+            "new_tab": false,
+            "hdbtn": true
+          }
+        },
+        "bar_gKFDAY": {
+          "type": "bar",
+          "settings": {
+            "title": "New10 – 10% off your first order",
+            "date": "",
+            "btn_txt": "",
+            "link": "",
+            "new_tab": false,
+            "hdbtn": true
+          }
+        },
+        "bar_gjMxHN": {
+          "type": "bar",
+          "settings": {
+            "title": "Free UK shipping on all orders",
+            "date": "",
+            "btn_txt": "",
+            "link": "",
+            "new_tab": false,
+            "hdbtn": true
+          }
+        }
+      },
+      "block_order": [
+        "bar_nUeYHL",
+        "bar_cJec9D",
+        "bar_Q9yYwY",
+        "bar_NgXjaH",
+        "bar_gKFDAY",
+        "bar_gjMxHN"
+      ],
+      "disabled": true,
+      "name": "Promotion bar",
+      "settings": {
+        "fontFm": "ft1",
+        "fts": 12,
+        "ftsm": 12,
+        "fw": "500",
+        "lh": 1.4,
+        "cl": "#ffffff",
+        "clhl": "#ffffff",
+        "cnt_txt": "#e74646",
+        "btn-style": "btn1",
+        "btn-size": "btn-md",
+        "fade": true,
+        "autoplay": true,
+        "speed": 10,
+        "arrow": false,
+        "arrowm": false,
+        "arr_show": "forever",
+        "fullwidth": true,
+        "addbg": true,
+        "bg": "#000000",
+        "bgg": "",
+        "overlay": "#3d4246",
+        "hidem": false,
+        "hided": false,
+        "sst": 12,
+        "ssb": 12,
+        "sstm": 10,
+        "ssbm": 10
+      }
+    },
+    "top_header_izH78y": {
+      "type": "top-header",
+      "blocks": {
+        "text_PVp7xP": {
+          "type": "text",
+          "settings": {
+            "txt": "Order on Call +440 0(111) 044 833",
+            "icon": "phone",
+            "url1": "tel:+440 0(111) 044 833",
+            "newtab1": true,
+            "txt1": "",
+            "icon2": "email",
+            "url2": "mailto:sales@yourstorename.com",
+            "newtab2": true,
+            "al": "f-jcc tl f-jcs-md",
+            "hdm": true
+          }
+        },
+        "text_GChRVp": {
+          "type": "text",
+          "settings": {
+            "txt": "Clearance Sale - Enjoy A Flat 70% Discount!",
+            "icon": "none",
+            "url1": "",
+            "newtab1": false,
+            "txt1": "",
+            "icon2": "none",
+            "url2": "",
+            "newtab2": false,
+            "al": "f-jcc tc f-jcc-md",
+            "hdm": false
+          }
+        },
+        "cl_VWnwcW": {
+          "type": "cl",
+          "settings": {
+            "sc": false,
+            "menu": "",
+            "txt": "",
+            "hdm": true,
+            "al": "f-jcc tr f-jce-md"
+          }
+        }
+      },
+      "block_order": [
+        "text_PVp7xP",
+        "text_GChRVp",
+        "cl_VWnwcW"
+      ],
+      "disabled": true,
+      "settings": {
+        "fs": 13,
+        "fw": "500",
+        "tu": false,
+        "cl": "#ffffff",
+        "clh": "#fafae9",
+        "icns": 14,
+        "fullwidth": true,
+        "bg": "#000000",
+        "bgg": "",
+        "bottom_border": "#000000",
+        "hidem": false,
+        "hided": false,
+        "sst": 15,
+        "ssb": 15,
+        "sstm": 10,
+        "ssbm": 10
+      }
+    },
+    "header_menu_bottom_MmmTGK": {
+      "type": "header-menu-bottom",
+      "blocks": {
+        "popular_search_DmJbtQ": {
+          "type": "popular_search",
+          "settings": {
+            "keyword": "Women Sandals",
+            "collection": "women-sandals-store-london"
+          }
+        },
+        "popular_search_HyKTf3": {
+          "type": "popular_search",
+          "settings": {
+            "keyword": "Women Chelsea Boots",
+            "collection": "women-chelsea-boots"
+          }
+        },
+        "popular_search_Uk9ri6": {
+          "type": "popular_search",
+          "settings": {
+            "keyword": "Leather Knee High Boots",
+            "collection": "women-knee-high-boots"
+          }
+        },
+        "home_khq4VH": {
+          "type": "home",
+          "settings": {
+            "title": "Home"
+          }
+        },
+        "m1_LwYdRc": {
+          "type": "m1",
+          "settings": {
+            "title": "Shop",
+            "url": "",
+            "menu": "shop-mega-menu",
+            "mcol": 4,
+            "callPos": "right",
+            "colWd": 40,
+            "icol": 1,
+            "iTtl1": "",
+            "imgurl1": "",
+            "new_tab": false,
+            "iTtl2": "",
+            "imgurl2": "",
+            "new_tab2": false,
+            "iTtl3": "",
+            "imgurl3": "",
+            "new_tab3": false,
+            "iTtl4": "",
+            "imgurl4": "",
+            "new_tab4": false,
+            "icnbr": 0,
+            "overlay_lbl": false,
+            "ttcl": "#111111",
+            "ttbg": "#ffffff",
+            "ttfs": 13,
+            "ttfw": "600",
+            "ttla": "tc",
+            "cwd": false,
+            "bxwd": "600",
+            "mmal": "center",
+            "bxsz": true
+          }
+        },
+        "slink_pQy8rC": {
+          "type": "slink",
+          "settings": {
+            "title": "Best Seller",
+            "url": "shopify://collections/best-seller"
+          }
+        },
+        "slink_wCgcPM": {
+          "type": "slink",
+          "settings": {
+            "title": "Sale",
+            "url": "shopify://collections/new-summer-styles-20-off"
+          }
+        },
+        "dd_xgiACE": {
+          "type": "dd",
+          "settings": {
+            "title": "New In",
+            "url": "shopify://collections/new-arrivals",
+            "menu": "new-in"
+          }
+        }
+      },
+      "block_order": [
+        "popular_search_DmJbtQ",
+        "popular_search_HyKTf3",
+        "popular_search_Uk9ri6",
+        "home_khq4VH",
+        "m1_LwYdRc",
+        "slink_pQy8rC",
+        "slink_wCgcPM",
+        "dd_xgiACE"
+      ],
+      "name": "Header - menu bottom",
+      "settings": {
+        "ht": 80,
+        "logowd": 500,
+        "icntyp": "1",
+        "icon": 20,
+        "fs": 10,
+        "cl": "#555555",
+        "clh": "#000000",
+        "leftcol": "1",
+        "pricon": "phone2",
+        "icon_size": 22,
+        "promo_head": "",
+        "prtcl": "#111111",
+        "prtfs": 13,
+        "prfw": "600",
+        "promo_text": "",
+        "prcl": "#111111",
+        "prfs": 12,
+        "sticky_type": "always",
+        "sticky_shadow": true,
+        "thcl": "#fffafa",
+        "trhead": true,
+        "trheadcl": false,
+        "trheadbg": false,
+        "trheadar": false,
+        "htm": 60,
+        "logowdm": 90,
+        "cntlogo": false,
+        "spnav": false,
+        "mbmenu": "main-menu",
+        "catnav": false,
+        "catmenu": "main-menu",
+        "sicnm": true,
+        "icnm": 30,
+        "icnrad": 30,
+        "help": "",
+        "fullwidth": false,
+        "bg": "#ffffff",
+        "bgg": "",
+        "bgrepeat": "no-repeat",
+        "bgposition": "center_center",
+        "bgsize": "auto",
+        "hdrbd": false,
+        "hdrbd_cl": "#ffffff"
+      }
+    }
+  },
+  "order": [
+    "promotion_bar_UEidbw",
+    "top_header_izH78y",
+    "header_menu_bottom_MmmTGK"
+  ]
+}

@@ -43,19 +43,55 @@
 
         <!-- DEFAULT SEARCH CONTENT -->
 
-        {%- if settings.search_word != blank or settings.searchCl != blank -%}
+        {%- if popular_search_blocks != blank or settings.search_word != blank or settings.searchCl != blank -%}
 
             <div id="search-suggest__Wrapper" class="mb20">
 
 
                 <!-- POPULAR SEARCH WORDS -->
 
-                {%- if settings.search_word != blank -%}
+                {%- assign has_popular_search_blocks = false -%}
+                {%- if popular_search_blocks != blank -%}
+                    {%- for block in popular_search_blocks -%}
+                        {%- if block.type == 'popular_search' and block.settings.keyword != blank -%}
+                            {%- assign has_popular_search_blocks = true -%}
+                            {%- break -%}
+                        {%- endif -%}
+                    {%- endfor -%}
+                {%- endif -%}
+
+                {%- if has_popular_search_blocks -%}
+
+                    <p class="reg-text ft2 mb15">
+                        {{ settings.search_lbl1 }}
+                    </p>
+
+                    <div class="search-suggest fl f-wrap f-aic gap mb30"
+                         style="--gap:14px;">
+
+                        {%- for block in popular_search_blocks -%}
+                            {%- if block.type == 'popular_search' -%}
+                                {%- assign search_label = block.settings.keyword | strip -%}
+                                {%- assign target_collection = block.settings.collection -%}
+
+                                {%- if search_label != blank and target_collection != blank -%}
+                                    <a href="{{ target_collection.url }}" {{ block.shopify_attributes }}>
+                                        {{ search_label | escape }}
+                                    </a>
+                                {%- elsif search_label != blank -%}
+                                    <span {{ block.shopify_attributes }}>
+                                        {{ search_label | escape }}
+                                    </span>
+                                {%- endif -%}
+                            {%- endif -%}
+                        {%- endfor -%}
+
+                    </div>
+
+                {%- elsif settings.search_word != blank -%}
 
                     {%- assign searchwords = settings.search_word
                         | replace: ', ', ','
-                        | replace: ' , ', ','
-                        | replace: ' ,', ','
                         | split: ','
                     -%}
 
@@ -64,14 +100,24 @@
                     </p>
 
                     <div class="search-suggest fl f-wrap f-aic gap mb30"
-                        style="--gap:14px;">
+                         style="--gap:14px;">
 
                         {%- for searchvalue in searchwords -%}
+                            {%- assign search_parts = searchvalue | split: '|' -%}
+                            {%- assign search_label = search_parts[0] | strip -%}
+                            {%- assign collection_handle = search_parts[1] | strip -%}
 
-                            <a href="{{ routes.search_url }}?type=product&options%5Bprefix%5D=none&q={{ searchvalue }}&options%5Bprefix%5D=last">
-                                {{ searchvalue }}
-                            </a>
-
+                            {%- if search_label != blank -%}
+                                {%- if collection_handle != blank -%}
+                                    <a href="{{ routes.collections_url }}/{{ collection_handle | handleize }}">
+                                        {{ search_label | escape }}
+                                    </a>
+                                {%- else -%}
+                                    <a href="{{ routes.search_url }}?type=product&amp;q={{ search_label | url_encode }}">
+                                        {{ search_label | escape }}
+                                    </a>
+                                {%- endif -%}
+                            {%- endif -%}
                         {%- endfor -%}
 
                     </div>
