@@ -241,12 +241,13 @@
 @media screen and (max-width: 768px) {
 
     .premium-category-section {
-        padding: 45px 15px;
+        padding: 28px 15px;
     }
 
 
     .premium-category-section .premium-category-header {
-        margin-bottom: 35px;
+        margin-top: 0;
+        margin-bottom: 24px;
     }
 
 

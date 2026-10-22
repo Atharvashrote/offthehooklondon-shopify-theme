@@ -382,7 +382,7 @@
 @media (max-width: 1199px) {
 
     .premium-reels-section {
-        padding: 60px 20px 65px;
+        padding: 40px 20px 40px;
     }
 
     .premium-reels-heading {
@@ -411,7 +411,7 @@
 @media (max-width: 767px) {
 
     .premium-reels-section {
-        padding: 45px 12px 50px;
+        padding: 28px 12px 30px;
     }
 
 
@@ -522,7 +522,7 @@
 @media (max-width: 480px) {
 
     .premium-reels-section {
-        padding: 38px 10px 45px;
+        padding: 26px 10px 28px;
     }
 
 
