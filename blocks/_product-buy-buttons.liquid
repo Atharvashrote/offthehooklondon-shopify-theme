@@ -367,6 +367,87 @@
 
     </div>
 
+    <script>
+    /* Move the existing Share and Wishlist controls (Additional links block)
+       into the quantity row: [ qty ] [ wishlist ] [ share ], Add to Cart below.
+       On mobile (max-width 767px) the same two elements are moved instead into
+       an overlay on the main product image (.pd-media-actions), and back to the
+       row when the screen widens. The elements are moved, not copied, so their
+       behaviour is unchanged. */
+    (function () {
+        var sectionId = {{ section.id | json }};
+        var mobile = window.matchMedia('(max-width: 767px)');
+
+        function placeForViewport() {
+            var info = document.getElementById('MainProduct-' + sectionId);
+            var row = info && info.querySelector('.product-form__buttons > .pd-utility-row');
+            var gallery = document.querySelector('#MediaGallery-' + sectionId + ' .product-images');
+            var share = document.querySelector('#ProductSection-' + sectionId + ' .pd-share');
+            var wish = document.querySelector('#ProductSection-' + sectionId + ' .pd-wish');
+            if (!row || !gallery || (!share && !wish)) return;
+
+            if (mobile.matches) {
+                var actions = gallery.querySelector(':scope > .pd-media-actions');
+                if (!actions) {
+                    actions = document.createElement('div');
+                    actions.className = 'pd-media-actions';
+                    gallery.appendChild(actions);
+                }
+                if (share && share.parentElement !== actions) actions.appendChild(share);
+                if (wish && wish.parentElement !== actions) actions.appendChild(wish);
+            } else {
+                if (share && share.parentElement !== row) row.appendChild(share);
+                if (wish && wish.parentElement !== row) row.appendChild(wish);
+            }
+        }
+
+        function relocate() {
+            var info = document.getElementById('MainProduct-' + sectionId);
+            var row = info && info.querySelector('.product-form__buttons > .fl.gap.mb10');
+            if (!row) return true;
+            if (row.classList.contains('pd-utility-row')) return true;
+
+            var share = info.querySelector('.additonal-links share-button');
+            var wishButton = info.querySelector('.additonal-links .addwishlist');
+            var wish = wishButton && wishButton.closest('product-card');
+            if (!share && !wish) return false;
+
+            if (share) {
+                var link = share.querySelector('.popup-link');
+                if (link) {
+                    Array.prototype.slice.call(link.childNodes).forEach(function (node) {
+                        if (node.nodeType === 3 && node.textContent.trim()) {
+                            var label = document.createElement('span');
+                            label.className = 'pd-label';
+                            label.textContent = node.textContent.trim();
+                            link.replaceChild(label, node);
+                        }
+                    });
+                    link.setAttribute('title', link.textContent.trim());
+                }
+                share.classList.add('pd-share');
+                row.appendChild(share);
+            }
+
+            if (wish) {
+                wishButton.setAttribute('title', wishButton.getAttribute('aria-label') || '');
+                wish.classList.add('pd-wish');
+                row.appendChild(wish);
+            }
+
+            row.classList.add('pd-utility-row');
+            placeForViewport();
+            return true;
+        }
+
+        if (!relocate()) {
+            document.addEventListener('DOMContentLoaded', relocate, { once: true });
+        }
+        if (mobile.addEventListener) mobile.addEventListener('change', placeForViewport);
+        else if (mobile.addListener) mobile.addListener(placeForViewport);
+    })();
+    </script>
+
 {%- else -%}
 
     <!-- Catalog Mode -->
@@ -661,7 +742,7 @@
     display: flex !important;
     width: 100%;
     min-height: 48px;
-    margin-top: 10px;
+    margin-top: 0;
     align-items: center;
     justify-content: center;
 
@@ -708,8 +789,8 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 14px;
-    padding-top: 4px;
+    margin-top: 0;
+    padding-top: 10px;
 }
 
 .product-payment-icon {
@@ -739,6 +820,11 @@
     width: 100% !important;
     align-items: stretch !important;
     margin-bottom: 10px !important;
+}
+
+/* With Buy Now below, the column's 14px gap alone separates the rows */
+.product-form .product-form__buttons > .fl.gap.mb10:has(+ .buy-now-button) {
+    margin-bottom: 0 !important;
 }
 
 /* Quantity */
@@ -794,7 +880,7 @@
     width: 100% !important;
     height: 68px !important;
     min-height: 68px !important;
-    margin-top: 10px !important;
+    margin-top: 0 !important;
     box-sizing: border-box !important;
     align-items: center !important;
     justify-content: center !important;
@@ -808,7 +894,8 @@
     justify-content: center !important;
     flex-wrap: wrap !important;
     gap: 8px !important;
-    margin-top: 14px !important;
+    margin-top: 0 !important;
+    padding-top: 10px !important;
     clear: both !important;
 }
 
@@ -1215,12 +1302,319 @@
     display: contents !important;
 }
 
-/* Buy Now remains a separate full-width row. */
-.product-form .product-form__buttons .buy-now-button {
-    width: 100% !important;
-    height: 68px !important;
-    min-height: 68px !important;
-    margin-top: 10px !important;
+/* Main product purchase area, once the relocation script has added
+   .pd-utility-row (quick view and featured product are unaffected):
+     Row 1: quantity | wishlist | share
+     Row 2: Add to Cart | Buy Now      (sold out: Sold out | Notify Me, Buy Now below)
+     Row 3: payment icons
+   The quantity row is display:contents, so its children and Buy Now share
+   one grid on .product-form__buttons: [1fr][icon][icon][1fr]. Wishlist and
+   Share are square icon columns; Add to Cart (cols 1-2) and Buy Now
+   (cols 3-4) come out equal because the two 1fr columns are equal.
+   From 1280px (wide information column) the row uses labelled thirds instead;
+   see the min-width:1280px block below. */
+.product-form .product-form__buttons:has(> .pd-utility-row) {
+    --pd-h1: 50px;
+    --pd-h2: 56px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--pd-h1) var(--pd-h1) minmax(0, 1fr);
+    /* gap (10px) comes from the product panel spacing rule in theme.css */
+}
+
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row,
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me {
+    display: contents !important;
+}
+
+/* Row 1 */
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > quantity-input.quantity,
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me > quantity-input.quantity {
+    grid-column: 1;
+    grid-row: 1;
+    height: var(--pd-h1) !important;
+    min-height: var(--pd-h1) !important;
+}
+
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > quantity-input.quantity .qty-btn,
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > quantity-input.quantity .qty-input,
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > quantity-input.quantity input {
+    height: 100% !important;
+    flex: 1 1 0;
+    width: auto;
+}
+
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > quantity-input.quantity .qty-btn {
+    min-width: 24px;
+    padding: 0;
+}
+
+/* Room for 4 digits (1000) */
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > quantity-input.quantity input {
+    min-width: calc(4ch + 8px);
+    padding: 0 4px;
+    text-align: center;
+}
+
+.product-form .product-form__buttons > .pd-utility-row > .pd-wish { grid-column: 2; grid-row: 1; }
+.product-form .product-form__buttons > .pd-utility-row > .pd-share { grid-column: 3; grid-row: 1; }
+
+/* Row 2 */
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > .product-form__submit,
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me > .product-form__submit {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    height: var(--pd-h2) !important;
+    min-height: var(--pd-h2) !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    white-space: nowrap;
+    position: relative;
+}
+
+/* Loading state: Avone hides the label with height:0, which still leaves its
+   width in this flex button and pushes the spinner off-centre. Keep the
+   label's box (no size change), hide it, and centre the spinner on the button. */
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > .product-form__submit.loading .txt {
+    height: auto;
+    overflow: visible;
+    visibility: hidden;
+}
+
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > .product-form__submit .loading__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 0;
+    pointer-events: none;
+    --icns: 20px;
+    --icnsm: 20px;
+}
+
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > .product-form__submit:not(.loading) .loading__spinner {
+    visibility: hidden;
+}
+
+.product-form .product-form__buttons:has(> .pd-utility-row) > .buy-now-button {
+    grid-column: 3 / 5;
+    grid-row: 2;
+    height: var(--pd-h2) !important;
+    min-height: var(--pd-h2) !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    white-space: nowrap;
+}
+
+.product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me > .ot-custom-notify-me {
+    grid-column: 3 / 5;
+    grid-row: 2;
+    height: var(--pd-h2) !important;
+    min-height: var(--pd-h2) !important;
+}
+
+.product-form .product-form__buttons:has(> .pd-utility-row.has-notify-me) > .buy-now-button {
+    grid-column: 1 / -1;
+    grid-row: 3;
+}
+
+/* Row 3: payment icons and anything else in the buttons area */
+.product-form .product-form__buttons:has(> .pd-utility-row) > :not(.pd-utility-row):not(.buy-now-button) {
+    grid-column: 1 / -1;
+}
+
+.product-form .product-form__buttons > .pd-utility-row > .pd-share,
+.product-form .product-form__buttons > .pd-utility-row > .pd-wish {
+    display: flex;
+    min-width: 0;
+    height: var(--pd-h1);
+    --icns: 18px;
+    --icnsm: 18px;
+}
+
+.product-form .product-form__buttons > .pd-utility-row > .pd-share > .popup-link,
+.product-form .product-form__buttons > .pd-utility-row > .pd-wish > .wishlist {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #111111;
+    background: #ffffff;
+    border: 1px solid #d8d8d8 !important; /* the wishlist button carries .border-0 (border:0 !important) */
+    border-radius: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+}
+
+.product-form .product-form__buttons > .pd-utility-row > .pd-share > .popup-link:hover,
+.product-form .product-form__buttons > .pd-utility-row > .pd-wish > .wishlist:hover {
+    background: #f7f7f7;
+    border-color: #111111 !important;
+}
+
+.product-form .product-form__buttons > .pd-utility-row > .pd-share > .popup-link:focus-visible,
+.product-form .product-form__buttons > .pd-utility-row > .pd-wish > .wishlist:focus-visible {
+    outline: 2px solid #111111;
+    outline-offset: 2px;
+}
+
+.product-form .product-form__buttons > .pd-utility-row .pd-share .at-icon,
+.product-form .product-form__buttons > .pd-utility-row .pd-wish .wish-txt {
+    margin: 0;
+}
+
+/* Icon-only buttons; labels stay available to screen readers and as tooltips */
+.product-form .product-form__buttons > .pd-utility-row .pd-label,
+.product-form .product-form__buttons > .pd-utility-row .wish-txt {
+    position: absolute !important;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+}
+
+/* Wide information column: [ - 1 + ] [ ♡ Add to wishlist ] [ Share ] in equal
+   thirds, labels visible; Add to Cart | Buy Now stay equal halves. */
+@media (min-width: 1280px) {
+    .product-form .product-form__buttons:has(> .pd-utility-row) {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > quantity-input.quantity,
+    .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me > quantity-input.quantity {
+        grid-column: 1 / 3;
+    }
+
+    .product-form .product-form__buttons > .pd-utility-row > .pd-wish { grid-column: 3 / 5; }
+    .product-form .product-form__buttons > .pd-utility-row > .pd-share { grid-column: 5 / 7; }
+
+    .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > .product-form__submit,
+    .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me > .product-form__submit {
+        grid-column: 1 / 4;
+    }
+
+    .product-form .product-form__buttons:has(> .pd-utility-row) > .buy-now-button,
+    .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me > .ot-custom-notify-me {
+        grid-column: 4 / 7;
+    }
+
+    .product-form .product-form__buttons > .pd-utility-row > .pd-share > .popup-link,
+    .product-form .product-form__buttons > .pd-utility-row > .pd-wish > .wishlist {
+        gap: 8px;
+    }
+
+    .product-form .product-form__buttons > .pd-utility-row .pd-label,
+    .product-form .product-form__buttons > .pd-utility-row .wish-txt {
+        position: static !important;
+        overflow: visible;
+        clip: auto;
+        width: auto;
+        height: auto;
+        margin: 0;
+    }
+}
+
+/* Mobile: Share and Wishlist sit on the main product image (moved there by
+   the relocation script), top-right, as 42px translucent circles. */
+@media (max-width: 767px) {
+    .pd-media-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 4;
+        display: flex;
+        gap: 8px;
+    }
+
+    .pd-media-actions .pd-share,
+    .pd-media-actions .pd-wish {
+        display: flex;
+        --icns: 18px;
+        --icnsm: 18px;
+    }
+
+    .pd-media-actions .pd-share > .popup-link,
+    .pd-media-actions .pd-wish > .wishlist {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        margin: 0;
+        padding: 0;
+        color: #111111;
+        background: rgba(255, 255, 255, .9);
+        border: 1px solid rgba(17, 17, 17, .08) !important; /* the wishlist button carries .border-0 */
+        border-radius: 50%;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+        cursor: pointer;
+        transition: background .2s ease, border-color .2s ease;
+    }
+
+    .pd-media-actions .pd-share > .popup-link:hover,
+    .pd-media-actions .pd-wish > .wishlist:hover,
+    .pd-media-actions .pd-share > .popup-link:active,
+    .pd-media-actions .pd-wish > .wishlist:active {
+        background: #ffffff;
+        border-color: #111111 !important;
+    }
+
+    .pd-media-actions .pd-share > .popup-link:focus-visible,
+    .pd-media-actions .pd-wish > .wishlist:focus-visible {
+        outline: 2px solid #111111;
+        outline-offset: 2px;
+    }
+
+    .pd-media-actions .pd-share .at-icon {
+        margin: 0;
+    }
+
+    /* Icon only; labels stay available to screen readers and as tooltips */
+    .pd-media-actions .pd-label,
+    .pd-media-actions .wish-txt {
+        position: absolute !important;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        border: 0;
+    }
+}
+
+@media (max-width: 749px) {
+    .product-form .product-form__buttons:has(> .pd-utility-row) {
+        --pd-h1: 46px;
+        --pd-h2: 52px;
+    }
+}
+
+@media (max-width: 359px) {
+    .product-form .product-form__buttons:has(> .pd-utility-row) {
+        --pd-h1: 42px;
+    }
+
+    .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > .product-form__submit,
+    .product-form .product-form__buttons:has(> .pd-utility-row) > .buy-now-button,
+    .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me > .ot-custom-notify-me {
+        font-size: 12px !important;
+        letter-spacing: .04em !important;
+    }
 }
 
 @media (max-width: 749px) {

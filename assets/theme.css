@@ -2005,7 +2005,44 @@ a:hover .img-icon { opacity: 1;}
   line-height: 1.15 !important;
   font-weight: 500 !important;
   letter-spacing: -0.7px !important;
-  margin: 0 0 12px !important;
+  margin: 0 0 6px !important;
+}
+
+/* Review stars (app block) sit 8px above the price */
+.template-product .product-meta__wrapper > .shopify-app-block {
+  margin-bottom: 8px;
+}
+
+/* Main product info panel rhythm: replaces the blocks' margin settings
+   (mb15/mb20/mb30 utility classes) so the panel reads as compact groups.
+   Scoped to the main product (featured product and quick view excluded). */
+body.template-product .product-meta__wrapper[id^="MainProduct-"] > div:has(> .product-shot-description) {
+  margin-bottom: 8px;
+}
+
+body.template-product .product-meta__wrapper[id^="MainProduct-"] > .priceSingle {
+  margin-bottom: 10px;
+}
+
+body.template-product .product-meta__wrapper[id^="MainProduct-"] > [id^="Inventory-"],
+body.template-product .product-meta__wrapper[id^="MainProduct-"] > [id^="Quantity-Form-"] {
+  margin-bottom: 16px;
+}
+
+body.template-product .product-meta__wrapper[id^="MainProduct-"] > variant-selects {
+  margin-bottom: 0;
+}
+
+body.template-product .product-meta__wrapper[id^="MainProduct-"] > .additonal-links {
+  margin-bottom: 16px;
+}
+
+body.template-product .product-meta__wrapper[id^="MainProduct-"] > div:has(> product-form) {
+  margin-bottom: 20px;
+}
+
+body.template-product .product-meta__wrapper[id^="MainProduct-"] .product-form__buttons {
+  gap: 10px;
 }
 
 
@@ -2203,6 +2240,17 @@ a:hover .img-icon { opacity: 1;}
 
   column-gap: 10px;
   row-gap: 10px;
+
+}
+
+/* Related-colour swatches carry inline 8px/18px margins; let the
+   legend (12px) and fieldset margins set the spacing like Size does */
+.template-product
+.product-form__input
+.avone-related-color-swatches {
+
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 
 }
 
@@ -2543,13 +2591,30 @@ a:hover .img-icon { opacity: 1;}
   display: flex;
   flex-wrap: wrap;
 
-  gap: 20px;
+  column-gap: 20px;
+  row-gap: 10px;
 
-  padding-top: 18px;
-  margin-top: 18px;
+  padding-top: 14px;
+  margin-top: 16px;
 
   border-top: 1px solid #e8e8e8;
 
+}
+
+/* Subtle divider between the delivery-row items (e.g. Free Delivery | Ask a question).
+   Script/style elements (the share block outputs a <script>) are not counted as items. */
+.template-product .additonal-links > :not(script):not(style) ~ :not(script):not(style) {
+  position: relative;
+}
+
+.template-product .additonal-links > :not(script):not(style) ~ :not(script):not(style)::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  height: 14px;
+  margin-top: -7px;
+  border-left: 1px solid #d8d8d8;
 }
 
 
@@ -2751,7 +2816,7 @@ a:hover .img-icon { opacity: 1;}
 
     letter-spacing: -.5px !important;
 
-    margin-bottom: 10px !important;
+    margin-bottom: 6px !important;
 
   }
 
@@ -2958,7 +3023,7 @@ a:hover .img-icon { opacity: 1;}
 
     overflow: hidden !important;
 
-    background: #f5f5f3 !important;
+    background: #f4f3f1 !important;
 
     display: flex !important;
     align-items: center !important;
@@ -3274,7 +3339,7 @@ a:hover .img-icon { opacity: 1;}
     margin: 0 !important;
     padding: 0 !important;
 
-    background: #f7f7f5 !important;
+    background: #f4f3f1 !important;
 
     overflow: hidden !important;
 
@@ -3538,10 +3603,13 @@ a:hover .img-icon { opacity: 1;}
      MAIN PRODUCT GRID
      ======================================================= */
 
+  /* Gallery 56% | 48px gap | information 44% (about 700px | 550px in the
+     1300px page width). The information column no longer has side padding;
+     the gap separates the columns. */
   body.template-product .product-single {
     display: grid !important;
-    grid-template-columns: 60% 40% !important;
-    gap: 0 !important;
+    grid-template-columns: minmax(0, 56fr) minmax(0, 44fr) !important;
+    gap: 0 48px !important;
 
     width: 100% !important;
     max-width: 100% !important;
@@ -3561,7 +3629,12 @@ a:hover .img-icon { opacity: 1;}
     width: 100% !important;
     max-width: 100% !important;
 
-    margin-top: -110px !important;
+    /* The gallery is position:relative here, so the theme's sticky offset
+       (top: header height + 15px = 95px) pushed it down; the old
+       margin-top:-110px compensated and left it 15px above the information
+       column. Both removed so the two columns align at the top. */
+    top: 0 !important;
+    margin-top: 0 !important;
     margin-bottom: 0 !important;
 
     padding: 0 !important;
@@ -3597,7 +3670,7 @@ a:hover .img-icon { opacity: 1;}
 
     overflow: hidden !important;
 
-    background: #f7f7f7 !important;
+    background: #f4f3f1 !important;
   }
 
 
@@ -3629,8 +3702,8 @@ a:hover .img-icon { opacity: 1;}
     margin: 0 !important;
 
     padding-top: 0 !important;
-    padding-left: 42px !important;
-    padding-right: 40px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 
     align-self: start !important;
 
@@ -3654,7 +3727,7 @@ a:hover .img-icon { opacity: 1;}
 
   body.template-product .product-meta__wrapper h1 {
     margin-top: 0 !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 6px !important;
   }
 
 
@@ -3807,6 +3880,66 @@ a:hover .img-icon { opacity: 1;}
   .product-thumbnails::-webkit-scrollbar-track,
   .pr_thumbs::-webkit-scrollbar-track {
     background: transparent;
+  }
+
+
+  /* Main product gallery: 88px square thumbnail rail, 16px gap, main image
+     beside it. Scoped to .product-single so quick view keeps the generic
+     thumbnail rules above. */
+  body.template-product .product-single media-gallery {
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  body.template-product .product-single .product-images {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  body.template-product .product-single .product-thumbnails {
+    flex: 0 0 88px;
+    width: 88px !important;
+    height: auto !important;      /* follows the main image height */
+    max-height: none !important;
+    align-self: stretch;
+    /* Size containment: the rail ignores its own content height, so with
+       many images it stays as tall as the main image (instead of growing to
+       fit every thumbnail) and the extra thumbnails scroll inside it. */
+    contain: size;
+    /* Hide the native scrollbar the generic rule draws (overflow-y:auto,
+       thin grey bar with arrows, which also narrowed the thumbnails to 78px)
+       while keeping wheel/touch scrolling for products with many images. */
+    scrollbar-width: none;
+  }
+
+  body.template-product .product-single .product-thumbnails::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.template-product .product-single .product-thumb__list {
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+
+  body.template-product .product-single .product-thumb {
+    display: block;
+    aspect-ratio: 1 / 1;
+    padding: 0 !important;
+    background: #f4f3f1;
+    border-color: #e2e0dc;
+  }
+
+  body.template-product .product-single .product-thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  body.template-product .product-single .product-thumb__item.swiper-slide-thumb-active .product-thumb {
+    border-color: #111111;
+    box-shadow: inset 0 0 0 1px #111111;
   }
 
 }
@@ -4025,6 +4158,28 @@ h2,
     width: 56px !important;
     max-width: 56px !important;
     flex-basis: 56px !important;
+  }
+
+}
+
+/* Tablet product layout: 50/50 columns and a 24px inner gutter, so the
+   info column is not squeezed by the 60/40 grid and 42px/40px padding
+   (desktop keeps both from 992px) */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+
+  body.template-product .product-single {
+    grid-template-columns: 50% 50% !important;
+  }
+
+  body.template-product .product-single > .product-meta__column {
+    padding-left: 24px !important;
+    padding-right: 0 !important;
+  }
+
+  /* Align the gallery with the information column (its sticky offset was
+     acting as a downward shift; see the desktop gallery rule) */
+  body.template-product .product-single > .product-gallery {
+    top: 0 !important;
   }
 
 }
@@ -4310,11 +4465,11 @@ h2,
   }
 
   body.template-product .product-meta__wrapper .product-form{
-    margin-top:24px!important;
+    margin-top:16px!important;
   }
 
   body.template-product .product-meta__wrapper .product-form__input{
-    margin-bottom:28px!important;
+    margin-bottom:18px!important;
   }
 
   .template-product .product-form__input.swatch:not(.cloptions) .swatch-lbl:not(.color){
@@ -4358,11 +4513,11 @@ h2,
   }
 
   body.template-product .product-meta__wrapper .product-form{
-    margin-top:20px!important;
+    margin-top:16px!important;
   }
 
   body.template-product .product-meta__wrapper .product-form__input{
-    margin-bottom:22px!important;
+    margin-bottom:16px!important;
   }
 
   .template-product .product-form__input.swatch:not(.cloptions) .swatch-lbl:not(.color){
@@ -4912,16 +5067,20 @@ body.template-product .product-meta__wrapper .color-variant-image{
     left: auto !important;
   }
 
-  /* Mobile pagination dots */
+  /* Mobile pagination dots: overlaid on the bottom of the image instead of a
+     separate 35px strip below it */
   .template-product .product-image__slider .gallery-pagination {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
 
-    position: relative !important;
+    position: absolute !important;
+    left: 0 !important;
+    bottom: 10px !important;
+    z-index: 3;
     width: 100% !important;
 
-    margin-top: 10px !important;
+    margin-top: 0 !important;
     padding: 0 !important;
 
     justify-content: center !important;
@@ -4939,8 +5098,15 @@ body.template-product .product-meta__wrapper .color-variant-image{
 @media screen and (max-width: 767px) {
 
   body.template-product .product-single > .product-meta__column {
-    margin-top: 20px !important;
+    margin-top: 12px !important;
     padding-top: 0 !important;
+  }
+
+  /* Related-colour swatches: 52px on mobile (their 64px size is set inline) */
+  body.template-product .product-single .avone-related-color-swatch {
+    flex: 0 0 52px !important;
+    width: 52px !important;
+    height: 52px !important;
   }
 
 }

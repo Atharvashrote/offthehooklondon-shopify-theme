@@ -1,9 +1,5 @@
 {%- liquid
 	assign section_st = section.settings
-    assign cnt_width = settings.cntwd | append: 'px'
-    if section_st.sw
-        assign cnt_width = '100vw'
-    endif
 
 	assign current_variant = product.selected_or_first_available_variant
     assign product_form_id = 'product-form-' | append: section.id
@@ -14,15 +10,12 @@
 	if section_st.image-col == "sm"
 		assign pimgcol_wd = 'wd45-md'
 		assign pdescol_wd = 'wd55-md'
-		assign pimgsize = 40
 	elsif section_st.image-col == "md"
 		assign pimgcol_wd = 'wd50-md'
 		assign pdescol_wd = 'wd50-md'
-		assign pimgsize = 50
 	else
 		assign pimgcol_wd = 'wd60-md'
 		assign pdescol_wd = 'wd40-md'
-		assign pimgsize = 60
 	endif
 
 	assign class_name = ""
@@ -71,12 +64,14 @@
 {%- else -%}
     {% capture img_style %}--imgw:100%;{% endcapture %}
 {%- endif -%}
-{%- liquid
-    assign column = 100.00 | divided_by: pimgsize | times: 1
-    assign divide_colunm = 1.00 | divided_by: column | round: 2
-%}
+{%- comment -%}
+  Main image display width, matching theme.css: about 600px from 992px (56% gallery
+  column minus the 88px thumbnail rail), about half the screen on tablet. Avone's
+  40/50/60% column maths no longer matches the custom layout and requested a
+  550px file for a ~600-700px image.
+{%- endcomment -%}
 {%- capture sizes -%}
-  (min-width:1024px) calc(({{ cnt_width }} - 30px * {{ column | minus: 1 }}) * {{ divide_colunm }}), calc(100vw - 30px)
+  (min-width:992px) 600px, (min-width:768px) calc(50vw - 90px), calc(100vw - 30px)
 {%- endcapture -%}
 {%- if product.quantity_price_breaks_configured? -%}
     <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
@@ -180,7 +175,7 @@
                         {%- assign img_index = forloop.index0 -%}
                         <div class="swiper-slide product-thumb__item{% if media.media_type == 'video' or media.media_type == 'external_video' or media.media_type == 'model' %} vd{% endif %}" data-slide="{{ img_index }}">
                             <span class="grid-image product-thumb product-thumb{{ section.id }} of-hidden" data-mediaid="{{ media.id }}">
-                                {{ media | image_url: width:160 | image_tag: loading:'lazy', sizes:'80px', widths:'100,160', class: 'img-fit' }}
+                                {{ media | image_url: width:200 | image_tag: loading:'lazy', sizes:'88px', widths:'100,200', class: 'img-fit' }}
                                 {% if media.media_type == 'video' or media.media_type == 'external_video'  %}<svg class="at-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6zM48 453.5v-395c0-4.6 5.1-7.5 9.1-5.2l334.2 197.5c3.9 2.3 3.9 8 0 10.3L57.1 458.7c-4 2.3-9.1-.6-9.1-5.2z"/></svg>{% endif %}
                                 {% if media.media_type == 'model' or media.media_type == 'external_video'  %}<svg class="at-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M239.1 7.5l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V130.5c0-20-12.4-37.9-31.1-44.9l-208-78C262 3.4 250 3.4 239.1 7.5zm16.9 45l208 78v.3l-208 84.5-208-84.5v-.3l208-78zM48 182.6l184 74.8v190.2l-184-92v-173zm232 264.9V257.4l184-74.8v172.9l-184 92z"/></svg>{% endif %}
                             </span>
