@@ -41,6 +41,31 @@
 
 {%- paginate collection.products by section_st.prpp -%}
 
+{%- comment -%}
+    Availability ordering is done per page on the server so Shopify's native
+    pagination stays authoritative: in-stock products render first, sold-out
+    ones after. When "Out of stock" is the only availability filter, products
+    that still have an available variant are skipped (Shopify's filter is
+    variant-based and would otherwise include them).
+{%- endcomment -%}
+{%- liquid
+    assign strict_oos = false
+    for filter in collection.filters
+        if filter.param_name == 'filter.v.availability'
+            for value in filter.active_values
+                if value.value == '0'
+                    assign strict_oos = true
+                endif
+            endfor
+            for value in filter.active_values
+                if value.value == '1'
+                    assign strict_oos = false
+                endif
+            endfor
+        endif
+    endfor
+-%}
+
 {%- capture pr_view -%}
     {%- if section_st.gridicn -%}
         <div class="toolbar-item hide-sm hide-md{% if section_st.sbpos == 'top' %} mr0{% endif %}" style="--icns:14px;">
@@ -104,8 +129,18 @@
     {%- else -%}
         <div class="collection">
             {%- if pageurl == 'list' -%}
-                <div id="collection-products" class="listview-items" data-availability-pages="{{ paginate.pages }}" data-availability-per-page="{{ section_st.prpp }}" data-availability-current-page="{{ paginate.current_page }}" data-availability-view="list">
+                <div id="collection-products" class="listview-items">
+                    {%- for availability_pass in (1..2) -%}
                     {%- for product in collection.products -%}
+                    {%- liquid
+                        assign product_pass = 1
+                        unless product.available
+                            assign product_pass = 2
+                        endunless
+                        if product_pass != availability_pass
+                            continue
+                        endif
+                    -%}
                     {%- assign all_variants_sold_out = true -%}
                     {%- for variant in product.variants -%}
                         {%- if variant.available -%}
@@ -113,13 +148,24 @@
                             {%- break -%}
                         {%- endif -%}
                     {%- endfor -%}
-                    {%- assign availability_position = paginate.current_page | minus: 1 | times: section_st.prpp | plus: forloop.index -%}
-                    <product-card class="listview-item fl f-row-md f-col mb20 {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" data-fully-out-of-stock="{{ all_variants_sold_out }}" data-original-position="{{ availability_position }}" {% render 'animate-data' %}>{% render 'product-card-list', product: product, section_st: section_st, sizes:'(min-width:768px) 250px, 100vw'  %}</product-card>
+                    {%- if strict_oos and all_variants_sold_out == false -%}{%- continue -%}{%- endif -%}
+                    <product-card class="listview-item fl f-row-md f-col mb20 {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" {% render 'animate-data' %}>{% render 'product-card-list', product: product, section_st: section_st, sizes:'(min-width:768px) 250px, 100vw'  %}</product-card>
+                    {%- endfor -%}
                     {%- endfor -%}
                 </div>
             {%- else -%}
-                <div id="collection-products" class="grid rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products" data-availability-pages="{{ paginate.pages }}" data-availability-per-page="{{ section_st.prpp }}" data-availability-current-page="{{ paginate.current_page }}" data-availability-view="grid">
+                <div id="collection-products" class="grid rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products">
+                    {%- for availability_pass in (1..2) -%}
                     {%- for product in collection.products -%}
+                        {%- liquid
+                            assign product_pass = 1
+                            unless product.available
+                                assign product_pass = 2
+                            endunless
+                            if product_pass != availability_pass
+                                continue
+                            endif
+                        -%}
                         {%- capture sizes -%}
                             {%- if section_st.filters and section_st.sbpos != 'top' and section_st.sbpos != 'popup' -%}
                                 (min-width:1024px) calc(({{ page_width }} - {{ settings.grid_space | times: section_st.grid | minus:settings.grid_space | plus:340 }}px) / {{ section_st.grid }}),(min-width:768px) calc((100vw - {{ settings.grid_space | times: section_st.gridtb | minus:section_st.gspace }}px) / {{ section_st.gridtb }}), calc((100vw - {{ settings.grid_spacem | times: section_st.gridmb | minus:settings.grid_spacem }}px) / {{ section_st.gridmb }})
@@ -134,8 +180,9 @@
                                 {%- break -%}
                             {%- endif -%}
                         {%- endfor -%}
-                        {%- assign availability_position = paginate.current_page | minus: 1 | times: section_st.prpp | plus: forloop.index -%}
-                        <div class="gitem fl {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" data-fully-out-of-stock="{{ all_variants_sold_out }}" data-original-position="{{ availability_position }}" {% render 'animate-data' %}>{% render 'product-card-grid', product:product, section_st:section_st, sizes:sizes %}</div>
+                        {%- if strict_oos and all_variants_sold_out == false -%}{%- continue -%}{%- endif -%}
+                        <div class="gitem fl {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" {% render 'animate-data' %}>{% render 'product-card-grid', product:product, section_st:section_st, sizes:sizes %}</div>
+                    {%- endfor -%}
                     {%- endfor -%}
                 </div>
             {%- endif -%}
@@ -246,813 +293,46 @@
 <script src="{{ 'collections.js' | asset_url }}" defer></script>
 
 <style>
-  /* ==========================================================
-     Availability-first collection ordering
-     - Keeps Avone's product cards/animations intact
-     - Prevents the white/fade flash while DOM is reordered
-     - Keeps sold-out products visible
-     ========================================================== */
-  #collection-products.availability-ordering-active,
-  #collection-products.availability-ordering-active > *,
-  #collection-products.availability-ordering-active .gitem,
-  #collection-products.availability-ordering-active product-card {
-    animation: none !important;
-    transition: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: none !important;
-  }
-
-  #collection-products.availability-ordering-loading {
-    opacity: 1 !important;
-  }
-
+  /* Sold-out products stay visible in the grid. */
   #collection-products [data-availability="false"] {
     display: block !important;
   }
 
-  /* When the native Out of stock filter is selected, mixed-stock products
-     are hidden by the product-level availability check below. */
-  #collection-products.strict-out-of-stock-filter [data-fully-out-of-stock="false"],
-  #collection-products.strict-out-of-stock-filter [data-all-variants-sold-out="false"] {
-    display: none !important;
-  }
-
-  /* Keep the native Avone pagination area clean while our global ordering is active. */
-  #availability-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  /* Native pagination: filled current page, wraps on small screens. */
+  #pagination .pagination ul {
     flex-wrap: wrap;
-    margin-top: 30px;
+    row-gap: 8px;
   }
 
-  #availability-pagination button,
-  #availability-pagination a {
-    min-width: 40px;
-    height: 40px;
-    padding: 0 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #ddd;
+  #pagination .pagination li a {
     background: #fff;
     color: #111;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 13px;
-    line-height: 1;
+    border-color: #ddd;
     transition: background .2s ease, color .2s ease, border-color .2s ease;
   }
 
-  #availability-pagination button:hover,
-  #availability-pagination a:hover,
-  #availability-pagination .is-current {
+  #pagination .pagination li:not(.ellipsis) a:hover,
+  #pagination .pagination li.active a {
     background: #111;
     color: #fff;
     border-color: #111;
   }
 
-  #availability-pagination .availability-page-label {
-    border: 0;
+  #pagination .pagination li.active a {
     cursor: default;
-    background: transparent;
-    min-width: auto;
   }
 
-  #availability-pagination .availability-load-more {
-    min-width: 180px;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    font-weight: 600;
+  #pagination .pagination li.ellipsis a {
+    border-color: transparent;
+    cursor: default;
   }
 
-  #availability-pagination .availability-loading {
-    pointer-events: none;
-    opacity: .55;
+  @media (max-width: 767px) {
+    #pagination .pagination li a {
+      margin: 0 3px;
+    }
   }
 </style>
-
-<script>
-(function () {
-  'use strict';
-
-  var SCRIPT_KEY = 'availabilityFirstCollectionSorterV4';
-
-  /* Prevent Avone from registering the same sorter more than once. */
-  if (window[SCRIPT_KEY]) {
-    if (typeof window[SCRIPT_KEY].refresh === 'function') {
-      window[SCRIPT_KEY].refresh();
-    }
-    return;
-  }
-
-  var state = {
-    observer: null,
-    refreshTimer: null,
-    sorting: false,
-    requestId: 0,
-    lastGrid: null,
-    lastUrl: window.location.href
-  };
-
-  function getProductGrid() {
-    return document.getElementById('collection-products');
-  }
-
-  function getCollectionRoot() {
-    return document.getElementById('Collection');
-  }
-
-  function getCurrentPage(grid) {
-    return grid ? parseInt(grid.dataset.availabilityCurrentPage || '1', 10) || 1 : 1;
-  }
-
-  function getPerPage(grid) {
-    return grid ? parseInt(grid.dataset.availabilityPerPage || '12', 10) || 12 : 12;
-  }
-
-  function getTotalPages(grid) {
-    return grid ? parseInt(grid.dataset.availabilityPages || '1', 10) || 1 : 1;
-  }
-
-  function isListView(grid) {
-    return !!(grid && grid.dataset.availabilityView === 'list');
-  }
-
-  function getProductNodes(container) {
-    if (!container) return [];
-
-    return Array.prototype.slice.call(container.children).filter(function (node) {
-      return node.hasAttribute('data-original-position');
-    });
-  }
-
-  function availabilityValue(node) {
-    return node.getAttribute('data-availability') === 'true' ? 0 : 1;
-  }
-
-  /* Product-level availability:
-     true only when EVERY variant is unavailable.
-     This prevents a product with one sold-out size from appearing
-     in the Out of stock filter. */
-  function isFullySoldOut(node) {
-    /*
-     * Out of stock means EVERY variant is unavailable.
-     * A product with even ONE available variant is NOT out of stock.
-     */
-    return node.getAttribute('data-fully-out-of-stock') === 'true' ||
-           node.getAttribute('data-all-variants-sold-out') === 'true';
-  }
-
-  function strictOutOfStockFilterActive() {
-    /*
-     * Use the URL as the source of truth.
-     * After Avone clears filters through AJAX, the old checkbox can remain
-     * in the DOM for a short time. Looking only at :checked therefore makes
-     * the strict Out of stock mode incorrectly survive "Clear All".
-     */
-    var url = new URL(window.location.href);
-    var availabilityValues = url.searchParams.getAll('filter.v.availability');
-
-    if (availabilityValues.indexOf('0') === -1) return false;
-    if (availabilityValues.indexOf('1') !== -1) return false;
-
-    return true;
-  }
-
-  function filterForStrictOutOfStock(products) {
-    if (!strictOutOfStockFilterActive()) return products;
-    return products.filter(function (node) {
-      return isFullySoldOut(node);
-    });
-  }
-
-  function updateStrictOutOfStockClass(grid) {
-    if (!grid) return;
-    grid.classList.toggle('strict-out-of-stock-filter', strictOutOfStockFilterActive());
-  }
-
-  function originalPosition(node) {
-    var value = parseInt(node.getAttribute('data-original-position') || '999999999', 10);
-    return isNaN(value) ? 999999999 : value;
-  }
-
-  /* Stable sort: availability first, original collection position second. */
-  function sortProducts(products) {
-    return products.slice().sort(function (a, b) {
-      var availabilityDifference = availabilityValue(a) - availabilityValue(b);
-      if (availabilityDifference !== 0) return availabilityDifference;
-      return originalPosition(a) - originalPosition(b);
-    });
-  }
-
-  function uniqueProducts(products) {
-    var seen = Object.create(null);
-
-    return products.filter(function (node) {
-      var position = node.getAttribute('data-original-position');
-
-      if (!position || seen[position]) return false;
-      seen[position] = true;
-      return true;
-    });
-  }
-
-  /*
-   * When only "Out of stock" is selected, Shopify's native availability
-   * parameter (filter.v.availability=0) must NOT be used for our source data.
-   * Shopify's native filter is variant-based, so it can return products such
-   * as a product with UK 7 sold out but UK 8 available.
-   *
-   * We therefore fetch the same collection/filter URL WITHOUT the native
-   * availability parameter, then apply our own product-level rule:
-   * only products where ALL variants are unavailable are kept.
-   */
-  function isStrictOutOfStockMode() {
-    return strictOutOfStockFilterActive();
-  }
-
-  /*
-   * Performance optimization:
-   * Use Shopify's Section Rendering API instead of downloading the entire
-   * collection page (header, footer, etc.) for every background request.
-   * Only this collection section is rendered on the server.
-   */
-  var SECTION_ID = '{{ section.id }}';
-  var requestCache = Object.create(null);
-
-  function buildSectionUrl(pageNumber, grid, removeNativeAvailability) {
-    var params = new URLSearchParams(window.location.search);
-
-    if (removeNativeAvailability) {
-      params.delete('filter.v.availability');
-    }
-
-    params.set('page', String(pageNumber));
-    params.set('type', isListView(grid) ? 'list' : 'grid');
-    params.set('section_id', SECTION_ID);
-
-    return window.location.pathname + '?' + params.toString();
-  }
-
-  function parseCollectionResponse(html) {
-    var parser = new DOMParser();
-    var remoteDocument = parser.parseFromString(html, 'text/html');
-    var remoteGrid = remoteDocument.querySelector('#collection-products');
-
-    if (!remoteGrid) {
-      return { nodes: [], totalPages: 1 };
-    }
-
-    return {
-      nodes: getProductNodes(remoteGrid),
-      totalPages: parseInt(remoteGrid.dataset.availabilityPages || '1', 10) || 1
-    };
-  }
-
-  function fetchPage(pageNumber, grid, removeNativeAvailability) {
-    var url = buildSectionUrl(pageNumber, grid, removeNativeAvailability);
-
-    /* Reuse an identical background request during the same page state. */
-    if (requestCache[url]) {
-      return requestCache[url];
-    }
-
-    requestCache[url] = fetch(url, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Accept': 'text/html'
-      }
-    })
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error('Unable to load collection page ' + pageNumber);
-        }
-        return response.text();
-      })
-      .then(parseCollectionResponse)
-      .catch(function (error) {
-        delete requestCache[url];
-        throw error;
-      });
-
-    return requestCache[url];
-  }
-
-  function fetchAllProducts(totalPages, currentPage, grid, removeNativeAvailability) {
-    var requests = [];
-
-    for (var page = 1; page <= totalPages; page++) {
-      if (page === currentPage && !removeNativeAvailability) continue;
-      requests.push(fetchPage(page, grid, removeNativeAvailability));
-    }
-
-    if (!requests.length) {
-      return Promise.resolve({ products: [], totalPages: totalPages });
-    }
-
-    return Promise.all(requests).then(function (pageResults) {
-      var products = [];
-      var discoveredTotalPages = totalPages;
-
-      pageResults.forEach(function (pageResult) {
-        products = products.concat(pageResult.nodes);
-        discoveredTotalPages = Math.max(discoveredTotalPages, pageResult.totalPages);
-      });
-
-      return {
-        products: products,
-        totalPages: discoveredTotalPages
-      };
-    });
-  }
-
-  function fetchStrictOutOfStockProducts(grid) {
-    /*
-     * Shopify's native availability filter is removed from these requests.
-     * All other active filters (category, price, color, size, etc.) remain.
-     * The complete filtered collection is then checked client-side using
-     * data-all-variants-sold-out.
-     */
-    return fetchPage(1, grid, true).then(function (firstPage) {
-      var totalPages = firstPage.totalPages;
-      var requests = [];
-
-      for (var page = 2; page <= totalPages; page++) {
-        requests.push(fetchPage(page, grid, true));
-      }
-
-      if (!requests.length) {
-        return firstPage.nodes;
-      }
-
-      return Promise.all(requests).then(function (pageResults) {
-        var products = firstPage.nodes.slice();
-
-        pageResults.forEach(function (pageResult) {
-          products = products.concat(pageResult.nodes);
-        });
-
-        return products;
-      });
-    });
-  }
-
-  function setOrderingMode(grid, active) {
-    if (!grid) return;
-
-    if (active) {
-      grid.classList.add('availability-ordering-active');
-      grid.classList.add('availability-ordering-loading');
-    } else {
-      grid.classList.remove('availability-ordering-active');
-      grid.classList.remove('availability-ordering-loading');
-    }
-  }
-
-  function moveNodesWithoutAnimation(grid, nodes) {
-    if (!grid || !nodes.length) return;
-
-    /* CSS above disables Avone's entrance animation before nodes are moved. */
-    var fragment = document.createDocumentFragment();
-
-    nodes.forEach(function (node) {
-      fragment.appendChild(node);
-    });
-
-    grid.appendChild(fragment);
-  }
-
-  function showSlice(products, pageNumber, append, grid) {
-    if (!grid) return;
-
-    updateStrictOutOfStockClass(grid);
-
-    var perPage = getPerPage(grid);
-    var start = Math.max(0, (pageNumber - 1) * perPage);
-    var end = Math.min(start + perPage, products.length);
-    var slice = products.slice(start, end);
-
-    if (!append) {
-      /* Remove only the currently rendered product cards. The grid itself and
-         Avone's surrounding DOM stay untouched. */
-      getProductNodes(grid).forEach(function (node) {
-        node.remove();
-      });
-    }
-
-    moveNodesWithoutAnimation(grid, slice);
-  }
-
-  function clearPagination() {
-    var pagination = document.getElementById('pagination');
-    if (!pagination) return null;
-
-    pagination.innerHTML = '';
-    return pagination;
-  }
-
-  function updateUrlPage(pageNumber, replace) {
-    var url = new URL(window.location.href);
-
-    if (pageNumber <= 1) {
-      url.searchParams.delete('page');
-    } else {
-      url.searchParams.set('page', pageNumber);
-    }
-
-    var method = replace ? 'replaceState' : 'pushState';
-    history[method]({ availabilityCollectionPage: pageNumber }, '', url.toString());
-  }
-
-  function scrollToCollection() {
-    var root = getCollectionRoot();
-    if (!root) return;
-
-    window.scrollTo({
-      top: Math.max(0, root.getBoundingClientRect().top + window.pageYOffset - 30),
-      behavior: 'smooth'
-    });
-  }
-
-  function renderClassicPagination(products, grid) {
-    var pagination = clearPagination();
-    if (!pagination) return;
-
-    var perPage = getPerPage(grid);
-    var totalPages = Math.max(1, Math.ceil(products.length / perPage));
-    var currentPage = Math.min(getCurrentPage(grid), totalPages);
-
-    if (totalPages <= 1) return;
-
-    var wrapper = document.createElement('div');
-    wrapper.id = 'availability-pagination';
-
-    if (currentPage > 1) {
-      var previous = document.createElement('button');
-      previous.type = 'button';
-      previous.textContent = '‹';
-      previous.setAttribute('aria-label', 'Previous page');
-
-      previous.addEventListener('click', function () {
-        var targetPage = currentPage - 1;
-        grid.dataset.availabilityCurrentPage = String(targetPage);
-        showSlice(products, targetPage, false, grid);
-        updateUrlPage(targetPage, false);
-        renderClassicPagination(products, grid);
-        scrollToCollection();
-      });
-
-      wrapper.appendChild(previous);
-    }
-
-    for (var page = 1; page <= totalPages; page++) {
-      var pageButton = document.createElement('button');
-      pageButton.type = 'button';
-      pageButton.textContent = page;
-      pageButton.className = page === currentPage ? 'is-current' : '';
-      pageButton.setAttribute('aria-label', 'Page ' + page);
-
-      (function (targetPage) {
-        pageButton.addEventListener('click', function () {
-          grid.dataset.availabilityCurrentPage = String(targetPage);
-          showSlice(products, targetPage, false, grid);
-          updateUrlPage(targetPage, false);
-          renderClassicPagination(products, grid);
-          scrollToCollection();
-        });
-      })(page);
-
-      wrapper.appendChild(pageButton);
-    }
-
-    if (currentPage < totalPages) {
-      var next = document.createElement('button');
-      next.type = 'button';
-      next.textContent = '›';
-      next.setAttribute('aria-label', 'Next page');
-
-      next.addEventListener('click', function () {
-        var targetPage = currentPage + 1;
-        grid.dataset.availabilityCurrentPage = String(targetPage);
-        showSlice(products, targetPage, false, grid);
-        updateUrlPage(targetPage, false);
-        renderClassicPagination(products, grid);
-        scrollToCollection();
-      });
-
-      wrapper.appendChild(next);
-    }
-
-    pagination.appendChild(wrapper);
-  }
-
-  function renderLoadMorePagination(products, grid) {
-    var pagination = clearPagination();
-    if (!pagination) return;
-
-    var perPage = getPerPage(grid);
-    var totalPages = Math.max(1, Math.ceil(products.length / perPage));
-    var currentPage = getCurrentPage(grid);
-
-    if (currentPage >= totalPages) return;
-
-    var wrapper = document.createElement('div');
-    wrapper.id = 'availability-pagination';
-
-    var button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'availability-load-more';
-    button.textContent = 'Load more';
-
-    button.addEventListener('click', function () {
-      if (button.classList.contains('availability-loading')) return;
-
-      button.classList.add('availability-loading');
-      button.textContent = 'Loading...';
-
-      var nextPage = (parseInt(grid.dataset.availabilityCurrentPage || currentPage, 10) || 1) + 1;
-
-      if (nextPage <= totalPages) {
-        showSlice(products, nextPage, true, grid);
-        grid.dataset.availabilityCurrentPage = String(nextPage);
-      }
-
-      button.classList.remove('availability-loading');
-      button.textContent = 'Load more';
-
-      if (nextPage >= totalPages) {
-        pagination.innerHTML = '';
-      }
-    });
-
-    wrapper.appendChild(button);
-    pagination.appendChild(wrapper);
-  }
-
-  function renderInfinitePagination(products, grid) {
-    var pagination = clearPagination();
-    if (!pagination) return;
-
-    var perPage = getPerPage(grid);
-    var totalPages = Math.max(1, Math.ceil(products.length / perPage));
-    var currentPage = getCurrentPage(grid);
-
-    if (currentPage >= totalPages) return;
-
-    var wrapper = document.createElement('div');
-    wrapper.id = 'availability-pagination';
-
-    var sentinel = document.createElement('div');
-    sentinel.className = 'availability-page-label';
-    sentinel.textContent = 'Loading more…';
-    wrapper.appendChild(sentinel);
-    pagination.appendChild(wrapper);
-
-    var loading = false;
-    var observer = new IntersectionObserver(function (entries) {
-      if (!entries[0].isIntersecting || loading) return;
-
-      var current = parseInt(grid.dataset.availabilityCurrentPage || currentPage, 10) || 1;
-      var nextPage = current + 1;
-
-      if (nextPage > totalPages) {
-        observer.disconnect();
-        pagination.innerHTML = '';
-        return;
-      }
-
-      loading = true;
-      showSlice(products, nextPage, true, grid);
-      grid.dataset.availabilityCurrentPage = String(nextPage);
-      loading = false;
-
-      if (nextPage >= totalPages) {
-        observer.disconnect();
-        pagination.innerHTML = '';
-      }
-    }, { rootMargin: '500px 0px' });
-
-    observer.observe(sentinel);
-  }
-
-  function renderPagination(products, grid) {
-    var paginationMode = '{{ section_st.pagination }}';
-
-    if (paginationMode === 'default') {
-      renderClassicPagination(products, grid);
-    } else if (paginationMode === 'infinite') {
-      renderInfinitePagination(products, grid);
-    } else {
-      renderLoadMorePagination(products, grid);
-    }
-  }
-
-  function restoreNativeState(grid) {
-    if (!grid) return;
-
-    grid.dataset.availabilitySorted = 'error';
-    setOrderingMode(grid, false);
-  }
-
-  function sortCurrentCollection() {
-    var grid = getProductGrid();
-    if (!grid) return Promise.resolve();
-
-    /* If this exact grid has already been processed, do nothing. */
-    if (grid.dataset.availabilitySorted === 'true') return Promise.resolve();
-    if (state.sorting) return Promise.resolve();
-
-    var currentProducts = getProductNodes(grid);
-    if (!currentProducts.length) return Promise.resolve();
-
-    state.sorting = true;
-    state.lastGrid = grid;
-
-    var requestId = ++state.requestId;
-    var currentPage = getCurrentPage(grid);
-    var totalPages = getTotalPages(grid);
-
-    /* Stop Avone's animation from fading cards while we rearrange them. */
-    grid.dataset.availabilitySorted = 'loading';
-    setOrderingMode(grid, true);
-
-    if (isStrictOutOfStockMode()) {
-      var loadingCount = document.querySelector('#itemsCount .collection-product-count');
-      if (loadingCount) loadingCount.textContent = 'Loading out of stock products…';
-    }
-
-    /*
-     * IMPORTANT:
-     * In strict Out of stock mode we must fetch the UNFILTERED collection,
-     * because the current Shopify URL contains filter.v.availability=0.
-     * Fetching that URL would otherwise give us the same incorrect
-     * variant-based result set we are trying to fix.
-     */
-    var sourcePromise = isStrictOutOfStockMode()
-      ? fetchStrictOutOfStockProducts(grid)
-      : fetchAllProducts(totalPages, currentPage, grid, false).then(function (result) {
-          return uniqueProducts(currentProducts.concat(result.products));
-        });
-
-    return sourcePromise
-      .then(function (sourceProducts) {
-        if (requestId !== state.requestId) return;
-
-        /*
-         * In strict mode, sourceProducts contains the complete collection
-         * without Shopify's native availability filter. In normal mode it
-         * contains the existing collection source.
-         */
-        var allProducts = uniqueProducts(sourceProducts);
-
-        /* Only fully sold-out products belong in Out of stock. */
-        var filteredProducts = filterForStrictOutOfStock(allProducts);
-        var sortedProducts = sortProducts(filteredProducts);
-
-        /*
-         * Only move the existing DOM nodes. We never rebuild product HTML,
-         * so product images, wishlist state and Avone card markup are retained.
-         */
-        showSlice(sortedProducts, 1, false, grid);
-
-        grid.dataset.availabilitySorted = 'true';
-        grid.dataset.availabilityCurrentPage = '1';
-
-        renderPagination(sortedProducts, grid);
-
-        /*
-         * Shopify's toolbar count is based on the native variant filter.
-         * Replace it with the actual number of fully sold-out products while
-         * strict Out of stock mode is active.
-         */
-        if (isStrictOutOfStockMode()) {
-          var countNode = document.querySelector('#itemsCount .collection-product-count');
-          if (countNode) {
-            var visibleCount = Math.min(getPerPage(grid), sortedProducts.length);
-            countNode.textContent = 'Showing ' + visibleCount + ' of ' + sortedProducts.length + ' products';
-          }
-        }
-      })
-      .catch(function (error) {
-        console.error('[Availability ordering]', error);
-        restoreNativeState(grid);
-      })
-      .finally(function () {
-        if (requestId === state.requestId) {
-          setOrderingMode(grid, false);
-        }
-        state.sorting = false;
-      });
-  }
-
-  function scheduleRefresh() {
-    window.clearTimeout(state.refreshTimer);
-
-    state.refreshTimer = window.setTimeout(function () {
-      var grid = getProductGrid();
-      if (!grid) return;
-
-      var currentUrl = window.location.href;
-      var urlChanged = currentUrl !== state.lastUrl;
-
-      /*
-       * A URL change means a filter was added/removed, including Clear All.
-       * Always allow a fresh pass in that case.
-       */
-      if (urlChanged) {
-        state.lastUrl = currentUrl;
-        state.lastGrid = null;
-        state.requestId++;
-        state.sorting = false;
-
-        /*
-         * When Clear All removes filter.v.availability=0, the native Shopify
-         * collection should be shown normally again. We deliberately do not
-         * apply the strict Out of stock filter in this state.
-         */
-        grid.dataset.availabilitySorted = '';
-      }
-
-      /* A new grid means Avone/filter AJAX has replaced the collection. */
-      if (urlChanged || grid !== state.lastGrid || grid.dataset.availabilitySorted !== 'true') {
-        sortCurrentCollection();
-      }
-    }, 150);
-  }
-
-  function startObserver() {
-    if (state.observer) return;
-
-    var collectionRoot = getCollectionRoot();
-    if (!collectionRoot || typeof MutationObserver === 'undefined') return;
-
-    state.observer = new MutationObserver(function () {
-      if (state.sorting) return;
-      scheduleRefresh();
-    });
-
-    /*
-     * Watch only the collection area. The sorter disconnects logically via
-     * state.sorting, so its own DOM moves don't cause another full fetch.
-     */
-    state.observer.observe(collectionRoot, {
-      childList: true,
-      subtree: true
-    });
-  }
-
-  function refresh() {
-    startObserver();
-    scheduleRefresh();
-  }
-
-  window[SCRIPT_KEY] = {
-    refresh: refresh
-  };
-
-  /*
-   * Avone may handle Clear All with AJAX instead of a full page navigation.
-   * Give the theme time to update the URL and collection markup, then force
-   * one clean refresh. This prevents the previous strict Out of stock result
-   * set from being reused after all filters are cleared.
-   */
-  document.addEventListener('click', function (event) {
-    var clearAll = event.target.closest && event.target.closest('#active-filters .clear-all');
-
-    if (!clearAll) return;
-
-    state.lastGrid = null;
-    state.requestId++;
-    state.sorting = false;
-
-    window.setTimeout(refresh, 100);
-    window.setTimeout(refresh, 350);
-    window.setTimeout(refresh, 700);
-  });
-
-  refresh();
-
-  document.addEventListener('shopify:section:load', function () {
-    state.lastGrid = null;
-    state.requestId++;
-    state.sorting = false;
-    refresh();
-  });
-
-  window.addEventListener('popstate', function () {
-    state.lastGrid = null;
-    state.lastUrl = window.location.href;
-    state.requestId++;
-    state.sorting = false;
-    refresh();
-  });
-})();
-</script>
 
 {% schema %}
 {

@@ -1,22 +1,135 @@
 {% if collection != blank and collection.description != blank %}
-  <section class="collection-description-footer">
-    <div class="collection-description-footer__inner">
-      {{ collection.description }}
+  {%- liquid
+    # Row label: the description's first heading, else "Title – opening words".
+    # strip_html output is already HTML-encoded, so only the title is escaped.
+    assign cdf_label = ''
+    assign cdf_parts = collection.description | split: '<h'
+    for cdf_part in cdf_parts offset: 1
+      assign cdf_level = cdf_part | slice: 0
+      if cdf_level != blank and '123456' contains cdf_level
+        assign cdf_open = cdf_part | split: '>' | first | append: '>'
+        assign cdf_label = cdf_part | split: '</h' | first | remove_first: cdf_open | strip_html | strip
+        break
+      endif
+    endfor
+    if cdf_label == blank
+      assign cdf_excerpt = collection.description | strip_html | strip | truncatewords: 20
+      assign cdf_label = collection.title | escape | append: ' – ' | append: cdf_excerpt
+    endif
+  -%}
+  <section class="collection-description-footer" aria-label="{{ collection.title | escape }}">
+    <div class="collection-description-footer__wrap page-width">
+      <button
+        type="button"
+        class="collection-description-footer__toggle"
+        aria-expanded="false"
+        aria-controls="CollectionDescriptionFooter"
+      >
+        <svg class="collection-description-footer__chevron" viewBox="0 0 10 6" width="10" height="6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="collection-description-footer__label">{{ cdf_label }}</span>
+      </button>
+      <div class="collection-description-footer__panel" id="CollectionDescriptionFooter" inert>
+        <div class="collection-description-footer__clip">
+          <div class="collection-description-footer__inner">
+            {{ collection.description }}
+          </div>
+        </div>
+      </div>
     </div>
   </section>
+  <script>
+    (function () {
+      var root = document.currentScript.previousElementSibling;
+      var toggle = root.querySelector('.collection-description-footer__toggle');
+      var panel = root.querySelector('.collection-description-footer__panel');
+      toggle.addEventListener('click', function () {
+        var open = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', String(open));
+        root.classList.toggle('is-open', open);
+        panel.inert = !open;
+      });
+    })();
+  </script>
 {% endif %}
 
 <style>
   .collection-description-footer {
     margin: 0;
-    padding: 5px 20px 10px;
+    padding: 0;
     background: #fff;
   }
 
-  .collection-description-footer__inner {
-    max-width: 1200px;
-    margin: 0 auto;
+  .collection-description-footer__toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
     padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #000;
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.3;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .collection-description-footer__toggle:focus-visible {
+    outline: 1px solid #000;
+    outline-offset: -1px;
+  }
+
+  .collection-description-footer__chevron {
+    flex: 0 0 auto;
+    transition: transform .25s ease;
+  }
+
+  .collection-description-footer.is-open .collection-description-footer__chevron {
+    transform: rotate(180deg);
+  }
+
+  .collection-description-footer__label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Collapsed height is exactly 0; opening animates to the content's natural height. */
+  .collection-description-footer__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows .3s ease, visibility 0s linear .3s;
+  }
+
+  .collection-description-footer.is-open .collection-description-footer__panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows .3s ease, visibility 0s;
+  }
+
+  .collection-description-footer__clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .collection-description-footer__chevron,
+    .collection-description-footer__panel,
+    .collection-description-footer.is-open .collection-description-footer__panel {
+      transition: none;
+    }
+  }
+
+  .collection-description-footer__inner {
+    margin: 0;
+    padding: 2px 0 12px;
     font-size: 10px;
     line-height: 1.35;
     font-weight: 400;
@@ -44,11 +157,12 @@
   }
 
   @media screen and (max-width: 749px) {
-    .collection-description-footer {
-      padding: 3px 15px 8px;
+    .collection-description-footer__toggle {
+      min-height: 44px;
     }
 
     .collection-description-footer__inner {
+      padding-bottom: 10px;
       font-size: 9px;
       line-height: 1.3;
     }
