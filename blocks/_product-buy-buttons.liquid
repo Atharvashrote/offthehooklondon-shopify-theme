@@ -393,8 +393,9 @@
                     actions.className = 'pd-media-actions';
                     gallery.appendChild(actions);
                 }
-                if (share && share.parentElement !== actions) actions.appendChild(share);
+                /* Wishlist first, Share below: DOM order matches the visual (and tab) order */
                 if (wish && wish.parentElement !== actions) actions.appendChild(wish);
+                if (share && share.parentElement !== actions) actions.appendChild(share);
             } else {
                 if (share && share.parentElement !== row) row.appendChild(share);
                 if (wish && wish.parentElement !== row) row.appendChild(wish);
@@ -1527,23 +1528,41 @@
     }
 }
 
-/* Mobile: Share and Wishlist sit on the main product image (moved there by
-   the relocation script), top-right, as 42px translucent circles. */
+/* Product page Wishlist, in the wishlist (.added is toggled by the theme's checkWishlist):
+   a solid pink heart instead of the theme's trash icon. Other wishlist icons are unaffected. */
+.pd-wish .wishicon.added {
+    color: #FF4081;
+}
+
+.pd-wish .wishicon.added .added {
+    display: none;
+}
+
+.pd-wish .wishicon.added .add,
+.pd-wish .wishicon.added .wish-fill {
+    display: inline;
+    fill: #FF4081;
+}
+
+/* Mobile: Wishlist and Share sit on the main product image (moved there by
+   the relocation script), stacked top-right, as bare 24px icons with
+   transparent 44px tap areas (no background, border or shadow). */
 @media (max-width: 767px) {
     .pd-media-actions {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 12px;
+        right: 12px;
         z-index: 4;
         display: flex;
-        gap: 8px;
+        flex-direction: column;
+        gap: 4px;
     }
 
     .pd-media-actions .pd-share,
     .pd-media-actions .pd-wish {
         display: flex;
-        --icns: 18px;
-        --icnsm: 18px;
+        --icns: 24px;
+        --icnsm: 24px;
     }
 
     .pd-media-actions .pd-share > .popup-link,
@@ -1552,31 +1571,39 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
         margin: 0;
         padding: 0;
         color: #111111;
-        background: rgba(255, 255, 255, .9);
-        border: 1px solid rgba(17, 17, 17, .08) !important; /* the wishlist button carries .border-0 */
-        border-radius: 50%;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+        background: transparent;
+        border: 0 !important;
+        border-radius: 50%; /* keeps the keyboard focus ring round */
+        box-shadow: none;
         cursor: pointer;
-        transition: background .2s ease, border-color .2s ease;
+        transition: opacity .2s ease;
     }
 
-    .pd-media-actions .pd-share > .popup-link:hover,
-    .pd-media-actions .pd-wish > .wishlist:hover,
     .pd-media-actions .pd-share > .popup-link:active,
     .pd-media-actions .pd-wish > .wishlist:active {
-        background: #ffffff;
-        border-color: #111111 !important;
+        opacity: .6;
+    }
+
+    .pd-media-actions .pd-share > .popup-link > .at-icon,
+    .pd-media-actions .pd-wish .wishicon {
+        width: 24px;
+        height: 24px;
     }
 
     .pd-media-actions .pd-share > .popup-link:focus-visible,
     .pd-media-actions .pd-wish > .wishlist:focus-visible {
         outline: 2px solid #111111;
         outline-offset: 2px;
+    }
+
+    /* base.css forces a:focus { outline: 0 !important }, so the Share link gets a ring instead */
+    .pd-media-actions .pd-share > .popup-link:focus-visible {
+        box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #111111;
     }
 
     .pd-media-actions .pd-share .at-icon {

@@ -634,6 +634,73 @@ class ProductCard extends HTMLElement {
     if(this.wishlist) this.wishlist.addEventListener("click", this.wishlistInit);
 
     this.colorSwatch();
+    if(this.querySelector(".related-swatch")) this.relatedSwatch();
+  }
+  // Related-colour swatches link to separate colour products. Swap this card for the
+  // theme-rendered card of that product (sections/product-card-swap) so image, title, price,
+  // labels, buttons and links all follow the chosen colour; keep this card's swatch row.
+  relatedSwatch(){
+    var cache = ProductCard.cardCache || (ProductCard.cardCache = {}),
+        style = (this.className.match(/\bgrid-\d\b/) || [])[0],
+        card = this;
+    var load = function(href){
+      if(!cache[href]){
+        cache[href] = fetch(href + (href.indexOf("?") > -1 ? "&" : "?") + "section_id=product-card-swap")
+          .then(function(r){ if(!r.ok) throw r.status; return r.text(); })
+          .then(function(t){ return new DOMParser().parseFromString(t, "text/html").querySelector("product-card"); })
+          .catch(function(e){ delete cache[href]; throw e; });
+      }
+      return cache[href];
+    };
+    this.addEventListener("pointerover", function(e){
+      var a = e.target.closest(".related-swatch a");
+      if(a && style && !a.parentNode.classList.contains("active")) load(a.getAttribute("href")).catch(function(){});
+    });
+    this.addEventListener("click", function(e){
+      var a = e.target.closest(".related-swatch a");
+      if(!a || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      var li = a.parentNode, href = a.getAttribute("href");
+      if(card.classList.contains("swapping")){ card.queuedHref = href; return; }
+      if(li.classList.contains("active")) return;
+      if(!style){ window.location.href = href; return; }
+      card.classList.add("swapping");
+      load(href).then(function(tpl){
+        if(!tpl || (tpl.className.match(/\bgrid-\d\b/) || [])[0] !== style) throw "style";
+        var next = document.importNode(tpl, true),
+            list = card.querySelector(".related-swatches"),
+            oldImg = card.querySelector(".grid-image img"),
+            hadFocus = document.activeElement === a;
+        if(oldImg && oldImg.getAttribute("sizes")){
+          next.querySelectorAll(".grid-image img").forEach(function(img){ img.setAttribute("sizes", oldImg.getAttribute("sizes")); });
+        }
+        next.querySelectorAll(".grid-image img").forEach(function(img){ img.loading = "eager"; });
+        list.querySelectorAll(".related-swatch").forEach(function(s){
+          var on = s === li;
+          s.classList.toggle("active", on);
+          if(on) s.firstElementChild.setAttribute("aria-current", "true"); else s.firstElementChild.removeAttribute("aria-current");
+        });
+        var first = next.querySelector(".grid-image img");
+        var ready = first ? Promise.race([first.decode().catch(function(){}), new Promise(function(r){ setTimeout(r, 1500); })]) : Promise.resolve();
+        return ready.then(function(){
+          // move the swatch row only now, so it stays visible and clickable while the image loads
+          var slot = next.querySelector(".grid-swatches");
+          if(slot) slot.replaceWith(list); else next.querySelector(".grid-meta").appendChild(list);
+          card.replaceWith(next);
+          // the swap is done; extras below must never trigger the navigation fallback
+          try {
+            if(typeof checkWishlist === "function") checkWishlist();
+            if(hadFocus) a.focus({ preventScroll: true });
+            // a swatch clicked while this swap was loading wins
+            var queued = card.queuedHref && list.querySelector('.related-swatch a[href="' + card.queuedHref + '"]');
+            if(queued && !queued.parentNode.classList.contains("active")) queued.click();
+          } catch(err){ console.error(err); }
+        });
+      }).catch(function(){
+        card.classList.remove("swapping");
+        window.location.href = href;
+      });
+    });
   }
   quickViewInit(e){
     var url = this.dataset.url,
@@ -688,12 +755,22 @@ class ProductCard extends HTMLElement {
          cl.addEventListener("click", function(){
             var src = cl.dataset.src,
               wrapper = cl.closest(".grid-content"),
-              image = wrapper.querySelector('.primary');
-            if(src){
+              image = wrapper.querySelector('.primary') || wrapper.querySelector('.grid-image img');
+            if(src && image){
               image.src = src;
               image.removeAttribute("srcset");
+            }
+            if(src || cl.dataset.variant){
               clswatchs.forEach((cl) => { cl.classList.remove('active') });
               this.classList.add('active');
+            }
+            // same-product colours: open the product with this colour's variant selected
+            if(cl.dataset.variant){
+              wrapper.querySelectorAll(".grid-image, .grid-title a, a.overly").forEach((a) => {
+                var u = new URL(a.href, location.origin);
+                u.searchParams.set("variant", cl.dataset.variant);
+                a.href = u.pathname + u.search;
+              });
             }
          });
       });

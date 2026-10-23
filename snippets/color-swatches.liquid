@@ -2,7 +2,81 @@
     assign color_type = section.settings.color_type | default: settings.color_type
     assign img_position = section.settings.vr_bg_position | default: settings.vr_bg_position
     assign color_options = settings.colorOpt | downcase | replace:", ","," | replace:" , ","," | replace:" ,","," | split: ","
+    assign related_color_products = product.metafields.custom.related_color_swatches.value
 -%}
+{%- comment -%}
+  Colours on this store are separate products linked by the custom.related_color_swatches
+  product list (same metafield the product page uses in variant-options). When it is set,
+  show one circular swatch per related product, linking to that product.
+{%- endcomment -%}
+{%- if related_color_products != blank -%}
+  {%- liquid
+    assign seen_handles = ','
+    assign seen_colors = ','
+    assign swimg_size = settings.swatch_size | times: 2
+  -%}
+  {%- capture related_swatches -%}
+    {%- for related_product in related_color_products -%}
+      {%- liquid
+        if related_product == blank
+          continue
+        endif
+        assign handle_key = ',' | append: related_product.handle | append: ','
+        if seen_handles contains handle_key
+          continue
+        endif
+
+        assign rel_value = nil
+        for option in related_product.options_with_values
+          assign option_name = option.name | downcase
+          for value in option.values
+            if value.swatch.image or value.swatch.color or color_options contains option_name
+              assign rel_value = value
+              break
+            endif
+          endfor
+          if rel_value != nil
+            break
+          endif
+        endfor
+
+        assign is_current = false
+        if related_product.handle == product.handle
+          assign is_current = true
+        endif
+
+        assign rel_label = rel_value | default: related_product.title
+        assign color_key = ',' | append: rel_label | downcase | strip | append: ','
+        if seen_colors contains color_key and is_current == false
+          continue
+        endif
+        assign seen_handles = seen_handles | append: related_product.handle | append: ','
+        assign seen_colors = seen_colors | append: color_key
+
+        assign rel_bg = nil
+        if rel_value.swatch.image
+          assign rel_bg = rel_value.swatch.image | image_url: width: swimg_size
+          assign rel_bg = 'url(' | append: rel_bg | append: ')'
+        elsif rel_value.swatch.color
+          assign rel_bg = rel_value.swatch.color
+        endif
+      -%}
+      <li class="swatch related-swatch{% if is_current %} active{% endif %}{% unless related_product.available %} disabled{% endunless %}"{% if rel_bg != nil %} style="background:{{ rel_bg }};"{% endif %}>
+        <a href="{{ related_product.url }}" aria-label="{{ rel_label | escape }}" title="{{ rel_label | escape }}"{% if is_current %} aria-current="true"{% endif %}>
+          {%- if rel_bg == nil and related_product.featured_image != blank -%}
+            {{ related_product.featured_image | image_url: width: swimg_size | image_tag: class: 'img-fit', loading: 'lazy', alt: '', width: settings.swatch_size, height: settings.swatch_size }}
+          {%- endif -%}
+        </a>
+        <span class="tooltip-label top" aria-hidden="true">{{ rel_label }}</span>
+      </li>
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- if related_swatches != blank -%}
+    <ul class="grid-swatches related-swatches fl f-wrap f-aic{% if source != "list" %} f-jcc{% else %} mb20{% endif %}" aria-label="Colours">
+      {{- related_swatches | strip_newlines | remove: "  " -}}
+    </ul>
+  {%- endif -%}
+{%- else -%}
 {%- unless product.options.size == 1 and product.variants[0].title == 'Default Title' -%}
 {%- capture color_swatch -%}
     {%- for option in product.options_with_values -%}
@@ -51,6 +125,18 @@
                     endfor
                   endif
 
+                  comment
+                    Variant the card links to after this colour is clicked: first available one with this colour, else value.variant.
+                  endcomment
+                  assign swatch_variant = value.variant
+                  assign opt_idx = option.position | minus: 1
+                  for v in product.variants
+                    if v.available and v.options[opt_idx] == value
+                      assign swatch_variant = v
+                      break
+                    endif
+                  endfor
+
                   assign swatch_clr = value.swatch.color | default: value | downcase
                   if value.swatch.image
                      assign swatch_img = value.swatch.image | image_url: width: swimg_size
@@ -58,12 +144,12 @@
                   endif
                 -%}
                 {%- if color_type == "vrimage" and swatch_vi_img != blank -%}
-                      <li class="swatch background-image color-swatch pr of-hidden{% if option_disabled %} disabled{% endif %}{% if cl_count > settings.clcount %} hide{% endif %}" title="{{ value }}" data-src="{{ swatch_vi_img | image_url: width: 500 }}">
+                      <li class="swatch background-image color-swatch pr of-hidden{% if option_disabled %} disabled{% endif %}{% if cl_count > settings.clcount %} hide{% endif %}" title="{{ value }}" data-src="{{ swatch_vi_img | image_url: width: 500 }}"{% if swatch_variant %} data-variant="{{ swatch_variant.id }}"{% endif %}>
                           {{ swatch_vi_img | image_url: width: swimg_size | image_tag: class: 'img-fit', loading: 'lazy', widths: '50, 100, 150', sizes: "50px", alt: value | escape }}
                           <span class="tooltip-label top">{{ value }}</span>
                       </li>
                 {%- else -%}
-                      <li class="swatch color-swatch swatch-{{ value | handle }}{% if swatch_vi_img != blank %} noImg{% endif %}{% if option_disabled %} disabled{% endif %}{% if cl_count > settings.clcount %} hide{% endif %}" title="{{ value }}" style="background:{{ swatch_clr }};" {% if swatch_vi_img != blank %}data-src="{{ swatch_vi_img | image_url: width: 400 }}"{% endif %}>
+                      <li class="swatch color-swatch swatch-{{ value | handle }}{% if swatch_vi_img != blank %} noImg{% endif %}{% if option_disabled %} disabled{% endif %}{% if cl_count > settings.clcount %} hide{% endif %}" title="{{ value }}" style="background:{{ swatch_clr }};" {% if swatch_vi_img != blank %}data-src="{{ swatch_vi_img | image_url: width: 400 }}"{% endif %}{% if swatch_variant %} data-variant="{{ swatch_variant.id }}"{% endif %}>
                           <span class="tooltip-label top">{{ value }}</span>
                       </li>
                 {%- endif -%}
@@ -77,3 +163,4 @@
 {%- endcapture -%}
 {{- color_swatch | strip_newlines | remove: "  " | remove: "	" -}}
 {%- endunless -%}
+{%- endif -%}

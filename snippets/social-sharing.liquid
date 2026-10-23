@@ -1,3 +1,6 @@
+{%- comment -%} Absolute URL for the share services: products pass a full URL, articles a relative one. {%- endcomment -%}
+{%- assign share_abs = share_link -%}
+{%- unless share_link contains '://' -%}{%- assign share_abs = shop.url | append: share_link -%}{%- endunless -%}
 <script src="{{ 'share.js' | asset_url }}" defer="defer"></script>
 
 <share-button id="Share-{{ section.id }}" class="share-button fl">
@@ -8,7 +11,6 @@
     data-popup="share-popup"
     aria-haspopup="dialog"
     role="link"
-    aria-disabled="true"
   >
     <svg
       class="at-icon mr5"
@@ -78,7 +80,7 @@
 
       <!-- FACEBOOK -->
       <a
-        href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url | append: share_link | url_encode }}"
+        href="https://www.facebook.com/sharer/sharer.php?u={{ share_abs | url_encode }}"
         class="btn-share share-facebook fl f-aic f-jcc"
         title="Share on Facebook"
         aria-label="Share on Facebook"
@@ -99,7 +101,7 @@
 
       <!-- WHATSAPP -->
       <a
-        href="https://wa.me/?text={{ share_title | append: ' - ' | append: shop.url | append: share_link | url_encode }}"
+        href="https://wa.me/?text={{ share_title | append: ' - ' | append: share_abs | url_encode }}"
         class="btn-share share-whatsapp fl f-aic f-jcc"
         title="Share on WhatsApp"
         aria-label="Share on WhatsApp"
@@ -139,7 +141,7 @@
 
       <!-- PINTEREST -->
       <a
-        href="https://www.pinterest.com/pin/create/button/?url={{ shop.url | append: share_link | url_encode }}&media={{ share_image | image_url: width: 1024 | url_encode }}&description={{ share_title | url_param_escape }}"
+        href="https://www.pinterest.com/pin/create/button/?url={{ share_abs | url_encode }}&media={{ share_image | image_url: width: 1024 | url_encode }}&description={{ share_title | url_param_escape }}"
         class="btn-share share-pinterest fl f-aic f-jcc"
         title="Share on Pinterest"
         aria-label="Share on Pinterest"
@@ -160,7 +162,7 @@
 
       <!-- EMAIL -->
       <a
-        href="mailto:?subject={{ 'Check this product - ' | append: share_title | url_param_escape }}&body={{ shop.url | append: share_link | url_param_escape }}"
+        href="mailto:?subject={{ 'Check this product - ' | append: share_title | url_param_escape }}&body={{ share_abs | url_param_escape }}"
         class="btn-share share-email fl f-aic f-jcc"
         title="Share by Email"
         aria-label="Share by Email"

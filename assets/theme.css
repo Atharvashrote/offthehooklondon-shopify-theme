@@ -452,6 +452,13 @@ s.product-price { font-size:calc(var(--prfsm,var(--grid-product_price_fsm)) - va
 .grid-swatches li:hover .tooltip-label { opacity:1; top:-32px; visibility:visible }
 .grid-swatches li.numb { height:auto; width:auto;box-shadow:none; border:0 none; opacity:0.8 }
 .grid-3 .grid-swatches { justify-content:start }
+.related-swatches li { overflow:visible; background:#fff; }
+.related-swatches li a { display:block; width:100%; height:100%; border-radius:inherit; overflow:hidden; }
+.related-swatches li:has(a:focus-visible) { box-shadow:0 0 0 2px var(--grid-swatch_border_active) }
+.related-swatches li:focus-within .tooltip-label { opacity:1; top:-32px; visibility:visible }
+.related-swatches li.disabled { opacity:.45 }
+@media (max-width:767px) { .related-swatches { gap:4px; margin-left:0 } }
+.grid-content.swapping .grid-image img { opacity:.6; transition:opacity .2s }
 
 .grid-timer { font-size:var(--grid-timer_fs); opacity:1; bottom:8px; z-index:11; gap:4px; }
 .grid-timer > span { color:var(--grid-timer_cl); font-size:9px; font-weight:400; line-height:1.1; letter-spacing:0;
@@ -3883,7 +3890,7 @@ body.template-product .product-meta__wrapper[id^="MainProduct-"] .product-form__
   }
 
 
-  /* Main product gallery: 88px square thumbnail rail, 16px gap, main image
+  /* Main product gallery: 76px square thumbnail rail, 16px gap, main image
      beside it. Scoped to .product-single so quick view keeps the generic
      thumbnail rules above. */
   body.template-product .product-single media-gallery {
@@ -3897,8 +3904,8 @@ body.template-product .product-meta__wrapper[id^="MainProduct-"] .product-form__
   }
 
   body.template-product .product-single .product-thumbnails {
-    flex: 0 0 88px;
-    width: 88px !important;
+    flex: 0 0 76px;
+    width: 76px !important;
     height: auto !important;      /* follows the main image height */
     max-height: none !important;
     align-self: stretch;

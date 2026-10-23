@@ -1,0 +1,13 @@
+{%- comment -%}
+  Renders one grid product card for the current product. Fetched by ProductCard
+  (assets/theme.js) via /products/<handle>?section_id=product-card-swap when a
+  related-colour swatch is clicked, so the card can switch to that colour product.
+{%- endcomment -%}
+{%- if product -%}{%- render 'product-card-grid', product: product, sizes: '(min-width:768px) 33vw, 50vw' -%}{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product card swap",
+  "settings": []
+}
+{% endschema %}
