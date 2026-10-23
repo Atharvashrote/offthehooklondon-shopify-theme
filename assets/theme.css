@@ -458,6 +458,8 @@ s.product-price { font-size:calc(var(--prfsm,var(--grid-product_price_fsm)) - va
 .related-swatches li:focus-within .tooltip-label { opacity:1; top:-32px; visibility:visible }
 .related-swatches li.disabled { opacity:.45 }
 @media (max-width:767px) { .related-swatches { gap:4px; margin-left:0 } }
+/* Collection page only: no colour swatches under card prices (grid and list view) */
+.template-collection #collection-products .grid-swatches { display:none !important; }
 .grid-content.swapping .grid-image img { opacity:.6; transition:opacity .2s }
 
 .grid-timer { font-size:var(--grid-timer_fs); opacity:1; bottom:8px; z-index:11; gap:4px; }

@@ -222,6 +222,17 @@
 <div class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
     <div class="facets{% if section_st.fullwidth %} fw-section{% if section_st.npd %} npd{% endif %}{% else %} page-width{% endif %}" id="Collection">
         <div class="{% unless section_st.sbpos == 'top' %}fl f-col f-ais f-row-md{% endunless %}">
+            {%- if section_st.filters and section_st.sbpos != 'top' and section_st.sbpos != 'popup' -%}
+                <script>
+                    (function () {
+                        /* Desktop: the filter sidebar starts hidden. Once the customer shows it, it stays shown for the
+                           session (category, filter and page changes reload the page). Runs before the sidebar renders. */
+                        var shown = false;
+                        try { shown = sessionStorage.getItem('oth-filters-shown') === '1'; } catch (e) {}
+                        if (!shown && window.matchMedia('(min-width: 1025px)').matches) document.getElementById('Collection').classList.add('filters-hidden');
+                    })();
+                </script>
+            {%- endif -%}
             {%- if section_st.filters and section_st.sbpos != 'top' -%}
                 <filters-form class="sidebar sidebar-filter fl f-col gap anim{% if section_st.sbpos == 'popup' %} sidebar-popup custom-scroll{% endif %}{% if section_st.sbpos == 'right' %} order2 sb_right{% endif %}" id="collection-filters" data-id="{{ section.id }}" data-url="{{ shop.url }}{{ collection.url | split: "?" | first }}" style="--gap:{{ section_st.sdgap }}px;--gapm:{{ section_st.sdgapm }}px;">
                     {{ block_data }}
@@ -254,6 +265,38 @@
                 <div class="toolbar fl f-jcsb f-aic mb15 fs13">
                     {%- if section_st.sbpos == 'popup' and section_st.filters -%}
                         <div class="fl f-aic gap" style="--gap:15px;">{{ filter_button }}{{ pr_view }}</div>
+                    {%- elsif section_st.filters and section_st.sbpos != 'top' -%}
+                        <div class="toolbar-start fl f-aic">
+                            {%- comment -%} Desktop only: FILTERS shows/hides the sidebar; the grid widens to 4 columns while hidden. {%- endcomment -%}
+                            <button type="button" class="filters-visibility-toggle" aria-controls="collection-filters" aria-expanded="true" hidden>
+                                <span class="filters-visibility-toggle__hide">Hide filters</span><span class="filters-visibility-toggle__show">Filters</span>
+                            </button>
+                            <script>
+                                (function () {
+                                    var key = 'oth-filters-shown';
+                                    var root = document.getElementById('Collection');
+                                    var btn = document.currentScript.previousElementSibling;
+                                    var desktop = window.matchMedia('(min-width: 1025px)');
+                                    function shownStored() { try { return sessionStorage.getItem(key) === '1'; } catch (e) { return false; } }
+                                    function sync() { btn.setAttribute('aria-expanded', root.classList.contains('filters-hidden') ? 'false' : 'true'); }
+                                    btn.hidden = false;
+                                    sync();
+                                    btn.addEventListener('click', function () {
+                                        var hide = !root.classList.contains('filters-hidden');
+                                        var grid = document.getElementById('collection-products');
+                                        if (grid) { grid.classList.remove('oth-reflow'); void grid.offsetWidth; grid.classList.add('oth-reflow'); }
+                                        root.classList.toggle('filters-hidden', hide);
+                                        try { sessionStorage.setItem(key, hide ? '0' : '1'); } catch (e) {}
+                                        sync();
+                                    });
+                                    if (desktop.addEventListener) desktop.addEventListener('change', function () {
+                                        root.classList.toggle('filters-hidden', desktop.matches && !shownStored());
+                                        sync();
+                                    });
+                                })();
+                            </script>
+                            {{ filter_button }}{{ pr_view }}
+                        </div>
                     {%- else -%}
                         {{ filter_button }}{{ pr_view }}
                     {%- endif -%}
@@ -330,6 +373,138 @@
   @media (max-width: 767px) {
     #pagination .pagination li a {
       margin: 0 3px;
+    }
+  }
+  /* Hide / show filters (desktop sidebar only) */
+  .filters-visibility-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 24px 0 0;
+    padding: 0;
+    line-height: 1;
+    border: 0;
+    background: none;
+    color: #111111;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .filters-visibility-toggle::before {
+    content: "";
+    width: 14px;
+    height: 10px;
+    background:
+      linear-gradient(currentColor, currentColor) 0 0 / 14px 1.5px no-repeat,
+      linear-gradient(currentColor, currentColor) 0 50% / 10px 1.5px no-repeat,
+      linear-gradient(currentColor, currentColor) 0 100% / 6px 1.5px no-repeat;
+  }
+
+  .filters-visibility-toggle:hover {
+    opacity: .6;
+  }
+
+  .filters-visibility-toggle:focus-visible {
+    outline: 2px solid #111111;
+    outline-offset: 3px;
+  }
+
+  .filters-visibility-toggle__show,
+  .filters-hidden .filters-visibility-toggle__hide {
+    display: none;
+  }
+
+  .filters-hidden .filters-visibility-toggle__show {
+    display: inline;
+  }
+
+  @media (max-width: 1024px) {
+    .filters-visibility-toggle {
+      display: none !important;
+    }
+
+    /* Mobile/tablet: the left group adds no box, so the toolbar lays out exactly as before */
+    .toolbar-start {
+      display: contents;
+    }
+  }
+
+  /* Sidebar "Filters" text block: tighter gap under its title */
+  #collection-filters .custom_bk .widget-title {
+    padding-bottom: 6px;
+  }
+
+  @media (min-width: 1025px) {
+    /* The sidebar column folds away (width, margin, opacity); its markup stays in the page.
+       Visibility switches after the fold so hidden filters are not focusable. */
+    #collection-filters {
+      transition: width .3s ease, margin .3s ease, opacity .2s ease, visibility 0s linear 0s;
+    }
+
+    #collection-filters > * {
+      min-width: 300px; /* content keeps its width while the column animates */
+    }
+
+    #Collection.filters-hidden #collection-filters {
+      width: 0;
+      margin-inline-start: 0;
+      margin-inline-end: 0;
+      opacity: 0;
+      visibility: hidden;
+      overflow: hidden;
+      transition: width .3s ease, margin .3s ease, opacity .2s ease, visibility 0s linear .3s;
+    }
+
+    /* Hidden: the grid takes the full width (3 -> 4 columns); a short fade smooths the reflow */
+    #Collection.filters-hidden #collection-products.rwcols-lg-3 > .gitem {
+      width: 25%;
+    }
+
+    #collection-products.oth-reflow {
+      animation: oth-grid-reflow .35s ease;
+    }
+
+    @keyframes oth-grid-reflow {
+      from { opacity: .25; }
+      to { opacity: 1; }
+    }
+  }
+
+  @media (min-width: 1025px) and (prefers-reduced-motion: reduce) {
+    #collection-filters,
+    #Collection.filters-hidden #collection-filters {
+      transition: none;
+    }
+
+    #collection-products.oth-reflow {
+      animation: none;
+    }
+  }
+
+  /* Sort: show the existing "Sort by" label as a small heading beside the dropdown (tablet and up) */
+  @media (min-width: 768px) {
+    .toolbar .sorting {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toolbar .sorting label[for="sort-by"] {
+      position: static !important;
+      width: auto !important;
+      height: auto !important;
+      margin: 0 !important;
+      overflow: visible !important;
+      clip: auto !important;
+      white-space: nowrap;
+      color: #111111;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
   }
 </style>

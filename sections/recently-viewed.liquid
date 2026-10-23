@@ -18,7 +18,7 @@
                 <div class="swiper-wrapper recentPrList">
                     {%- for item in search.results -%}
                         <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
-                            {%- render 'product-card-grid', product: item, section_st: section_st, sizes: sizes -%}
+                            {%- render 'product-card-grid', product: item, section_st: section_st, sizes: sizes, showSw: false -%}
                         </div>
                     {%- endfor -%}
                 </div>
@@ -29,7 +29,7 @@
                 class="grid rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products recentPrList">
                 {%- for item in search.results -%}
                     <div class="gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
-                        {%- render 'product-card-grid', product: item, section_st: section_st, sizes: sizes -%}
+                        {%- render 'product-card-grid', product: item, section_st: section_st, sizes: sizes, showSw: false -%}
                     </div>
                 {%- endfor -%}
             </recently-viewed-products>

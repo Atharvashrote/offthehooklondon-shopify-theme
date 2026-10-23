@@ -21,7 +21,7 @@
         {%- capture products_data -%}
             {%- for recommendation in recommendations.products -%}
                 <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>
-                    {%- render 'product-card-grid', product:recommendation, section_st:section_st, sizes:sizes -%}
+                    {%- render 'product-card-grid', product:recommendation, section_st:section_st, sizes:sizes, showSw:false -%}
                 </div>
             {%- endfor -%}
         {%- endcapture -%}

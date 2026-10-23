@@ -1328,6 +1328,71 @@ endif
 })();
 </script>
 
+<script>
+/* =========================================================
+   OFF THE HOOK - ACCORDION STATE (desktop sidebar)
+   Presentation only: never touches inputs, URLs or the
+   category logic above. CATEGORIES and any group with an
+   active selection start open, the rest closed. The
+   customer's own open/close choices are remembered for the
+   session and re-applied after the AJAX filter refresh,
+   which re-renders every group. The mobile drawer keeps the
+   theme behaviour (all groups open).
+   ========================================================= */
+(function () {
+  'use strict';
+
+  var KEY = 'oth-filter-groups';
+  var desktop = window.matchMedia('(min-width: 1025px)');
+
+  function read() {
+    try { return JSON.parse(sessionStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
+  }
+
+  function write(state) {
+    try { sessionStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function groupKey(group) {
+    var summary = group.querySelector(':scope > summary');
+    return summary ? summary.textContent.replace(/\s+/g, ' ').trim().toUpperCase() : '';
+  }
+
+  function hasSelection(group) {
+    if (group.classList.contains('collection-category-global-filter')) return true;
+    if (group.querySelector('input[type="checkbox"]:checked')) return true;
+    if (!group.querySelector('input[name^="filter.v.price"]')) return false;
+    var params = new URLSearchParams(window.location.search);
+    return !!(params.get('filter.v.price.gte') || params.get('filter.v.price.lte'));
+  }
+
+  function apply() {
+    if (!desktop.matches) return;
+    var state = read();
+    document.querySelectorAll('#CollectionFiltersForm .filters-item__wrapper > details.filters-item').forEach(function (group) {
+      var key = groupKey(group);
+      group.open = Object.prototype.hasOwnProperty.call(state, key) ? state[key] : hasSelection(group);
+    });
+  }
+
+  document.addEventListener('click', function (event) {
+    var summary = event.target.closest('#CollectionFiltersForm .filters-item__wrapper > details.filters-item > summary');
+    if (!summary || !desktop.matches) return;
+    var group = summary.parentElement;
+    setTimeout(function () {
+      var state = read();
+      state[groupKey(group)] = group.open;
+      write(state);
+    }, 0);
+  });
+
+  apply();
+
+  var wrapper = document.querySelector('#CollectionFiltersForm .filters-item__wrapper');
+  if (wrapper) new MutationObserver(apply).observe(wrapper, { childList: true });
+  if (desktop.addEventListener) desktop.addEventListener('change', apply);
+})();
+</script>
 <style>
 /* =========================================================
    OFF THE HOOK - FINAL COLLECTION FILTER UI
@@ -1887,6 +1952,76 @@ endif
     overflow: visible !important;
 }
 
+/* =========================================================
+   ACCORDION ROWS - small chevron, compact spacing
+   The #CollectionFiltersForm prefix outranks the older
+   "FILTER SPACING" !important rules in theme.css (18px gaps,
+   20px paddings, 12px under headings, 5px row padding).
+   ========================================================= */
+#CollectionFiltersForm .filters-item__wrapper {
+    gap: 0 !important; /* group padding + separator already space the rows */
+}
+
+#CollectionFiltersForm .filters-item__wrapper > .sidebar-widget {
+    margin: 0 !important;
+    padding: 12px 0 !important;
+}
+
+#CollectionFiltersForm .filters-item__wrapper > .sidebar-widget.category-filter-first {
+    padding-top: 4px !important;
+}
+
+#CollectionFiltersForm .filters-item__wrapper > .sidebar-widget .filters-title {
+    margin-bottom: 10px !important;
+    line-height: 18px;
+}
+
+/* base.css gives every <details> content 0.7rem bottom padding (kept for its open/close animation elsewhere) */
+#CollectionFiltersForm .filters-item__wrapper > details.filters-item::details-content {
+    padding-block-end: 0;
+}
+
+/* Checkbox rows: about 8px between labels */
+#CollectionFiltersForm .filters-item__wrapper > .sidebar-widget .filters-select__list > li:not(.color):not(.pill) {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+.filters-item__wrapper > details.filters-item > .filters-title {
+    list-style: none;
+    cursor: pointer;
+}
+
+.filters-item__wrapper > details.filters-item > .filters-title::-webkit-details-marker {
+    display: none;
+}
+
+.filters-item__wrapper > details.filters-item > .filters-title::after {
+    content: "";
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    margin: -4px 2px 0 12px;
+    border-right: 1.5px solid #111111;
+    border-bottom: 1.5px solid #111111;
+    transform: rotate(45deg);
+    transition: transform .2s ease, margin .2s ease;
+}
+
+.filters-item__wrapper > details.filters-item[open] > .filters-title::after {
+    margin-top: 4px;
+    transform: rotate(-135deg);
+}
+
+/* Collapsed rows: no gap under the heading */
+#CollectionFiltersForm .filters-item__wrapper > details.filters-item:not([open]) > .filters-title {
+    margin-bottom: 0 !important;
+}
+
+.filters-item__wrapper > details.filters-item > .filters-title:focus-visible {
+    outline: 2px solid #111111;
+    outline-offset: 4px;
+}
 </style>
 
 {% schema %}
