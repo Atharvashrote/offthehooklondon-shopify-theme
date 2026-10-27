@@ -313,12 +313,21 @@
    SWIPER ARROWS
    ========================================================= */
 
+/* Self-contained: the homepage no longer loads Swiper's own stylesheet
+   (swiper-bundle.min.css came only with the removed premium product slider),
+   so position and arrow icons are defined here instead of relying on it. */
 .premiumReels .swiper-button-next,
 .premiumReels .swiper-button-prev {
+    position: absolute;
+    top: 50%;
+    z-index: 10;
+
     width: 42px;
     height: 42px;
 
     margin-top: -21px;
+
+    cursor: pointer;
 
     display: flex;
 
@@ -344,11 +353,28 @@
 
 /* Arrow icons */
 
+/* Chevrons drawn with borders (no icon font needed) */
 .premiumReels .swiper-button-next::after,
 .premiumReels .swiper-button-prev::after {
-    font-size: 15px;
+    content: "";
 
-    font-weight: 600;
+    width: 9px;
+    height: 9px;
+
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+}
+
+.premiumReels .swiper-button-next::after {
+    margin-left: -4px;
+
+    transform: rotate(45deg);
+}
+
+.premiumReels .swiper-button-prev::after {
+    margin-left: 4px;
+
+    transform: rotate(-135deg);
 }
 
 

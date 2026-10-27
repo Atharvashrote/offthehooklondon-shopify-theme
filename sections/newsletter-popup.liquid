@@ -1,5 +1,4 @@
-{%- capture newsletter_popup -%}
-{%- liquid 
+{%- liquid
     assign section_st = section.settings
     assign imgsize = '450px'
     if section_st.style == 'st1'
@@ -7,7 +6,9 @@
     endif
 -%}
 {%- capture showexitpp -%}{% if section_st.index %}index,{% endif %}{% if section_st.product %}product,{% endif %}{% if section_st.collection %}collection,{% endif %}{% if section_st.article %}article,{% endif %}{% if section_st.blog %}blog,{% endif %}{% if section_st.cart %}cart,{% endif %}{% if section_st.page %}page{% endif %}{%- endcapture -%}
-{%- if showexitpp contains request.page_type -%}
+{%- if showexitpp contains request.page_type and customer == blank -%}
+{%- if section_st.design == 'classic' -%}
+{%- capture newsletter_popup -%}
 <newsletter-popup id="{{ section.id }}" class="tinglebox {{ section_st.style }} pp-hide of-hidden" data-time="{{ section_st.seconds | times: 1000 }}" style="--bg:{% if section_st.bgg != blank %}{{ section_st.bgg }}{% else %}{{ section_st.bg }}{% endif %};--bdr:{{ section_st.brad }}px;">
     <div id="news-modal" class="{{ section_st.style }} m-auto{% if section_st.style == "st2" %} fl f-aic f-col f-row-md{% endif %}">
         {%- if section_st.image != blank -%}
@@ -26,9 +27,349 @@
         </div>
     </div>
 </newsletter-popup>
-{%- endif -%}
 {%- endcapture -%}
 {{- newsletter_popup | strip_newlines | remove: '	' | replace: "  "," " | replace: "  "," " -}}
+{%- else -%}
+{%- liquid
+  assign accent_html = '<span class="oth-nl__accent">' | append: section_st.heading_accent | append: '</span>'
+  if section_st.heading_accent != blank
+    assign heading_html = section_st.heading | escape | replace: section_st.heading_accent, accent_html
+  else
+    assign heading_html = section_st.heading | escape
+  endif
+-%}
+<style>
+  .oth-nl{--nl-panel:{{ section_st.panel_bg | default: '#FFFFFF' }};--nl-ink:#141414;--nl-accent:{{ section_st.accent | default: '#657653' }};--nl-accent-dark:color-mix(in srgb,var(--nl-accent) 80%,#000);--nl-muted:#555555;--nl-line:#e6e6e6;--nl-gap:24px}
+  .tingle-modal-box .oth-nl{display:block}
+  .oth-nl.tinglebox{position:relative;width:100%;background:var(--nl-panel);color:var(--nl-ink);border:1px solid rgba(20,20,20,.10);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.35);overflow:hidden}
+  .oth-nl *,.oth-nl *::before,.oth-nl *::after{box-sizing:border-box}
+  .oth-nl__grid{display:grid;grid-template-columns:1fr 1fr;min-height:min(620px,calc(100dvh - 48px));max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px)}
+
+  /* Campaign image */
+  .oth-nl__media{position:relative;overflow:hidden;background:#1b1714 radial-gradient(120% 90% at 30% 20%,color-mix(in srgb,var(--nl-accent) 45%,transparent) 0%,transparent 60%)}
+  .oth-nl__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .oth-nl__media::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 32%,rgba(0,0,0,0) 52%,rgba(0,0,0,.68) 100%);z-index:1}
+  .oth-nl__media::after{content:"";position:absolute;inset:16px;border:1px solid rgba(255,255,255,.28);border-radius:10px;z-index:1;pointer-events:none}
+  .oth-nl__brand{position:absolute;top:36px;left:38px;right:38px;z-index:2;color:#fff;display:flex;flex-direction:column;gap:6px;line-height:1}
+  .oth-nl__brand-name{font-family:var(--ft2);font-size:16px;font-weight:700;letter-spacing:.32em;text-transform:uppercase}
+  .oth-nl__brand-sub{font-size:10px;font-weight:600;letter-spacing:.5em;text-transform:uppercase;color:color-mix(in srgb,var(--nl-accent) 40%,#fff);text-shadow:0 1px 6px rgba(0,0,0,.35)}
+  .oth-nl__media-copy{position:absolute;left:38px;right:38px;bottom:38px;z-index:2;color:#fff}
+  .oth-nl__kicker{margin:0 0 10px;font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;opacity:.85}
+  .oth-nl__tagline{margin:0;font-family:var(--ft2);font-size:30px;font-weight:500;line-height:1.12;letter-spacing:-.005em;max-width:15ch}
+
+  /* Signup panel */
+  .oth-nl__body{position:relative;overflow-y:auto;max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);padding:58px 52px 34px;display:flex;flex-direction:column;justify-content:safe center;text-align:center;overscroll-behavior:contain}
+  .oth-nl__eyebrow{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 0 18px;font-size:11px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--nl-accent)}
+  .oth-nl__eyebrow::before,.oth-nl__eyebrow::after{content:"";width:22px;height:1px;background:currentColor;opacity:.6;flex:none}
+  .oth-nl__heading{margin:0;font-family:var(--ft2);font-size:60px;font-weight:700;line-height:.95;letter-spacing:-.01em;text-transform:uppercase;color:var(--nl-ink)}
+  .oth-nl__accent{color:var(--nl-accent)}
+  .oth-nl__sub{margin:12px 0 0;font-size:17px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--nl-ink)}
+  .oth-nl__rule{display:block;width:44px;height:2px;margin:22px auto;background:var(--nl-accent)}
+  .oth-nl__desc{margin:0 auto 26px;max-width:340px;font-size:14px;line-height:1.6;color:var(--nl-muted)}
+  .oth-nl__field{display:flex;flex-direction:column;gap:12px}
+  .oth-nl__input{width:100%;height:54px;margin:0;padding:0 18px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;color:var(--nl-ink);font-size:15px;text-align:left;outline:none;transition:border-color .2s,box-shadow .2s}
+  .oth-nl__input::placeholder{color:#8c8c8c}
+  .oth-nl__input:focus{border-color:var(--nl-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--nl-accent) 20%,transparent)}
+  .oth-nl__input[aria-invalid="true"]{border-color:#b3261e}
+  .oth-nl__btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;margin:0;padding:0 20px;border:0;border-radius:6px;background:var(--nl-accent);color:#fff;font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:background-color .25s}
+  .oth-nl__btn svg{width:18px;height:18px;transition:transform .25s}
+  .oth-nl__btn:hover,.oth-nl__btn:focus-visible{background:var(--nl-accent-dark)}
+  .oth-nl__btn:focus-visible{outline:2px solid var(--nl-accent);outline-offset:3px}
+  .oth-nl__btn:hover svg{transform:translateX(4px)}
+  .oth-nl__btn[disabled]{opacity:.7;cursor:progress}
+  .oth-nl__error{min-height:0;margin:0;font-size:12.5px;line-height:1.4;color:#b3261e;text-align:left}
+  .oth-nl__error:empty{display:none}
+  .oth-nl__benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:30px 0 0;padding:24px 0 0;list-style:none;border-top:1px solid var(--nl-line)}
+  .oth-nl__benefit{display:flex;flex-direction:column;align-items:center;gap:10px;margin:0;font-size:10.5px;font-weight:600;line-height:1.35;letter-spacing:.12em;text-transform:uppercase;color:var(--nl-ink)}
+  .oth-nl__icon{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid color-mix(in srgb,var(--nl-accent) 45%,transparent);border-radius:50%;color:var(--nl-accent)}
+  .oth-nl__icon svg{width:19px;height:19px}
+  .oth-nl__note{margin:24px 0 0;font-size:12px;color:var(--nl-muted)}
+  .oth-nl__dismiss{margin:10px auto 0;padding:4px;border:0;background:none;color:var(--nl-accent);font-size:12px;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--nl-accent) 45%,transparent);text-underline-offset:3px;cursor:pointer}
+  .oth-nl__dismiss:hover,.oth-nl__dismiss:focus-visible{color:var(--nl-accent-dark);text-decoration-color:currentColor}
+  .oth-nl svg{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+  /* Success state */
+  .oth-nl__done{display:none;flex-direction:column;align-items:center}
+  .oth-nl--done .oth-nl__pre{display:none}
+  .oth-nl--done .oth-nl__done{display:flex}
+  .oth-nl__check{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 0 22px;border-radius:50%;background:var(--nl-accent);color:#fff}
+  .oth-nl__check svg{width:28px;height:28px;stroke-width:2}
+  .oth-nl__done-heading{margin:0;font-family:var(--ft2);font-size:44px;font-weight:700;line-height:1;text-transform:uppercase}
+  .oth-nl__done-text{margin:16px auto 26px;max-width:340px;font-size:14px;line-height:1.6;color:var(--nl-muted)}
+  .oth-nl__done-text strong{color:var(--nl-ink)}
+
+  /* Modal shell overrides, scoped to this popup only */
+  .tingle-modal.nwPopup:has(.oth-nl){padding:24px!important}
+  .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal-box{width:100%!important;max-width:960px!important;max-height:none!important;margin:auto!important;padding:0!important;background:transparent!important;overflow:visible!important;border-radius:20px!important}
+  .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close{position:absolute!important;top:16px!important;right:16px!important;left:auto!important;width:38px!important;height:38px!important;padding:0!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;background:rgba(255,255,255,.94)!important;border:1px solid rgba(20,20,20,.12)!important;border-radius:50%!important;box-shadow:0 2px 10px rgba(0,0,0,.14)!important;z-index:5!important;font-size:0!important;line-height:0!important;cursor:pointer!important;transform:none!important}
+  .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__closeIcon,.tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__closeLabel{display:none!important}
+  .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close::before,.tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close::after{content:""!important;position:absolute!important;left:50%!important;top:50%!important;width:14px!important;height:1.5px!important;background:#141414!important;border-radius:2px!important}
+  .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close::before{transform:translate(-50%,-50%) rotate(45deg)!important}
+  .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close::after{transform:translate(-50%,-50%) rotate(-45deg)!important}
+  .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close:hover{background:#fff!important}
+
+  @media (min-width:768px) and (max-width:989px){
+    .oth-nl__grid{grid-template-columns:.85fr 1.15fr}
+    .oth-nl__body{padding:52px 34px 30px}
+    .oth-nl__heading{font-size:48px}
+    .oth-nl__tagline{font-size:24px}
+  }
+  @media (min-width:768px) and (max-height:760px){
+    .oth-nl__body{padding:38px 44px 22px}
+    .oth-nl__eyebrow{margin-bottom:12px}
+    .oth-nl__heading{font-size:50px}
+    .oth-nl__rule{margin:16px auto}
+    .oth-nl__desc{margin-bottom:18px}
+    .oth-nl__benefits{margin-top:20px;padding-top:16px}
+    .oth-nl__note{margin-top:14px}
+    .oth-nl__dismiss{margin-top:4px}
+  }
+  @media (max-width:767px){
+    .tingle-modal.nwPopup:has(.oth-nl){padding:12px!important}
+    .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal-box{max-width:440px!important}
+    .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close{top:12px!important;right:12px!important;width:34px!important;height:34px!important}
+    .oth-nl.tinglebox{border-radius:16px;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
+    .oth-nl__grid{grid-template-columns:1fr;min-height:0;max-height:none}
+    .oth-nl__media{height:min(150px,22dvh);min-height:96px}
+    .oth-nl__media::after{inset:10px;border-radius:8px}
+    .oth-nl__brand{top:auto;bottom:22px;left:24px;right:60px}
+    .oth-nl__brand-name{font-size:14px}
+    .oth-nl__media-copy{display:none}
+    .oth-nl__body{max-height:none;overflow:visible;padding:26px 22px 20px}
+    .oth-nl__eyebrow{margin-bottom:12px;font-size:9.5px;letter-spacing:.2em;gap:8px}
+    .oth-nl__eyebrow::before,.oth-nl__eyebrow::after{width:14px}
+    .oth-nl__heading{font-size:40px}
+    .oth-nl__sub{margin-top:8px;font-size:13px;letter-spacing:.2em}
+    .oth-nl__rule{margin:14px auto}
+    .oth-nl__desc{margin-bottom:18px;font-size:13px;line-height:1.5}
+    .oth-nl__field{gap:10px}
+    .oth-nl__input{height:50px;font-size:16px}
+    .oth-nl__btn{height:52px;font-size:12px;letter-spacing:.14em}
+    .oth-nl__benefits{gap:8px;margin-top:20px;padding-top:16px}
+    .oth-nl__benefit{gap:7px;font-size:9px;letter-spacing:.08em}
+    .oth-nl__icon{width:34px;height:34px}
+    .oth-nl__icon svg{width:16px;height:16px}
+    .oth-nl__note{margin-top:16px;font-size:11px}
+    .oth-nl__dismiss{margin-top:6px;font-size:11.5px}
+    .oth-nl__done-heading{font-size:34px}
+  }
+  @media (max-width:767px) and (max-height:640px){
+    .oth-nl__media{height:96px}
+    .oth-nl__desc{display:none}
+    .oth-nl__rule{margin:10px auto 14px}
+  }
+</style>
+<newsletter-popup id="{{ section.id }}" class="tinglebox oth-nl pp-hide" data-time="{{ section_st.seconds | times: 1000 }}" role="dialog" aria-modal="true" aria-labelledby="OthNlHeading-{{ section.id }}">
+  <div class="oth-nl__grid">
+    <div class="oth-nl__media">
+      {%- if section_st.image != blank -%}
+        {%- assign img_pos = section_st.image.presentation.focal_point | prepend: 'object-position:' -%}
+        {%- comment -%} sizes covers the ~680px-tall desktop panel, so square images cropped by object-fit stay sharp. {%- endcomment -%}
+        {{ section_st.image | image_url: width: 1600 | image_tag: loading: 'lazy', class: 'oth-nl__img', sizes: '(min-width: 768px) 700px, 100vw', widths: '400,600,800,1000,1200,1400,1600', style: img_pos, alt: section_st.image.alt }}
+      {%- endif -%}
+      <div class="oth-nl__brand">
+        {%- if section_st.overlay_brand != blank -%}<span class="oth-nl__brand-name">{{ section_st.overlay_brand | escape }}</span>{%- endif -%}
+        {%- if section_st.overlay_sub != blank -%}<span class="oth-nl__brand-sub">{{ section_st.overlay_sub | escape }}</span>{%- endif -%}
+      </div>
+      {%- if section_st.overlay_kicker != blank or section_st.overlay_title != blank -%}
+        <div class="oth-nl__media-copy">
+          {%- if section_st.overlay_kicker != blank -%}<p class="oth-nl__kicker">{{ section_st.overlay_kicker | escape }}</p>{%- endif -%}
+          {%- if section_st.overlay_title != blank -%}<p class="oth-nl__tagline">{{ section_st.overlay_title | escape }}</p>{%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="oth-nl__body">
+      {%- form 'customer', id: 'newsletter-popup', class: 'oth-nl__form', novalidate: 'novalidate' -%}
+        {%- if form.posted_successfully? -%}{%- assign form_posted = true -%}{%- endif -%}
+        <div class="oth-nl__pre"{% if form_posted %} hidden{% endif %}>
+          {%- if section_st.eyebrow != blank -%}<p class="oth-nl__eyebrow">{{ section_st.eyebrow | escape }}</p>{%- endif -%}
+          <div class="oth-nl__heading" role="heading" aria-level="2" id="OthNlHeading-{{ section.id }}">{{ heading_html }}</div>
+          {%- if section_st.subheading != blank -%}<p class="oth-nl__sub">{{ section_st.subheading | escape }}</p>{%- endif -%}
+          <span class="oth-nl__rule" aria-hidden="true"></span>
+          {%- if section_st.description != blank -%}<p class="oth-nl__desc">{{ section_st.description | escape }}</p>{%- endif -%}
+
+          <div class="oth-nl__field">
+            <input type="hidden" name="contact[tags]" value="newsletter,popup-welcome-10">
+            <label for="OthNlEmail-{{ section.id }}" class="hidden_txt">{{ section_st.placeholder | escape }}</label>
+            <input id="OthNlEmail-{{ section.id }}" class="oth-nl__input" type="email" name="contact[email]" required
+              autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
+              placeholder="{{ section_st.placeholder | escape }}" aria-describedby="OthNlError-{{ section.id }}"
+              {% if form.errors %}aria-invalid="true"{% endif %}>
+            <p class="oth-nl__error" id="OthNlError-{{ section.id }}" role="alert" aria-live="assertive">
+              {%- if form.errors -%}{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}{%- endif -%}
+            </p>
+            <button type="submit" class="oth-nl__btn">
+              <span>{{ section_st.button | escape }}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+
+          <ul class="oth-nl__benefits">
+            {%- if section_st.benefit_1 != blank -%}
+              <li class="oth-nl__benefit"><span class="oth-nl__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>{{ section_st.benefit_1 | escape }}</li>
+            {%- endif -%}
+            {%- if section_st.benefit_2 != blank -%}
+              <li class="oth-nl__benefit"><span class="oth-nl__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9L11 3z"/><path d="M19 15l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"/></svg></span>{{ section_st.benefit_2 | escape }}</li>
+            {%- endif -%}
+            {%- if section_st.benefit_3 != blank -%}
+              <li class="oth-nl__benefit"><span class="oth-nl__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>{{ section_st.benefit_3 | escape }}</li>
+            {%- endif -%}
+          </ul>
+          {%- if section_st.note != blank -%}<p class="oth-nl__note">{{ section_st.note | escape }}</p>{%- endif -%}
+          {%- if section_st.dismiss_text != blank -%}<button type="button" class="oth-nl__dismiss" data-oth-nl-close>{{ section_st.dismiss_text | escape }}</button>{%- endif -%}
+        </div>
+
+        <div class="oth-nl__done" tabindex="-1">
+          <span class="oth-nl__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          <p class="oth-nl__done-heading">{{ section_st.success_heading | escape }}</p>
+          <p class="oth-nl__done-text"><span data-oth-nl-email-line hidden>{{ section_st.success_lead | escape }} <strong data-oth-nl-email></strong>.</span> {{ section_st.success_text | escape }}</p>
+          <button type="button" class="oth-nl__btn" data-oth-nl-close>{{ section_st.success_button | escape }}</button>
+        </div>
+      {%- endform -%}
+      <input type="checkbox" id="dontshowpp" hidden aria-hidden="true" tabindex="-1">
+    </div>
+  </div>
+</newsletter-popup>
+<script>
+  (function () {
+    var root = document.getElementById({{ section.id | json }});
+    if (!root) return;
+    var form = root.querySelector('form.oth-nl__form');
+    var input = root.querySelector('.oth-nl__input');
+    var errorEl = root.querySelector('.oth-nl__error');
+    var button = root.querySelector('.oth-nl__form button[type="submit"]');
+    var signupDays = {{ section_st.signup_days | default: 365 | json }};
+    var MSG = {
+      invalid: {{ section_st.msg_invalid | json }},
+      duplicate: {{ section_st.msg_duplicate | json }},
+      generic: 'Something went wrong. Please try again in a moment.'
+    };
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    /* Same cookie the theme's NewsletterPopup checks; written here because vendor.js loads deferred.
+       No days = session cookie, cleared when the browser closes. */
+    function hidePopupFor(days) {
+      var expires = '';
+      if (days) {
+        var d = new Date();
+        d.setTime(d.getTime() + 864e5 * days);
+        expires = ';expires=' + d.toUTCString();
+      }
+      document.cookie = 'nwSignup=closed' + expires + ';path=/;SameSite=None; secure';
+    }
+
+    /* Guests: once the popup has opened, keep it hidden for the rest of the browser session.
+       Skipped when a cookie already exists so the long signup cookie is never shortened. */
+    if (window.customElements) {
+      customElements.whenDefined('newsletter-popup').then(function () {
+        var open = root.init;
+        if (typeof open !== 'function') return;
+        root.init = function () {
+          if (!/(^|;\s*)nwSignup=closed/.test(document.cookie)) hidePopupFor(0);
+          return open.apply(this, arguments);
+        };
+      });
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      input.setAttribute('aria-invalid', 'true');
+    }
+
+    function clearError() {
+      errorEl.textContent = '';
+      input.removeAttribute('aria-invalid');
+    }
+
+    function showSuccess(email) {
+      var line = root.querySelector('[data-oth-nl-email-line]');
+      if (email) {
+        root.querySelector('[data-oth-nl-email]').textContent = email;
+        line.hidden = false;
+      }
+      root.querySelector('.oth-nl__pre').hidden = true;
+      root.classList.add('oth-nl--done');
+      /* Stop the theme's close handler replacing the long signup cookie with the 1-day dismiss cookie. */
+      var keep = document.getElementById('dontshowpp');
+      if (keep) keep.checked = false;
+      hidePopupFor(signupDays);
+      var done = root.querySelector('.oth-nl__done');
+      if (done) done.focus({ preventScroll: true });
+    }
+
+    /* Returning from a non-JS / challenge submission: hide future popups and show the confirmation now. */
+    var postedBack = /[?&]customer_posted=true/.test(location.search) && location.hash === '#newsletter-popup';
+    if (root.querySelector('.oth-nl__pre[hidden]') || postedBack) {
+      hidePopupFor(signupDays);
+      document.addEventListener('DOMContentLoaded', function () {
+        if (window.Shopify && Shopify.designMode) return;
+        showSuccess('');
+        if (typeof root.init === 'function') root.init();
+      });
+    }
+
+    root.addEventListener('click', function (e) {
+      if (!e.target.closest('[data-oth-nl-close]')) return;
+      e.preventDefault();
+      var close = document.querySelector('.nwPopup .tingle-modal__close');
+      if (close) close.click();
+    });
+
+    input.addEventListener('input', clearError);
+
+    function nativeSubmit() {
+      HTMLFormElement.prototype.submit.call(form);
+    }
+
+    function findServerError(doc) {
+      var el = doc.querySelector('#newsletter-popup .oth-nl__error, .errors, .form-error, .email-signup__message--error, .note--error');
+      return el ? el.textContent.replace(/\s+/g, ' ').trim() : '';
+    }
+
+    form.addEventListener('submit', function (e) {
+      var email = input.value.trim();
+      input.value = email;
+      if (!EMAIL_RE.test(email)) {
+        e.preventDefault();
+        showError(MSG.invalid);
+        input.focus();
+        return;
+      }
+      if (!window.fetch || !window.FormData || !window.DOMParser) return;
+      e.preventDefault();
+      clearError();
+      button.disabled = true;
+
+      fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { Accept: 'text/html' } })
+        .then(function (res) {
+          var url = res.url || '';
+          if (url.indexOf('/challenge') !== -1) {
+            /* Shopify's spam check needs the full page; hand the submission over to it. */
+            nativeSubmit();
+            return null;
+          }
+          if (/[?&]customer_posted=true/.test(url)) {
+            showSuccess(email);
+            return null;
+          }
+          return res.text().then(function (html) {
+            var message = findServerError(new DOMParser().parseFromString(html, 'text/html'));
+            if (/taken|already|exist/i.test(message)) showError(MSG.duplicate);
+            else showError(message || MSG.generic);
+          });
+        })
+        .catch(function () {
+          showError(MSG.generic);
+        })
+        .then(function () {
+          button.disabled = false;
+        });
+    });
+  })();
+</script>
+{%- endif -%}
+{%- endif -%}
 {% schema %}
 {
   "name": "Newsletter popup",
@@ -47,6 +388,17 @@
   ],
   "settings": [
     {
+      "type": "select",
+      "id": "design",
+      "label": "Design",
+      "default": "luxury",
+      "options": [
+        { "value": "luxury", "label": "Luxury split (welcome offer)" },
+        { "value": "classic", "label": "Classic (uses blocks)" }
+      ],
+      "info": "Luxury split uses the settings below. Blocks only appear in the Classic design."
+    },
+    {
       "type": "range",
       "id": "seconds",
       "label": "Show after",
@@ -55,7 +407,182 @@
       "max": 50,
       "step": 1,
       "unit": "sec"
-    },    
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Luxury split: portrait campaign image, at least 1000 × 1300px. Classic horizontal --> maximum width:1000px. Classic vertical --> width:500px, height:650px."
+    },
+    {
+      "type": "number",
+      "id": "signup_days",
+      "label": "Hide popup after signup (days)",
+      "default": 365
+    },
+    {
+      "type": "header",
+      "content": "Luxury split: image overlay"
+    },
+    {
+      "type": "text",
+      "id": "overlay_brand",
+      "label": "Brand name",
+      "default": "Off The Hook"
+    },
+    {
+      "type": "text",
+      "id": "overlay_sub",
+      "label": "Brand subline",
+      "default": "London"
+    },
+    {
+      "type": "text",
+      "id": "overlay_kicker",
+      "label": "Caption label",
+      "default": "The new season edit"
+    },
+    {
+      "type": "text",
+      "id": "overlay_title",
+      "label": "Caption",
+      "default": "Step out in something unforgettable."
+    },
+    {
+      "type": "header",
+      "content": "Luxury split: signup content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Welcome to Off The Hook London"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "GET 10% OFF"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Accent words in heading",
+      "default": "10%",
+      "info": "This part of the heading is shown in the accent colour."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Your first order"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Join our mailing list and be the first to know about new arrivals, exclusive offers and more."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email placeholder",
+      "default": "Enter your email address"
+    },
+    {
+      "type": "text",
+      "id": "button",
+      "label": "Button label",
+      "default": "Claim my 10% off"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1",
+      "label": "Benefit 1",
+      "default": "Exclusive offers"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2",
+      "label": "Benefit 2",
+      "default": "Early access to new arrivals"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3",
+      "label": "Benefit 3",
+      "default": "Style updates and more"
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Footer note",
+      "default": "No spam. Just great style and exclusive offers."
+    },
+    {
+      "type": "text",
+      "id": "dismiss_text",
+      "label": "Dismiss link",
+      "default": "No, Thanks! I'll pay full price."
+    },
+    {
+      "type": "header",
+      "content": "Luxury split: after signup"
+    },
+    {
+      "type": "text",
+      "id": "success_heading",
+      "label": "Success heading",
+      "default": "You're in."
+    },
+    {
+      "type": "text",
+      "id": "success_lead",
+      "label": "Success lead-in",
+      "default": "We've sent your 10% welcome code to"
+    },
+    {
+      "type": "textarea",
+      "id": "success_text",
+      "label": "Success message",
+      "default": "Check your inbox (and spam folder), then enter the code at checkout to save 10% on your first order.",
+      "info": "Only promise what your welcome email actually sends."
+    },
+    {
+      "type": "text",
+      "id": "success_button",
+      "label": "Success button",
+      "default": "Continue shopping"
+    },
+    {
+      "type": "text",
+      "id": "msg_invalid",
+      "label": "Invalid email message",
+      "default": "Please enter a valid email address."
+    },
+    {
+      "type": "text",
+      "id": "msg_duplicate",
+      "label": "Already subscribed message",
+      "default": "This email is already on our list. The welcome offer is for new subscribers only."
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Accent colour",
+      "default": "#657653",
+      "info": "Used for the heading accent, divider, welcome label, icons, button and dismiss link."
+    },
+    {
+      "type": "color",
+      "id": "panel_bg",
+      "label": "Signup panel background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Classic design"
+    },
     {
       "type": "select",
       "id": "style",
@@ -73,12 +600,6 @@
       ]
     },
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Image",
-      "info": "Horizontal image --> maximum width:1000px. Vertical image --> width:500px, height:650px."
-    },
-    {
       "type": "text_alignment",
       "id": "talign",
       "label": "Text alignment",
@@ -94,7 +615,7 @@
       "type": "color_background",
       "id": "bgg",
       "label": "Background gradient"
-    },    
+    },
     {
         "type": "text",
         "id": "c_msg",

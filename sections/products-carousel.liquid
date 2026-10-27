@@ -7,23 +7,78 @@
     endif
 -%}
 {%- capture sizes -%}
+  {%- if section_st.peek -%}
+  (min-width:1025px) calc(100vw / 4.6),(min-width:767px) calc(100vw / 3.2), calc(100vw / 1.6)
+  {%- else -%}
   (min-width:1024px) calc({{ page_width }} / {{ section_st.grid }}),(min-width:768px) calc(100vw / {{ section_st.gridtb }}), calc(100vw / {{ section_st.gridmb }})
+  {%- endif -%}
 {%- endcapture -%}
-<div id="{{ section.id }}" class="section-cover {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
+{%- if section_st.peek -%}
+{%- liquid
+  assign glide_ms = section_st.speed | at_least: 4 | times: 1000
+  if section_st.products != blank
+    assign peek_count = section_st.products.size
+  else
+    assign peek_count = section_st.collection.products_count | default: 0
+  endif
+  assign peek_count = peek_count | at_most: section_st.rows
+  # Swiper 8 with slidesPerView auto clones only one set of slides; when that set is narrower than the window the loop jams at the end. Clone at least 6.
+  assign peek_clones = peek_count | at_least: 6
+  # Peek cards are ~290px (desktop) / ~225px (mobile) wide; these steps cover 2x-3x screens. Other modes keep the card default.
+  assign card_widths = '320,460,640,800,960,1200'
+-%}
+<script src="{{ 'products-carousel-peek.js' | asset_url }}" defer></script>
+<style>
+  /* Peek layout: left-aligned header, cards run off the right edge so the next one peeks in.
+     Cards are 382:575 portrait; square product shots sit inside with contain on their own #f3f3f1 background. */
+  .pc-peek { --pc-n:1.6; --grid-img_ratio:150.524%; --grid-img_size:contain; }
+  .pc-peek > .page-width { --pc-pl:max(var(--site_gutter), calc((100vw - {{ settings.cntwd }}px) / 2 + var(--site_gutter))); max-width:none; padding-right:0; padding-left:var(--pc-pl); }
+  .pc-peek .section-header, .pc-peek .section-header.tc { text-align:start !important; align-items:flex-start; padding-right:var(--site_gutter); }
+  .pc-peek .section-header:after { margin-left:0; margin-right:0; }
+  /* Slider window bleeds to the screen's left edge (cards sliding out are not clipped at the gutter);
+     the padding keeps the first card on the content edge. Swiper subtracts container padding. */
+  .pc-peek .grid-products { margin-right:0; margin-left:calc(-1 * var(--pc-pl)); padding-left:calc(var(--pc-pl) - var(--grid_productsm)); container-type:inline-size; }
+  .pc-peek .grid-products .gitem { width:calc(100% / var(--pc-n)); }
+  .pc-peek .grid-image { background:#f3f3f1; }
+  .pc-peek.pc-glide .swiper-wrapper { transition-timing-function:linear; }
+  .pc-peek .grid-content .grid-meta { text-align:center; }
+  .pc-peek .swiper-arrows { top:calc((100cqw / var(--pc-n) - 2 * var(--grid_productsm)) * 1.50524 / 2); }
+  .pc-peek .swiper-button-next { right:15px; }
+  .pc-peek .swiper-button-prev { left:calc(var(--pc-pl) + 10px); }
+  @media (min-width:767px) { .pc-peek { --pc-n:3.2; } }
+  @media (min-width:1025px) {
+    .pc-peek { --pc-n:4.6; }
+    .pc-peek .swiper-arrows { top:calc((100cqw / var(--pc-n) - 2 * var(--grid_products)) * 1.50524 / 2); }
+    .pc-peek .grid-products { padding-left:calc(var(--pc-pl) - var(--grid_products)); }
+    .pc-peek .swiper-button-prev { left:calc(var(--pc-pl) + 15px); }
+    .pc-peek .swiper-button-next { right:25px; }
+  }
+</style>
+{%- endif -%}
+{%- comment -%} DEMO-ONLY START: remove this block and the "demo_hide_sold_out" schema setting after the client demo. {%- endcomment -%}
+{%- if section_st.demo_hide_sold_out -%}
+<style>
+  /* Visual only, this section only: no faded image or "Sold out" badge. Sold-out cards still hide their add-to-cart button (theme.css). */
+  #shopify-section-{{ section.id }} .sold-out .grid-image { opacity:1; }
+  #shopify-section-{{ section.id }} .lbl.sold-out { display:none; }
+</style>
+{%- endif -%}
+{%- comment -%} DEMO-ONLY END {%- endcomment -%}
+<div id="{{ section.id }}"{% if section_st.peek and section_st.autoplay %} data-glide-ms="{{ glide_ms }}"{% endif %} class="section-cover{% if section_st.peek %} pc-peek{% if section_st.autoplay %} pc-glide{% endif %}{% endif %} {% render 'sec-settings', section_st:section_st, class: true %}" style="{% render 'sec-settings', section_st:section_st, styles: true %}" {% render 'sec-settings', section_st:section_st, bgimage: true %}>
     <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" id="{{ section.id }}">
 	    {%- render 'sec-title' -%}
 
         <slide-section class="grid rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products swiper"
-            data-swiper='{ "slidesPerView":"auto", "loop":{{ section_st.loop }},{% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+            data-swiper='{ "slidesPerView":"auto", "loop":{{ section_st.loop }},{% if section_st.peek and section_st.loop %}"loopedSlides":{{ peek_clones }},"loopedSlidesLimit":false,{% endif %}{% if section_st.peek and section_st.autoplay %}"autoplay":{ "delay":0, "disableOnInteraction":false, "pauseOnMouseEnter":true }, "speed":{{ glide_ms }},{% elsif section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
             <div class="swiper-wrapper">
                 {%- if section_st.products != blank or section_st.collection != blank -%}                   
                     {%- if section_st.products != blank -%}                                        
                         {%- for product in section_st.products limit: section_st.rows -%}                      
-                              <div class="swiper-slide gitem">{% render 'product-card-grid', product: product, section_st:section_st, sizes: sizes %}</div>
+                              <div class="swiper-slide gitem">{% render 'product-card-grid', product: product, section_st:section_st, sizes: sizes, widths: card_widths %}</div>
                         {%- endfor -%}                   
                     {%- else -%}
                         {%- for product in section_st.collection.products limit: section_st.rows -%}
-                          <div class="swiper-slide gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>{% render 'product-card-grid', product: product, section_st: section_st, sizes: sizes %}</div>
+                          <div class="swiper-slide gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>{% render 'product-card-grid', product: product, section_st: section_st, sizes: sizes, widths: card_widths %}</div>
                         {%- endfor -%}
                     {%- endif -%}
                 {%- else -%}
@@ -126,6 +181,20 @@
           "label": "Text button "
         }
       ]
+    },
+    {
+      "type": "checkbox",
+      "id": "peek",
+      "label": "Portrait peek layout",
+      "default": false,
+      "info": "Tall 2:3 cards, about 4.6 on desktop, 3.2 on tablet and 1.6 on mobile, with the next card peeking in on the right. Overrides the column settings below. With auto-rotate on, cards glide continuously (one card per autoplay-speed seconds, minimum 4) and pause on hover; reduced-motion visitors get no glide."
+    },
+    {
+      "type": "checkbox",
+      "id": "demo_hide_sold_out",
+      "label": "DEMO ONLY: hide sold-out styling",
+      "default": false,
+      "info": "Temporary, for client demos. Removes the faded image and Sold out badge in this section only. Does not change stock, and sold-out products still cannot be added to cart."
     },
     {
       "type": "checkbox",

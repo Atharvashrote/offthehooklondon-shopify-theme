@@ -38,6 +38,8 @@
   	{%- render 'social-meta-tags' -%}
     
     {%- render 'head-css', is_rtl:is_rtl -%}
+    {%- if request.page_type == 'index' -%}{{ 'home-sections.css' | asset_url | stylesheet_tag }}{%- endif -%}
+    {%- if request.page_type == 'index' -%}{{ 'home-reviews.css' | asset_url | stylesheet_tag }}{%- endif -%}
     {%- if request.design_mode -%}<script src="{{ 'jquery.min.js' | asset_url }}" defer></script>{%- endif -%}
     <script>
 		var theme = {

@@ -1,0 +1,248 @@
+/* =========================================================
+   HOMEPAGE CUSTOMER REVIEWS — Judge.me "Cards Carousel" app block
+   Section: apps section 1788875460dab5e578 ("Our Happy Customers").
+   Loaded only on the homepage (layout/theme.liquid, after home-sections.css).
+
+   Styling only: review data, Judge.me settings and its carousel script are untouched.
+   The script positions cards by measuring them (getBoundingClientRect), so card width
+   and gap can be set here. Cards are sized from the cards window with container units,
+   so they always fill it exactly: no partial or clipped cards.
+   Heading matches the other homepage section headings (NEW ARRIVALS): theme heading
+   font/weight/colour, 20px, left-aligned, 50px rule 10px below, on the shared --home-gutter.
+   !important is used only against rules that are themselves !important
+   (home-sections.css heading rules) or inline styles.
+   ========================================================= */
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] {
+    --rv-bg: #faf7f2;
+    --rv-card: #ffffff;
+    --rv-ink: #141414;
+    --rv-muted: #77716a;
+    --rv-line: rgba(20, 20, 20, .09);
+    --rv-pad-y: 36px;
+    --rv-gap: 20px;
+    --rv-visible: 4;
+    background: var(--rv-bg);
+    overflow-x: clip;
+}
+
+/* Full width: the app's 1100px box is dropped; content sits on the same gutter as the other sections */
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .section-cover {
+    background: var(--rv-bg);
+    padding: var(--rv-pad-y) 0;
+    margin: 0;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .page-width {
+    max-width: none;
+    padding-left: var(--home-gutter);
+    padding-right: var(--home-gutter);
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-cards-carousel {
+    --jm-card-gap: var(--rv-gap);
+    --visible-cards: var(--rv-visible);
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ---------- Heading: same as NEW ARRIVALS ---------- */
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-header {
+    margin: 0;
+    padding: 0 0 24px;
+    text-align: left !important;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-header .jdgm-title {
+    margin: 0;
+    font-family: var(--sec_ttl_ff);
+    font-size: 20px !important;
+    font-weight: var(--sec_ttl_fw);
+    line-height: 1.25 !important;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    color: var(--headings_cl, var(--sec_ttl_cl));
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-header::after {
+    content: "";
+    display: block;
+    width: 50px;
+    height: 0;
+    margin: 10px 0 0;
+    border-top: 2px solid #333;
+}
+
+
+/* ---------- Carousel row: arrows at the gutter edges, vertically centred; equal cards between ---------- */
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-content {
+    margin: 0;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-cards-wrapper {
+    max-width: none;
+    container-type: inline-size;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card {
+    /* 100cqw = the cards window; the card's text widths read the same variable */
+    --card-width: calc((100cqw - (var(--rv-visible) - 1) * var(--rv-gap)) / var(--rv-visible));
+    /* Cards share the row's height; centring the text + rating group splits any spare height
+       of short reviews evenly above and below instead of leaving a gap under the rating. */
+    justify-content: center;
+    background: var(--rv-card);
+    border: 1px solid var(--rv-line);
+    border-radius: 6px;
+    box-shadow: none;
+    transition: border-color .25s ease;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card:hover {
+    border-color: rgba(20, 20, 20, .22);
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-arrow {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(20, 20, 20, .18);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--rv-ink);
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-arrow:hover,
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-arrow:focus-visible {
+    background: var(--rv-ink);
+    border-color: var(--rv-ink);
+    color: #fff;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-arrow svg {
+    width: 11px;
+    height: 18px;
+}
+
+
+/* ---------- Card content: quote → text → rule → stars, name, product (one compact group) ---------- */
+
+/* Judge.me gives the text flex:1, which pushes the rating to the bottom of tall cards. Size it to its content instead. */
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-text {
+    flex: 0 0 auto;
+    padding: 22px 22px 0;
+    place-items: start center;
+    align-content: start;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--rv-ink);
+}
+
+/* Opening quote mark */
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-text::before {
+    content: "\201C";
+    display: block;
+    height: 16px;
+    margin-bottom: 6px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 38px;
+    line-height: 1;
+    color: var(--rv-muted);
+    opacity: .5;
+}
+
+/* Up to 4 lines keeps card heights close; the full review opens in Judge.me's lightbox on click */
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-text p {
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-line-clamp: 4;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section {
+    margin: 14px 22px 0;
+    padding: 14px 0 20px;
+    width: auto;
+    gap: 6px;
+    border-top: 1px solid var(--rv-line);
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section .jdgm-stars {
+    gap: 3px;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section .jdgm-star {
+    font-size: 15px;
+}
+
+/* Same row height with or without the 20px verified badge */
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section .jdgm-reviewer-info {
+    min-height: 20px;
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section .jdgm-reviewer-name {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--rv-ink);
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section .jdgm-product-name a,
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section .jdgm-product-name.jdgm-product-name--unlinked {
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: .02em;
+    color: var(--rv-muted);
+}
+
+body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section .jdgm-product-name a:hover {
+    color: var(--rv-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+
+/* ---------- Breakpoints: 4 → 3 → 2 → 1 cards ---------- */
+
+@media (max-width: 1199px) {
+    body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] {
+        --rv-visible: 3;
+    }
+}
+
+@media (max-width: 899px) {
+    body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] {
+        --rv-visible: 2;
+        --rv-pad-y: 30px;
+        --rv-gap: 14px;
+    }
+}
+
+@media (max-width: 766px) {
+    body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] {
+        --rv-pad-y: 24px;
+    }
+
+    body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-header {
+        padding-bottom: 18px;
+    }
+}
+
+@media (max-width: 599px) {
+    body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] {
+        --rv-visible: 1;
+    }
+
+    body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-text {
+        padding: 20px 20px 0;
+    }
+
+    body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card .jdgm-rating-section {
+        margin: 12px 20px 0;
+        padding-bottom: 18px;
+    }
+}

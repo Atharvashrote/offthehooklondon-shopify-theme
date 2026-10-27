@@ -1,0 +1,173 @@
+/* =========================================================
+   HOMEPAGE SECTIONS — width, headings, header spacing
+   Loaded only on the homepage (layout/theme.liquid, request.page_type == 'index').
+
+   Scope: body.template-index:not(#oth-home) [id^="shopify-section-template--"]
+   - only template sections; header/footer/overlay groups use "shopify-section-sections--" ids
+   - :not(#oth-home) adds ID-level specificity, so plain declarations beat the theme and
+     section CSS. !important is used only where the rule being overridden is itself
+     !important (section CSS font sizes, .tc, the inline mobile title style, .premium-instagram).
+   Product titles, prices, buttons, navigation and card labels are not targeted.
+   ========================================================= */
+
+body.template-index:not(#oth-home) {
+    --home-gutter: 20px;
+}
+
+@media (max-width: 766px) {
+    body.template-index:not(#oth-home) {
+        --home-gutter: 15px;
+    }
+}
+
+
+/* =========================================================
+   1. FULL WIDTH
+   Containers drop their 1400px cap; content keeps one shared inner gutter.
+   ========================================================= */
+
+body.template-index:not(#oth-home) [id^="shopify-section-template--"] .page-width,
+body.template-index:not(#oth-home) .category-cards-container {
+    max-width: none;
+    padding-left: var(--home-gutter);
+    padding-right: var(--home-gutter);
+}
+
+body.template-index:not(#oth-home) .premium-category-section,
+body.template-index:not(#oth-home) .premium-reels-section {
+    padding-left: var(--home-gutter);
+    padding-right: var(--home-gutter);
+}
+
+/* Portrait peek carousel (products-carousel.liquid): left edge = shared gutter,
+   cards still run off the right edge */
+body.template-index:not(#oth-home) .pc-peek > .page-width {
+    --pc-pl: var(--home-gutter);
+    padding-right: 0;
+}
+
+/* Full-width sections with "Remove side margins": the header gets the gutter */
+body.template-index:not(#oth-home) .fw-section.npd > .section-header {
+    padding-left: var(--home-gutter);
+    padding-right: var(--home-gutter);
+}
+
+/* collection-list-text-overlay insets itself by 12px on mobile (.collection-list { padding: 0 12px }),
+   so its header only needs the remainder to land on the gutter */
+@media (max-width: 766px) {
+    body.template-index:not(#oth-home) .fw-section.npd.collection-list > .section-header {
+        padding-left: calc(var(--home-gutter) - 12px);
+        padding-right: calc(var(--home-gutter) - 12px);
+    }
+}
+
+
+/* =========================================================
+   2. HEADER ALIGNMENT (left)
+   ========================================================= */
+
+body.template-index:not(#oth-home) .section-header,
+body.template-index:not(#oth-home) .section-header.tc,
+body.template-index:not(#oth-home) .category-cards-heading,
+body.template-index:not(#oth-home) .category-cards-eyebrow,
+body.template-index:not(#oth-home) .category-cards-description,
+body.template-index:not(#oth-home) .premium-category-header,
+body.template-index:not(#oth-home) .premium-reels-heading,
+body.template-index:not(#oth-home) .jdgm-header {
+    text-align: left !important;
+}
+
+body.template-index:not(#oth-home) .section-header.f-aic {
+    align-items: flex-start;
+}
+
+body.template-index:not(#oth-home) .premium-category-header,
+body.template-index:not(#oth-home) .premium-reels-heading {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+/* =========================================================
+   3. HEADINGS 20px, SUBHEADINGS + DESCRIPTIONS 10px
+   ========================================================= */
+
+body.template-index:not(#oth-home) .section-header__title,
+body.template-index:not(#oth-home) .category-cards-heading,
+body.template-index:not(#oth-home) .premium-category-header h2,
+body.template-index:not(#oth-home) .premium-reels-heading h2,
+body.template-index:not(#oth-home) .jdgm-header .jdgm-title {
+    max-width: none;
+    margin: 0;
+    font-size: 20px !important;
+    line-height: 1.25 !important;
+}
+
+body.template-index:not(#oth-home) .section-header__subtitle,
+body.template-index:not(#oth-home) .category-cards-eyebrow {
+    margin: 0 0 4px;
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+}
+
+body.template-index:not(#oth-home) .section-header > .mb0,
+body.template-index:not(#oth-home) .section-header > .mb0 *,
+body.template-index:not(#oth-home) .category-cards-description,
+body.template-index:not(#oth-home) .premium-category-header p,
+body.template-index:not(#oth-home) .premium-reels-heading p {
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+}
+
+
+/* =========================================================
+   4. HEADER SPACING
+   heading → description: 6px; description → divider: 10px;
+   divider → products: 24px (18px on mobile)
+   ========================================================= */
+
+body.template-index:not(#oth-home) .section-header > .mb0,
+body.template-index:not(#oth-home) .category-cards-description,
+body.template-index:not(#oth-home) .premium-category-header p,
+body.template-index:not(#oth-home) .premium-reels-heading p {
+    margin: 6px 0 0;
+}
+
+body.template-index:not(#oth-home) .section-header {
+    padding-bottom: 24px;
+}
+
+body.template-index:not(#oth-home) .section-header:after,
+body.template-index:not(#oth-home) .category-cards-divider,
+body.template-index:not(#oth-home) .premium-category-header .heading-line,
+body.template-index:not(#oth-home) .premium-reels-heading .heading-line {
+    margin: 10px 0 0;
+}
+
+body.template-index:not(#oth-home) .category-cards-divider {
+    margin-bottom: 24px;
+}
+
+body.template-index:not(#oth-home) .premium-category-header,
+body.template-index:not(#oth-home) .premium-reels-heading {
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+body.template-index:not(#oth-home) .premium-reels-heading .premium-instagram {
+    justify-content: flex-start !important;
+    margin: 8px 0 0 !important;
+}
+
+@media (max-width: 766px) {
+    body.template-index:not(#oth-home) .section-header {
+        padding-bottom: 18px;
+    }
+
+    body.template-index:not(#oth-home) .category-cards-divider,
+    body.template-index:not(#oth-home) .premium-category-header,
+    body.template-index:not(#oth-home) .premium-reels-heading {
+        margin-bottom: 18px;
+    }
+}

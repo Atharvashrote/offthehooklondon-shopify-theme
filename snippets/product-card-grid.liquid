@@ -35,6 +35,32 @@
        endif
     endif
 
+    # Optional srcset list from the caller (products-carousel peek mode); other callers keep the default.
+    # Shopify drops srcset widths above the source width, so a source smaller than the largest step
+    # (e.g. 382px) would top out at a lower step (320). Offer the source width itself in that case.
+    assign img_widths = '200,320,460,550,660,800'
+    assign img2_widths = img_widths
+    if widths != blank
+      assign img_widths = widths
+      assign img2_widths = widths
+      assign width_list = widths | split: ','
+      assign max_w = width_list | last | plus: 0
+      assign src_w = product.featured_image.width | default: 0
+      if src_w > 0 and src_w < max_w
+        assign src_w_str = src_w | append: ''
+        unless width_list contains src_w_str
+          assign img_widths = widths | append: ',' | append: src_w_str
+        endunless
+      endif
+      assign src_w = product.images[1].width | default: 0
+      if src_w > 0 and src_w < max_w
+        assign src_w_str = src_w | append: ''
+        unless width_list contains src_w_str
+          assign img2_widths = widths | append: ',' | append: src_w_str
+        endunless
+      endif
+    endif
+
     assign lazy_img = 'lazy'
     assign fetch_priority = 'auto'
     if section.index < 3 and product_index <= 4
@@ -164,10 +190,10 @@ endif
             {% capture video_tag %}{{ product_media | video_tag: loop:true, autoplay:true, muted:muted, class:image_class }}{% endcapture %}
             {{ video_tag | replace: 'src=', 'data-src=' }}
         {%- elsif product.featured_image -%}
-            {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:lazy_img, fetchpriority: fetch_priority, class:image_class, sizes:sizes, widths:"200,320,460,550,660,800" }}
+            {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:lazy_img, fetchpriority: fetch_priority, class:image_class, sizes:sizes, widths:img_widths }}
         {%- endif -%}
         {%- if second_img and product.images.size > 1 and boxstyle != "style2" -%}
-            {{ product.images[1] | image_url: width: product.images[1].width | image_tag: loading:'lazy', class:'img-fit hover', sizes:sizes, widths:"200,320,460,550,660,800" }}
+            {{ product.images[1] | image_url: width: product.images[1].width | image_tag: loading:'lazy', class:'img-fit hover', sizes:sizes, widths:img2_widths }}
         {%- endif -%}
     </a>
     {%- if settings.product-label -%}
