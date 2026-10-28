@@ -4902,6 +4902,23 @@ body.template-product .product-meta__wrapper .color-variant-image{
 
 }
 
+/* ==========================================
+   MOBILE HEADER - HIDE "OFF THE HOOK" LOGO
+   Main site header only (#header). The logo is absolutely
+   positioned at this width, so the icons keep their place.
+   The text selector (1,4,0) outranks the header section's
+   inline ".header-wrap:not(.sticky-header) #header .luxury-logo".
+   ========================================== */
+
+@media only screen and (max-width: 767px) {
+
+  .header-wrap #header .header-center .header-logo,
+  .header-wrap #header .header-center .header-logo .luxury-logo {
+    display: none !important;
+  }
+
+}
+
 
 /* =========================================================
    DESKTOP SIZE SELECTOR - 6 COLUMNS
