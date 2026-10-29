@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         navigation: {
-            nextEl: ".premiumReels .swiper-button-next",
-            prevEl: ".premiumReels .swiper-button-prev",
+            nextEl: ".premium-reels-carousel .swiper-button-next",
+            prevEl: ".premium-reels-carousel .swiper-button-prev",
         },
 
         breakpoints: {

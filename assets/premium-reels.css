@@ -316,8 +316,8 @@
 /* Self-contained: the homepage no longer loads Swiper's own stylesheet
    (swiper-bundle.min.css came only with the removed premium product slider),
    so position and arrow icons are defined here instead of relying on it. */
-.premiumReels .swiper-button-next,
-.premiumReels .swiper-button-prev {
+.premium-reels-carousel .swiper-button-next,
+.premium-reels-carousel .swiper-button-prev {
     position: absolute;
     top: 50%;
     z-index: 10;
@@ -354,8 +354,8 @@
 /* Arrow icons */
 
 /* Chevrons drawn with borders (no icon font needed) */
-.premiumReels .swiper-button-next::after,
-.premiumReels .swiper-button-prev::after {
+.premium-reels-carousel .swiper-button-next::after,
+.premium-reels-carousel .swiper-button-prev::after {
     content: "";
 
     width: 9px;
@@ -365,39 +365,50 @@
     border-right: 2px solid currentColor;
 }
 
-.premiumReels .swiper-button-next::after {
+.premium-reels-carousel .swiper-button-next::after {
     margin-left: -4px;
 
     transform: rotate(45deg);
 }
 
-.premiumReels .swiper-button-prev::after {
+.premium-reels-carousel .swiper-button-prev::after {
     margin-left: 4px;
 
     transform: rotate(-135deg);
 }
 
 
-/* Arrow hover */
+/* Arrow hover (pointer devices only, so a tap doesn't leave the button dark) */
 
-.premiumReels .swiper-button-next:hover,
-.premiumReels .swiper-button-prev:hover {
-    background: #111;
+@media (hover: hover) {
 
-    color: #fff;
+    .premium-reels-carousel .swiper-button-next:hover,
+    .premium-reels-carousel .swiper-button-prev:hover {
+        background: #111;
 
-    transform: scale(1.05);
+        color: #fff;
+
+        transform: scale(1.05);
+    }
+
 }
 
 
-/* Arrow positioning */
+/* Arrow positioning: the buttons sit outside the overflow-hidden slider, in the
+   carousel's side gutters, so they are never clipped and never cover a reel */
 
-.premiumReels .swiper-button-prev {
-    left: 15px;
+.premium-reels-carousel {
+    position: relative;
+
+    padding: 0 56px;
 }
 
-.premiumReels .swiper-button-next {
-    right: 15px;
+.premium-reels-carousel .swiper-button-prev {
+    left: 0;
+}
+
+.premium-reels-carousel .swiper-button-next {
+    right: 0;
 }
 
 
@@ -531,11 +542,27 @@
     }
 
 
-    /* Hide arrows on mobile */
+    /* Arrows on mobile: no gutters (the reels keep their width); the buttons
+       overlay the card edges, vertically centred, clear of the brand text and Shop Now */
 
-    .premiumReels .swiper-button-next,
-    .premiumReels .swiper-button-prev {
-        display: none !important;
+    .premium-reels-carousel {
+        padding: 0;
+    }
+
+    .premium-reels-carousel .swiper-button-next,
+    .premium-reels-carousel .swiper-button-prev {
+        width: 38px;
+        height: 38px;
+
+        margin-top: -19px;
+    }
+
+    .premium-reels-carousel .swiper-button-prev {
+        left: 8px;
+    }
+
+    .premium-reels-carousel .swiper-button-next {
+        right: 8px;
     }
 
 }

@@ -8,7 +8,7 @@
    and gap can be set here. Cards are sized from the cards window with container units,
    so they always fill it exactly: no partial or clipped cards.
    Heading matches the other homepage section headings (NEW ARRIVALS): theme heading
-   font/weight/colour, 20px, left-aligned, 50px rule 10px below, on the shared --home-gutter.
+   font/weight/colour, 20px, centred, centred 50px rule 10px below, on the shared --home-gutter.
    !important is used only against rules that are themselves !important
    (home-sections.css heading rules) or inline styles.
    ========================================================= */
@@ -22,6 +22,8 @@ body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] {
     --rv-pad-y: 36px;
     --rv-gap: 20px;
     --rv-visible: 4;
+    /* Same values as --home-gutter (home-sections.css), so this file also works without it */
+    --rv-gutter: var(--home-gutter, 20px);
     background: var(--rv-bg);
     overflow-x: clip;
 }
@@ -35,8 +37,8 @@ body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .section-cover {
 
 body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .page-width {
     max-width: none;
-    padding-left: var(--home-gutter);
-    padding-right: var(--home-gutter);
+    padding-left: var(--rv-gutter);
+    padding-right: var(--rv-gutter);
 }
 
 body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-cards-carousel {
@@ -53,7 +55,7 @@ body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-cards-caro
 body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-header {
     margin: 0;
     padding: 0 0 24px;
-    text-align: left !important;
+    text-align: center;
 }
 
 body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-header .jdgm-title {
@@ -72,7 +74,7 @@ body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-header::af
     display: block;
     width: 50px;
     height: 0;
-    margin: 10px 0 0;
+    margin: 10px auto 0;
     border-top: 2px solid #333;
 }
 
@@ -225,6 +227,7 @@ body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-media-card
 @media (max-width: 766px) {
     body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] {
         --rv-pad-y: 24px;
+        --rv-gutter: var(--home-gutter, 15px);
     }
 
     body.template-index:not(#oth-home) [id$="__1788875460dab5e578"] .jdgm-header {

@@ -63,22 +63,32 @@ body.template-index:not(#oth-home) .fw-section.npd > .section-header {
 
 
 /* =========================================================
-   2. HEADER ALIGNMENT (left)
+   2. HEADER ALIGNMENT
+   Headings and their divider lines are centred (section 4 centres the dividers);
+   subtitles, descriptions and the Instagram link stay left-aligned.
+   The reviews heading (Judge.me) is aligned in home-reviews.css.
    ========================================================= */
 
 body.template-index:not(#oth-home) .section-header,
 body.template-index:not(#oth-home) .section-header.tc,
-body.template-index:not(#oth-home) .category-cards-heading,
 body.template-index:not(#oth-home) .category-cards-eyebrow,
 body.template-index:not(#oth-home) .category-cards-description,
 body.template-index:not(#oth-home) .premium-category-header,
-body.template-index:not(#oth-home) .premium-reels-heading,
-body.template-index:not(#oth-home) .jdgm-header {
+body.template-index:not(#oth-home) .premium-reels-heading {
     text-align: left !important;
 }
 
 body.template-index:not(#oth-home) .section-header.f-aic {
     align-items: flex-start;
+}
+
+/* .section-header is a flex column, so its title is centred as an item, then its text */
+body.template-index:not(#oth-home) .section-header__title,
+body.template-index:not(#oth-home) .category-cards-heading,
+body.template-index:not(#oth-home) .premium-category-header h2,
+body.template-index:not(#oth-home) .premium-reels-heading h2 {
+    align-self: center;
+    text-align: center;
 }
 
 body.template-index:not(#oth-home) .premium-category-header,
@@ -91,13 +101,13 @@ body.template-index:not(#oth-home) .premium-reels-heading {
 
 /* =========================================================
    3. HEADINGS 20px, SUBHEADINGS + DESCRIPTIONS 10px
+   20px = the computed size of the OUR HAPPY CUSTOMERS heading (set in home-reviews.css)
    ========================================================= */
 
 body.template-index:not(#oth-home) .section-header__title,
 body.template-index:not(#oth-home) .category-cards-heading,
 body.template-index:not(#oth-home) .premium-category-header h2,
-body.template-index:not(#oth-home) .premium-reels-heading h2,
-body.template-index:not(#oth-home) .jdgm-header .jdgm-title {
+body.template-index:not(#oth-home) .premium-reels-heading h2 {
     max-width: none;
     margin: 0;
     font-size: 20px !important;
@@ -142,7 +152,7 @@ body.template-index:not(#oth-home) .section-header:after,
 body.template-index:not(#oth-home) .category-cards-divider,
 body.template-index:not(#oth-home) .premium-category-header .heading-line,
 body.template-index:not(#oth-home) .premium-reels-heading .heading-line {
-    margin: 10px 0 0;
+    margin: 10px auto 0;
 }
 
 body.template-index:not(#oth-home) .category-cards-divider {
