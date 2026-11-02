@@ -1,0 +1,30 @@
+{%- comment -%}
+  Card for sections/product-image-carousel.liquid.
+  Accepts: product, image (optional override), sizes, img_w2 (requested
+  image width), loading ('eager' | 'lazy'). Blank product = placeholder.
+{%- endcomment -%}
+{%- if product != blank -%}
+  {%- assign card_image = image | default: product.featured_media.preview_image -%}
+  <a class="pic-card db" href="{{ product.url }}">
+    <span class="pic-media db pr of-hidden">
+      {%- if card_image != blank -%}
+        {%- assign card_alt = card_image.alt | default: product.title | escape -%}
+        {{ card_image | image_url: width: img_w2 | image_tag: loading: loading, sizes: sizes, widths: '300,450,600,750,900,1200', alt: card_alt }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </span>
+    <span class="pic-info db">
+      <span class="pic-title db">{{ product.title | escape }}</span>
+      <span class="pic-price grid-price db">{% render 'product-price', product: product %}</span>
+    </span>
+  </a>
+{%- else -%}
+  <span class="pic-card db">
+    <span class="pic-media db pr of-hidden">{{ placeholder | default: 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}</span>
+    <span class="pic-info db">
+      <span class="pic-title db">{{ 'homepage.onboarding.product_title' | t }}</span>
+      <span class="pic-price grid-price db"><span class="product-price">{{ 1999 | money }}</span></span>
+    </span>
+  </span>
+{%- endif -%}

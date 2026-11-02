@@ -1,0 +1,429 @@
+{%- comment -%}
+  Product Image Carousel: product image cards (default 3:4, up to 450px wide)
+  with title and price, on the theme's existing <slide-section> Swiper
+  (vendor.js) and swiper-navigation snippet, so it adds no JavaScript.
+  Products come from the Collection (up to "Maximum products"), then the
+  "Products" list, then any Product blocks (each can override the image); card markup is snippets/product-image-carousel-card.
+  Cards are sized in CSS: N visible per breakpoint (fractions show a peek of
+  the next card), never wider than "Image width". Placeholders (no products,
+  empty blocks) only render in the theme editor.
+{%- endcomment -%}
+{%- liquid
+  assign section_st = section.settings
+
+  assign coll_count = 0
+  if section_st.collection != blank
+    assign coll_count = section_st.collection.products_count | at_most: section_st.limit
+  endif
+  assign item_count = section_st.products.count | plus: section.blocks.size | plus: coll_count
+  assign list_offset = coll_count | plus: section_st.products.count
+
+  assign ratio = section_st.ratio | times: 1.0
+  assign img_w = section_st.img_width
+  assign img_w2 = img_w | times: 2
+
+  assign eager_count = 0
+  if section.index != blank and section.index <= 2
+    assign eager_count = section_st.grid | ceil
+  endif
+-%}
+{%- capture sizes -%}
+  (min-width:1025px) min({{ img_w }}px, calc((100vw - 60px) / {{ section_st.grid }})), (min-width:768px) calc((100vw - 40px) / {{ section_st.gridtb }}), calc((100vw - 30px) / {{ section_st.gridmb }})
+{%- endcapture -%}
+
+{%- if item_count > 0 or request.design_mode -%}
+<div class="section-cover pic-section {% render 'sec-settings', section_st: section_st, class: true %}" style="{% render 'sec-settings', section_st: section_st, styles: true %}--pic-ratio:{{ ratio }};--pic-w:{{ img_w }}px;--pic-nd:{{ section_st.grid }};--pic-nt:{{ section_st.gridtb }};--pic-nm:{{ section_st.gridmb }};--pic-fit:{{ section_st.fit }};--pic-tile:{{ section_st.tile_bg }};--grsp:{{ section_st.gspace | divided_by: 2.0 }}px;--grspm:{{ section_st.gspacem | divided_by: 2.0 }}px;" {% render 'sec-settings', section_st: section_st, bgimage: true %}>
+  <div class="{% if section_st.fullwidth %}fw-section{% if section_st.npd %} npd{% endif %}{% else %}page-width{% endif %}" id="pic-{{ section.id }}">
+    {%- render 'sec-title' -%}
+    <div class="pic-wrap pr {{ section_st.align }}">
+      <slide-section class="grid gspace swiper pic-slider"
+        data-swiper='{ "slidesPerView":"auto", "loop":{{ section_st.loop }}, "grabCursor":true, "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":true }}'>
+        <div class="swiper-wrapper">
+          {%- if item_count > 0 -%}
+            {%- if coll_count > 0 -%}
+              {%- for product in section_st.collection.products limit: coll_count -%}
+                {%- liquid
+                  assign card_loading = 'lazy'
+                  if forloop.index <= eager_count
+                    assign card_loading = 'eager'
+                  endif
+                -%}
+                <div class="swiper-slide gitem pic-item">{% render 'product-image-carousel-card', product: product, sizes: sizes, img_w2: img_w2, loading: card_loading %}</div>
+              {%- endfor -%}
+            {%- endif -%}
+            {%- for product in section_st.products -%}
+              {%- liquid
+                assign card_loading = 'lazy'
+                assign card_index = coll_count | plus: forloop.index
+                if card_index <= eager_count
+                  assign card_loading = 'eager'
+                endif
+              -%}
+              <div class="swiper-slide gitem pic-item">{% render 'product-image-carousel-card', product: product, sizes: sizes, img_w2: img_w2, loading: card_loading %}</div>
+            {%- endfor -%}
+            {%- for block in section.blocks -%}
+              {%- if block.settings.product == blank and request.design_mode == false -%}{%- continue -%}{%- endif -%}
+              {%- liquid
+                assign card_loading = 'lazy'
+                assign card_index = list_offset | plus: forloop.index
+                if card_index <= eager_count
+                  assign card_loading = 'eager'
+                endif
+              -%}
+              <div class="swiper-slide gitem pic-item" {{ block.shopify_attributes }}>{% render 'product-image-carousel-card', product: block.settings.product, image: block.settings.image, sizes: sizes, img_w2: img_w2, loading: card_loading, placeholder: 'product-2' %}</div>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for i in (1..4) -%}
+              {%- assign placeholder = 'product-' | append: i -%}
+              <div class="swiper-slide gitem pic-item">{% render 'product-image-carousel-card', product: blank, placeholder: placeholder %}</div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+        {%- render 'swiper-navigation', id: section.id, section_st: section_st -%}
+      </slide-section>
+    </div>
+  </div>
+</div>
+{%- endif -%}
+
+{% stylesheet %}
+  /* Card width: N visible (fractions peek the next card), capped at --pic-w.
+     100cqw = .pic-wrap width; .gspace widens the slider by one gap (2 x half gap). */
+  .pic-wrap { container-type: inline-size; }
+  .pic-section .pic-slider { --pic-g: var(--grspm); --pic-n: var(--pic-nm); --pic-slide: min(calc((100cqw + 2 * var(--pic-g)) / var(--pic-n)), calc(var(--pic-w) + 2 * var(--pic-g))); }
+  @media (min-width: 768px) { .pic-section .pic-slider { --pic-g: var(--grsp); --pic-n: var(--pic-nt); } }
+  @media (min-width: 1025px) { .pic-section .pic-slider { --pic-n: var(--pic-nd); } }
+  .pic-section .pic-slider .pic-item { width: var(--pic-slide); height: auto; }
+
+  .pic-card { color: inherit; text-decoration: none; }
+  .pic-media { aspect-ratio: 1 / var(--pic-ratio); background: var(--pic-tile); }
+  .pic-media img, .pic-media .placeholder-svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: var(--pic-fit); transition: transform .6s ease; }
+  .pic-card:hover .pic-media img { transform: scale(1.03); }
+  .pic-info { padding-top: 12px; }
+  .pic-title { font-size: 14px; line-height: 1.4; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pic-price { margin-top: 4px; font-size: 14px; }
+  .pic-wrap.tc .pic-price { text-align: center; }
+
+  /* Arrows centred on the image, not on image + text */
+  .pic-section .pic-slider .swiper-arrows { top: calc((var(--pic-slide) - 2 * var(--pic-g)) * var(--pic-ratio) / 2); }
+  .pic-section .pic-slider .swiper-button-disabled { opacity: 0; pointer-events: none; }
+  .pic-section .swiper-pagination { position: static; margin-top: 16px; }
+
+  @media (prefers-reduced-motion: reduce) { .pic-media img { transition: none; } .pic-card:hover .pic-media img { transform: none; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product image carousel",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Shop the edit"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Shows this collection's products, in the collection's sort order."
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Maximum products from collection",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 12,
+      "visible_if": "{{ section.settings.collection != blank }}"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Products to display",
+      "limit": 24,
+      "info": "Shown after the collection's products. Product blocks below come last and can each use a different image."
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "select",
+      "id": "ratio",
+      "label": "Image aspect ratio",
+      "default": "1.3333",
+      "options": [
+        { "value": "1.3333", "label": "3:4 portrait (450 × 600)" },
+        { "value": "1.5", "label": "2:3 portrait" },
+        { "value": "1.25", "label": "4:5 portrait" },
+        { "value": "1", "label": "1:1 square" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "img_width",
+      "label": "Image width",
+      "info": "Maximum card width. Cards can be narrower when more products are visible.",
+      "min": 300,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 450
+    },
+    {
+      "type": "select",
+      "id": "fit",
+      "label": "Image fit",
+      "default": "contain",
+      "options": [
+        { "value": "contain", "label": "Show whole image" },
+        { "value": "cover", "label": "Fill frame (crops edges)" }
+      ],
+      "info": "Images are never stretched."
+    },
+    {
+      "type": "color",
+      "id": "tile_bg",
+      "label": "Image background",
+      "default": "#f4f3f1"
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Text alignment",
+      "default": "tl",
+      "options": [
+        { "value": "tl", "label": "Left" },
+        { "value": "tc", "label": "Center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Carousel"
+    },
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Products visible on desktop",
+      "min": 2,
+      "max": 6,
+      "step": 0.5,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "gridtb",
+      "label": "Products visible on tablet",
+      "min": 1.5,
+      "max": 4,
+      "step": 0.5,
+      "default": 2.5
+    },
+    {
+      "type": "range",
+      "id": "gridmb",
+      "label": "Products visible on mobile",
+      "min": 1,
+      "max": 3,
+      "step": 0.5,
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "gspace",
+      "label": "Carousel spacing",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "gspacem",
+      "label": "Carousel spacing (mobile)",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "arrow",
+      "label": "Show arrows on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "arrowm",
+      "label": "Show arrows on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Show dots on desktop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "dotm",
+      "label": "Show dots on mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "npd",
+      "label": "Remove side margins",
+      "default": false,
+      "visible_if": "{{ section.settings.fullwidth }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "addbg",
+      "label": "Add background color",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background color",
+      "default": "#ffffff",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bgg",
+      "label": "Background gradient",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "color",
+      "id": "headings_cl",
+      "label": "Heading color",
+      "visible_if": "{{ section.settings.addbg }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidem",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hided",
+      "label": "Hide on desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "range",
+      "id": "sst",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top spacing",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "ssb",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom spacing",
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sstm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Top spacing (mobile)",
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "ssbm",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Bottom spacing (mobile)",
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image",
+          "info": "Optional. Defaults to the product's featured image."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product image carousel",
+      "category": "Products"
+    }
+  ]
+}
+{% endschema %}

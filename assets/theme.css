@@ -458,6 +458,8 @@ s.product-price { font-size:calc(var(--prfsm,var(--grid-product_price_fsm)) - va
 .related-swatches li:focus-within .tooltip-label { opacity:1; top:-32px; visibility:visible }
 .related-swatches li.disabled { opacity:.45 }
 @media (max-width:767px) { .related-swatches { gap:4px; margin-left:0 } }
+/* colour values without a Shopify swatch: neutral fill under the colour-name cascade (snippets/swatch-color-fallback) */
+.grid-swatches li.sw-fallback { background-color:#cdc7bd; }
 /* Collection page only: no colour swatches under card prices (grid and list view) */
 .template-collection #collection-products .grid-swatches { display:none !important; }
 .grid-content.swapping .grid-image img { opacity:.6; transition:opacity .2s }

@@ -1,0 +1,23 @@
+{% doc %}
+  Outputs a background-color cascade for a colour option value that has no Shopify swatch.
+  Each word of the value is tried as a CSS colour name, the first word last so it wins, and
+  the whole value without separators last of all ("Dark Green" -> darkgreen, "Brown-Suede" ->
+  brown, "White/Black" -> white). Browsers drop invalid colours, so when no word is a colour
+  the swatch keeps the neutral .sw-fallback colour from theme.css, or a Custom colors match.
+
+  @param {string} value - Colour option value, e.g. "Brown-Suede"
+
+  @example
+  style="{% render 'swatch-color-fallback', value: value %}"
+{% enddoc %}
+{%- liquid
+  assign sw_handle = value | handle
+  assign sw_words = sw_handle | split: '-' | reverse
+  assign sw_compact = sw_handle | remove: '-'
+  for sw_word in sw_words
+    echo 'background-color:' | append: sw_word | append: ';'
+  endfor
+  if sw_words.size > 1
+    echo 'background-color:' | append: sw_compact | append: ';'
+  endif
+-%}

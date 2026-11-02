@@ -16,8 +16,50 @@
     if section_st.sw
         assign page_width = '100vw'
     endif
-    assign pageurl = canonical_url | split:'type=' | last
+    assign pageurl = canonical_url | split:'type=' | last | split:'&' | first
 -%}
+
+{%- comment -%}
+    Global in-stock-first ordering. When the filtered result set has at most 250 products
+    (Shopify's paginate maximum), all of it is loaded in a single paginate page, split into
+    in-stock (product.available: at least one purchasable variant) and sold-out products,
+    each keeping the collection's own order (default sort or the customer's sort_by), and
+    shown section_st.prpp at a time. paginate owns ?page=, and canonical_url only keeps page,
+    type and q, so the page number travels in ?q=. Vendor/type listings use ?q= themselves and
+    bigger result sets keep Shopify's native pagination with in-stock-first ordering per page.
+{%- endcomment -%}
+{%- liquid
+    assign oth_per_page = section_st.prpp | at_least: 1
+    assign oth_q_page = 1
+    assign oth_legacy_page = 1
+    if canonical_url contains '?'
+        assign oth_query = canonical_url | replace: '&amp;', '&' | split: '?' | last | split: '&'
+        for oth_pair in oth_query
+            assign oth_kv = oth_pair | split: '='
+            if oth_kv[0] == 'q'
+                assign oth_q_page = oth_kv[1] | plus: 0 | at_least: 1
+            elsif oth_kv[0] == 'page'
+                assign oth_legacy_page = oth_kv[1] | plus: 0 | at_least: 1
+            endif
+        endfor
+    endif
+    assign oth_fits = false
+    if collection.products_count > 0 and collection.products_count <= 250
+        assign oth_fits = true
+    endif
+    if collection.current_vendor or collection.current_type
+        assign oth_fits = false
+    endif
+    assign oth_global = false
+    assign oth_page_size = oth_per_page
+    if oth_fits and oth_legacy_page == 1
+        assign oth_global = true
+        assign oth_page_size = 250
+    endif
+-%}
+{%- if oth_fits and oth_legacy_page > 1 -%}
+    <script>(function(){var u=new URL(window.location.href);var p=u.searchParams.get('page');u.searchParams.delete('page');u.searchParams.set('q',p);window.location.replace(u.toString());})();</script>
+{%- endif -%}
 
 {%- style -%}
     :root { 
@@ -39,14 +81,12 @@
      price-range.filters-select__list .field:before { content:'{{ cart.currency.symbol }}'; position:absolute; top:7px; {{ left_right }}:15px; }
 {%- endstyle -%}
 
-{%- paginate collection.products by section_st.prpp -%}
+{%- paginate collection.products by oth_page_size -%}
 
 {%- comment -%}
-    Availability ordering is done per page on the server so Shopify's native
-    pagination stays authoritative: in-stock products render first, sold-out
-    ones after. When "Out of stock" is the only availability filter, products
-    that still have an available variant are skipped (Shopify's filter is
-    variant-based and would otherwise include them).
+    When "Out of stock" is the only availability filter, products that still have an
+    available variant are left out (Shopify's filter is variant-based and would otherwise
+    include them).
 {%- endcomment -%}
 {%- liquid
     assign strict_oos = false
@@ -64,6 +104,22 @@
             endfor
         endif
     endfor
+
+    assign oth_in = collection.products | where: 'available'
+    assign oth_out = collection.products | reject: 'available'
+    if strict_oos
+        assign oth_list = oth_out
+    else
+        assign oth_list = oth_in | concat: oth_out
+    endif
+    assign oth_pages = 1
+    assign oth_page = 1
+    assign oth_offset = 0
+    if oth_global
+        assign oth_pages = oth_list.size | plus: oth_per_page | minus: 1 | divided_by: oth_per_page | at_least: 1
+        assign oth_page = oth_q_page | at_most: oth_pages
+        assign oth_offset = oth_page | minus: 1 | times: oth_per_page
+    endif
 -%}
 
 {%- capture pr_view -%}
@@ -130,17 +186,7 @@
         <div class="collection">
             {%- if pageurl == 'list' -%}
                 <div id="collection-products" class="listview-items">
-                    {%- for availability_pass in (1..2) -%}
-                    {%- for product in collection.products -%}
-                    {%- liquid
-                        assign product_pass = 1
-                        unless product.available
-                            assign product_pass = 2
-                        endunless
-                        if product_pass != availability_pass
-                            continue
-                        endif
-                    -%}
+                    {%- for product in oth_list limit: oth_per_page offset: oth_offset -%}
                     {%- assign all_variants_sold_out = true -%}
                     {%- for variant in product.variants -%}
                         {%- if variant.available -%}
@@ -148,24 +194,12 @@
                             {%- break -%}
                         {%- endif -%}
                     {%- endfor -%}
-                    {%- if strict_oos and all_variants_sold_out == false -%}{%- continue -%}{%- endif -%}
                     <product-card class="listview-item fl f-row-md f-col mb20 {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" {% render 'animate-data' %}>{% render 'product-card-list', product: product, section_st: section_st, sizes:'(min-width:768px) 250px, 100vw'  %}</product-card>
-                    {%- endfor -%}
                     {%- endfor -%}
                 </div>
             {%- else -%}
                 <div id="collection-products" class="grid rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products">
-                    {%- for availability_pass in (1..2) -%}
-                    {%- for product in collection.products -%}
-                        {%- liquid
-                            assign product_pass = 1
-                            unless product.available
-                                assign product_pass = 2
-                            endunless
-                            if product_pass != availability_pass
-                                continue
-                            endif
-                        -%}
+                    {%- for product in oth_list limit: oth_per_page offset: oth_offset -%}
                         {%- capture sizes -%}
                             {%- if section_st.filters and section_st.sbpos != 'top' and section_st.sbpos != 'popup' -%}
                                 (min-width:1024px) calc(({{ page_width }} - {{ settings.grid_space | times: section_st.grid | minus:settings.grid_space | plus:340 }}px) / {{ section_st.grid }}),(min-width:768px) calc((100vw - {{ settings.grid_space | times: section_st.gridtb | minus:section_st.gspace }}px) / {{ section_st.gridtb }}), calc((100vw - {{ settings.grid_spacem | times: section_st.gridmb | minus:settings.grid_spacem }}px) / {{ section_st.gridmb }})
@@ -180,34 +214,96 @@
                                 {%- break -%}
                             {%- endif -%}
                         {%- endfor -%}
-                        {%- if strict_oos and all_variants_sold_out == false -%}{%- continue -%}{%- endif -%}
                         <div class="gitem fl {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" {% render 'animate-data' %}>{% render 'product-card-grid', product:product, section_st:section_st, sizes:sizes %}</div>
-                    {%- endfor -%}
                     {%- endfor -%}
                 </div>
             {%- endif -%}
         </div>
     {%- endif -%}
 
+    {%- if oth_global -%}
+        {%- liquid
+            assign oth_base = collection.url | split: '?' | first
+            if current_tags.size > 0
+                assign oth_tags = ''
+                for tag in current_tags
+                    unless forloop.first
+                        assign oth_tags = oth_tags | append: '+'
+                    endunless
+                    assign oth_tags = oth_tags | append: tag | handleize
+                endfor
+                assign oth_base = oth_base | append: '/' | append: oth_tags
+            endif
+            assign oth_type = ''
+            if canonical_url contains 'type='
+                assign oth_type = '&type=' | append: pageurl
+            endif
+        -%}
+        {%- capture oth_params -%}
+            {%- if collection.sort_by != blank -%}&sort_by={{ collection.sort_by | url_encode }}{%- endif -%}
+            {%- for filter in collection.filters -%}
+                {%- if filter.type == 'price_range' -%}
+                    {%- if filter.min_value.value != nil -%}&{{ filter.min_value.param_name }}={{ filter.min_value.value | money_without_currency | remove: ',' }}{%- endif -%}
+                    {%- if filter.max_value.value != nil -%}&{{ filter.max_value.param_name }}={{ filter.max_value.value | money_without_currency | remove: ',' }}{%- endif -%}
+                {%- else -%}
+                    {%- for value in filter.active_values -%}&{{ value.param_name }}={{ value.value | url_encode }}{%- endfor -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endcapture -%}
+    {%- endif -%}
     <div id="pagination" class="pagination-wrapper mt30">
+        {%-liquid
+            assign view_type = '&type=grid'
+            if pageurl == 'list'
+                assign view_type = '&type=list'
+            endif
+            assign pgurl = ''
+            if oth_global
+                if oth_page < oth_pages
+                    assign pgurl = oth_page | plus: 1 | prepend: '?q=' | prepend: oth_base | append: oth_params | append: view_type
+                endif
+            elsif paginate.next
+                assign pgurl = paginate.next.url
+                unless paginate.next.url contains "&type="
+                    assign pgurl = paginate.next.url | append: view_type
+                endunless
+            endif
+        -%}
         {%- if section_st.pagination == "infinite" or section_st.pagination == "button" -%}
-            {%- if paginate.next -%}
+            {%- if pgurl != '' -%}
                 <div class="infinitpagin tc">
-                    {%-liquid
-                        assign view_type = '&type=grid'
-                        if pageurl == 'list'
-                            assign view_type = '&type=list'
-                        endif
-                        assign pgurl = paginate.next.url
-                        unless paginate.next.url contains "&type="
-                            assign pgurl = paginate.next.url | append: view_type
-                        endunless
-                    -%}
                     {%- if section_st.pagination == "infinite" -%}
                         <a href="{{ pgurl }}" class="load-more infinite"><svg class="at-icon at-spin mb10" style="--icns:25px"><use xlink:href="#icon-loading"></use></svg><p>{{ 'general.pagination.loading' | t }}</p></a>
                     {%- else -%}
                         <a href="{{ pgurl }}" class="btn load-more"><span class="txt">{{ 'general.pagination.loadmore' | t }}</span><div class="loading__spinner"><svg class="at-icon at-spin"><use xlink:href="#icon-loading"></use></svg></div></a>
                     {%- endif -%}
+                </div>
+            {%- endif -%}
+        {%- elsif oth_global -%}
+            {%- if oth_pages > 1 -%}
+                {%- liquid
+                    assign oth_lo = oth_page | minus: 2
+                    assign oth_hi = oth_page | plus: 2
+                    assign oth_gap = false
+                -%}
+                <div class="pagination mb20">
+                    <hr class="clear" />
+                    <ul class="fl f-jcc">
+                        {%- if oth_page > 1 -%}<li class="prev"><a href="{{ oth_base }}?q={{ oth_page | minus: 1 }}{{ oth_params }}{{ oth_type }}" aria-label="previous Page"><svg class="at-icon arw left"><use xlink:href="#icon-arrow"></use></svg></a></li>{%- endif -%}
+                        {%- for i in (1..oth_pages) -%}
+                            {%- if i == oth_page -%}
+                                <li class="active"><a href="#this">{{ i }}</a></li>
+                                {%- assign oth_gap = false -%}
+                            {%- elsif i == 1 or i == oth_pages or i >= oth_lo and i <= oth_hi -%}
+                                <li><a href="{{ oth_base }}?q={{ i }}{{ oth_params }}{{ oth_type }}">{{ i }}</a></li>
+                                {%- assign oth_gap = false -%}
+                            {%- elsif oth_gap == false -%}
+                                <li class="ellipsis disabled"><a href="#" onclick="return false;">&hellip;</a></li>
+                                {%- assign oth_gap = true -%}
+                            {%- endif -%}
+                        {%- endfor -%}
+                        {%- if oth_page < oth_pages -%}<li class="next"><a href="{{ oth_base }}?q={{ oth_page | plus: 1 }}{{ oth_params }}{{ oth_type }}" aria-label="Next Page"><svg class="at-icon arw right"><use xlink:href="#icon-arrow"></use></svg></a></li>{%- endif -%}
+                    </ul>
                 </div>
             {%- endif -%}
         {%- else -%}

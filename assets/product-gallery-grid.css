@@ -1,0 +1,109 @@
+/* =========================================================
+   Product page - two-column image grid gallery
+   Loaded by sections/main-product.liquid only when Gallery style is
+   "Two columns list" (.product-single.pd-grid). Desktop (>=992px): gallery
+   60% | info 40%, images in two columns at their own aspect ratio, 8px
+   gaps, no thumbnail rail. Tablet: one image column. Mobile (<=767px) keeps
+   the swipe slider. The !important flags are needed to beat the stacked
+   product layout overrides in theme.css.
+   ========================================================= */
+
+@media screen and (min-width: 768px) {
+
+  /* Both columns are sticky. The shorter one holds while the taller one
+     scrolls; a column taller than the screen first scrolls to its end.
+     --pd-sticky-top is set by product-gallery-grid.js. */
+  body.template-product .product-single.pd-grid > .product-gallery,
+  body.template-product .product-single.pd-grid > .product-meta__column {
+    position: sticky !important;
+    top: var(--pd-sticky-top, calc(var(--header_height, 80px) + 16px)) !important;
+    align-self: start !important;
+    transition: top .25s ease;
+  }
+
+  /* The info wrapper's own sticky has no room inside a sticky column */
+  body.template-product .product-single.pd-grid .product-meta__wrapper {
+    position: static !important;
+  }
+
+  body.template-product .product-single.pd-grid media-gallery,
+  body.template-product .product-single.pd-grid .product-images {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  body.template-product .product-single.pd-grid .product-thumbnails {
+    display: none !important;
+  }
+
+  /* Swiper is destroyed above 767px for this style; the wrapper becomes a grid */
+  body.template-product .product-single.pd-grid .product-image__slider,
+  body.template-product .product-single.pd-grid .product-image__slider .swiper-wrapper {
+    overflow: visible !important;
+    height: auto !important;
+    transform: none !important;
+  }
+
+  body.template-product .product-single.pd-grid .product-image__slider .swiper-wrapper {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+  }
+
+  body.template-product .product-single.pd-grid .product-image-lg {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #f4f3f1 !important;
+  }
+
+  body.template-product .product-single.pd-grid .product-image-lg img {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    object-fit: contain !important;
+  }
+
+  /* Drift hover zoom: its pane sits inside the tile, so the tile image rules
+     (here and in theme.css) would squeeze the zoom image back to 100%.
+     Drift sizes it to the tile x zoomFactor 2. */
+  body.template-product .product-single.pd-grid .product-image-lg .drift-zoom-pane img {
+    width: 200% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Images of the colours that are not selected (multi-colour products) */
+  body.template-product .product-single.pd-grid .product-image-lg[data-pd-off] {
+    display: none !important;
+  }
+
+  body.template-product .product-single.pd-grid .product-image__slider .swiper-arrows,
+  body.template-product .product-single.pd-grid .gallery-pagination {
+    display: none !important;
+  }
+
+}
+
+@media screen and (min-width: 992px) {
+
+  body.template-product .product-single.pd-grid {
+    grid-template-columns: minmax(0, 60fr) minmax(0, 40fr) !important;
+    gap: 0 56px !important;
+  }
+
+  body.template-product .product-single.pd-grid .product-image__slider .swiper-wrapper {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}

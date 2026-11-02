@@ -519,6 +519,11 @@ if(!customElements.get("media-gallery")){
           if(this.imgZoom.length > 0) this.zoomImage();
        }
        zoomImage(){
+            // drift.min.js is deferred in the section, after theme.js: wait for it
+            if(typeof Drift === 'undefined'){
+                if(document.readyState !== 'complete') window.addEventListener('load', () => this.zoomImage(), { once:true });
+                return;
+            }
             if(window.innerWidth >= 1024) {
                 this.imgZoom.forEach((img) => {
                     var container = img.closest('.przoom');
@@ -578,6 +583,9 @@ if(!customElements.get("media-gallery")){
         setActiveMedia(mediaId){
           const activeMedia = this.querySelector('.product-image-lg:not(.swiper-slide-duplicate)[data-id="' +mediaId +'"]').getAttribute("data-slide");
           if(activeMedia != undefined) {
+            // Two columns list on desktop: every image is already in the grid, so don't
+            // jump the page on load or on each size change (see product-gallery-grid.js)
+            if(this.el.pstyle == "2" && this.mql.matches === true) return;
             if(this.el.pstyle == "2" || this.el.pstyle == "3" || this.el.pstyle == "4"){
               var imgposition = this.querySelector('.product-image-lg[data-id="' + mediaId + '"]').offsetTop;
               if(this.mql.matches === true){

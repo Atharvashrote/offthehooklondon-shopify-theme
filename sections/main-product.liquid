@@ -46,6 +46,7 @@
         if color_options contains opt_name
             assign all_color = option.values
             assign svriant = option.selected_value
+            assign color_idx = option.position | minus: 1
         endif
         if settings.sizechart and size_options contains opt_name
             assign sizechart = true
@@ -54,6 +55,43 @@
     assign is_color_group = false
     if all_color.size > 0 and product.metafields.custom.color_group
         assign is_color_group = true
+    endif
+
+    comment
+      "Two columns list" gallery (prstyle 2) = desktop image grid, see
+      assets/product-gallery-grid.css/.js. All images show at once, so for
+      products with several colours each image is tagged with the colour of
+      the nearest preceding variant featured image ("|<media id>=<colour>"
+      map); images before the first one are shared. Needs 2+ colours with
+      their own featured image, otherwise every image shows for every colour.
+    endcomment
+    assign pd_grid = false
+    assign pd_color_map = ''
+    if section_st.prstyle == "2"
+        assign pd_grid = true
+    endif
+    if pd_grid and all_color.size > 1 and is_color_group == false
+        assign pd_colors_seen = '|'
+        assign pd_color_count = 0
+        for variant in product.variants
+            if variant.featured_media
+                assign pd_key = '|' | append: variant.featured_media.id | append: '='
+                unless pd_color_map contains pd_key
+                    assign pd_vcolor = variant.options[color_idx]
+                    assign pd_color_map = pd_color_map | append: pd_key | append: pd_vcolor
+                    assign pd_ckey = '|' | append: pd_vcolor | append: '|'
+                    unless pd_colors_seen contains pd_ckey
+                        assign pd_colors_seen = pd_colors_seen | append: pd_vcolor | append: '|'
+                        assign pd_color_count = pd_color_count | plus: 1
+                    endunless
+                endunless
+            endif
+        endfor
+        if pd_color_count < 2
+            assign pd_color_map = ''
+        else
+            assign pd_color_map = pd_color_map | append: '|'
+        endif
     endif
 -%}
 <style>.main-content { --page-width:{{ section_st.page_width }}px }</style>
@@ -73,6 +111,18 @@
 {%- capture sizes -%}
   (min-width:992px) 600px, (min-width:768px) calc(50vw - 90px), calc(100vw - 30px)
 {%- endcapture -%}
+{%- if pd_grid -%}
+    {%- comment -%} Grid tile: half of the 60% gallery column from 992px, one column on tablet {%- endcomment -%}
+    {%- liquid
+        assign pd_tile = section_st.page_width | times: 0.3 | minus: 20 | round
+        assign pd_cap = section_st.page_width | plus: 60
+    -%}
+    {%- capture sizes -%}
+      {% unless section_st.fullwidth %}(min-width:{{ pd_cap }}px) {{ pd_tile }}px, {% endunless %}(min-width:992px) 29vw, (min-width:768px) calc(50vw - 30px), calc(100vw - 30px)
+    {%- endcapture -%}
+    {{ 'product-gallery-grid.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'product-gallery-grid.js' | asset_url }}" defer></script>
+{%- endif -%}
 {%- if product.quantity_price_breaks_configured? -%}
     <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
@@ -80,7 +130,7 @@
 <div class="section-cover" style="--sbg:{{ section_st.bg }};--sst:{{ section_st.sst }}px;--ssb:{{ section_st.ssb }}px;--sstm:{{ section_st.sstm }}px;--ssbm:{{ section_st.ssbm }}px;--picon:{{ section_st.play_ico }};--thumb_bdr:{{ section_st.thumb_bdr }}">
 	 <div class="prstl{{ section_st.prstyle }}{% if section_st.fullwidth %} fw-section{% else %} page-width{% endif %}" data-style="{{ section_st.prstyle }}" id="ProductSection-{{ section.id }}" data-url="{{ product.url }}" data-section-id="{{ section.id }}" data-enable-history-state="true">
   	{%- capture product_media_gallery -%}
-        <media-gallery id="MediaGallery-{{ section.id }}" data-section="{{ section.id }}" data-target="{{ featured_img.id }}" data-style="{{ section_st.prstyle }}" class="fl f-jcsb f-col{% if section_st.prthumbs != "bottom" %} f-row-md{% endif %}{% if is_color_group %} hide{% endif %}">
+        <media-gallery id="MediaGallery-{{ section.id }}" data-section="{{ section.id }}" data-target="{{ featured_img.id }}" data-style="{{ section_st.prstyle }}"{% if pd_color_map != blank %} data-pd-color-pos="{{ color_idx | plus: 1 }}"{% endif %} class="fl f-jcsb f-col{% if section_st.prthumbs != "bottom" %} f-row-md{% endif %}{% if is_color_group %} hide{% endif %}">
     		<div class="product-images{% if product.media.size == 1 %} w-100{% endif %}" style="{{ img_style }}">
     			<div id="pis{{ section.id }}" class="product-image__slider tc swiper p{{ section_st.prstyle }}" 
                      data-swiper='{ "slidesPerView":"auto", "loopedSlides":1, "loop":{{ loop_slides }}, "centeredSlides":{{ centered_slides }}, "navigation":{ "nextEl":".swiper-button-next","prevEl":".swiper-button-prev" },"pagination":{ "el":".gallery-pagination","clickable":true },
@@ -95,10 +145,29 @@
 							assign lazy_img = 'eager'
 							assign fetch_priority = 'high'
 						endif
+						assign pd_attr = ''
+						if pd_color_map != blank
+							if forloop.first
+								assign pd_color = ''
+							endif
+							assign pd_key = '|' | append: media.id | append: '='
+							if pd_color_map contains pd_key
+								assign pd_color = pd_color_map | split: pd_key | last | split: '|' | first
+							endif
+							if pd_color != blank
+								assign pd_color_esc = pd_color | escape
+								assign pd_attr = ' data-pd-color="' | append: pd_color_esc | append: '"'
+								if pd_color != svriant
+									assign pd_attr = pd_attr | append: ' data-pd-off'
+									assign lazy_img = 'lazy'
+									assign fetch_priority = 'auto'
+								endif
+							endif
+						endif
 					-%}
     				{% case media.media_type %}
     					{% when 'image' %}
-    						<a data-id="{{ media.id }}" data-pswp-width="{{ media.width }}" data-pswp-height="{{ media.height }}" class="swiper-slide product-image-lg p{{ section_st.prstyle }}{% if section_st.prlightbox %} pswipe{% endif %}{% if enable_zoom %} przoom{% endif %}"
+    						<a data-id="{{ media.id }}" data-pswp-width="{{ media.width }}" data-pswp-height="{{ media.height }}" class="swiper-slide product-image-lg p{{ section_st.prstyle }}{% if section_st.prlightbox %} pswipe{% endif %}{% if enable_zoom %} przoom{% endif %}"{{ pd_attr }}
                              {% if section_st.prlightbox %}href="{{ media | image_url: width: media.width }}"{% else %}role="link" aria-disabled="true"{% endif %}
                              {% if enable_zoom %}data-zoom="{{ media | image_url: width: '2000' }}"{% endif %} data-slide="{{ img_index }}">
     							{% if settings.pimg_maxHt != blank %}<span class="img-wrapper" style="max-width:{{ settings.pimg_maxHt | times: media.aspect_ratio }}px;">{% endif %}
@@ -106,11 +175,11 @@
     							{% if settings.pimg_maxHt != blank %}</span>{% endif %}
     						</a>
     					{% when 'external_video' %}
-    						<div class="swiper-slide product-image-lg p{{ section_st.prstyle }} videoSlide" data-media-id="{{ media.id }}" data-slide="{{ img_index }}">
+    						<div class="swiper-slide product-image-lg p{{ section_st.prstyle }} videoSlide" data-media-id="{{ media.id }}" data-slide="{{ img_index }}"{{ pd_attr }}>
     							<div class="video-wrap">{{ media | external_video_tag }}</div>
     						</div>
     					{% when 'video' %}
-    						<div class="swiper-slide product-image-lg p{{ section_st.prstyle }} videoSlide" data-media-id="{{ media.id }}" data-slide="{{ img_index }}">
+    						<div class="swiper-slide product-image-lg p{{ section_st.prstyle }} videoSlide" data-media-id="{{ media.id }}" data-slide="{{ img_index }}"{{ pd_attr }}>
     							{%- assign video_thumb = media | image_url: width: '800' -%}
     							{{ media | video_tag: poster: video_thumb, controls:true, muted:true, loop:true, playsinline:true, webkit-playsinline:true }}
     						</div>
@@ -190,7 +259,7 @@
         {%- endif -%}
 	{%- endcapture -%}
 
-	<div class="grid f-ais product-single">
+	<div class="grid f-ais product-single{% if pd_grid %} pd-grid{% endif %}">
 		<div class="gitem {{ pimgcol_wd }} product-gallery mb20">{{ product_media_gallery | strip_newlines | remove: "  " | remove: "	" }}</div>
 		<div class="{% unless section_st.prstyle == "5" %}gitem {{ pdescol_wd }}{% endunless %} product-meta__column pr{% if section_st.image-col == "lg" %} small_view{% endif %}">
 			<product-info id="MainProduct-{{ section.id }}" class="db product-meta__wrapper" data-section="{{ section.id }}" data-product-id="{{ product.id }}" data-update-url="true" data-url="{{ product.url }}">				        		

@@ -53,20 +53,20 @@
         assign seen_handles = seen_handles | append: related_product.handle | append: ','
         assign seen_colors = seen_colors | append: color_key
 
+        comment
+          Swatch fill: Shopify swatch colour, else Shopify swatch pattern image, else the colour
+          name itself (swatch-color-fallback). Never the product photo.
+        endcomment
         assign rel_bg = nil
-        if rel_value.swatch.image
+        if rel_value.swatch.color
+          assign rel_bg = rel_value.swatch.color
+        elsif rel_value.swatch.image
           assign rel_bg = rel_value.swatch.image | image_url: width: swimg_size
           assign rel_bg = 'url(' | append: rel_bg | append: ')'
-        elsif rel_value.swatch.color
-          assign rel_bg = rel_value.swatch.color
         endif
       -%}
-      <li class="swatch related-swatch{% if is_current %} active{% endif %}{% unless related_product.available %} disabled{% endunless %}"{% if rel_bg != nil %} style="background:{{ rel_bg }};"{% endif %}>
-        <a href="{{ related_product.url }}" aria-label="{{ rel_label | escape }}" title="{{ rel_label | escape }}"{% if is_current %} aria-current="true"{% endif %}>
-          {%- if rel_bg == nil and related_product.featured_image != blank -%}
-            {{ related_product.featured_image | image_url: width: swimg_size | image_tag: class: 'img-fit', loading: 'lazy', alt: '', width: settings.swatch_size, height: settings.swatch_size }}
-          {%- endif -%}
-        </a>
+      <li class="swatch related-swatch{% if rel_bg == nil %} sw-fallback swatch-{{ rel_label | handle }}{% endif %}{% if is_current %} active{% endif %}{% unless related_product.available %} disabled{% endunless %}" style="{% if rel_bg != nil %}background:{{ rel_bg }};{% else %}{% render 'swatch-color-fallback', value: rel_label %}{% endif %}">
+        <a href="{{ related_product.url }}" aria-label="{{ rel_label | escape }}" title="{{ rel_label | escape }}"{% if is_current %} aria-current="true"{% endif %}></a>
         <span class="tooltip-label top" aria-hidden="true">{{ rel_label }}</span>
       </li>
     {%- endfor -%}
@@ -137,8 +137,10 @@
                     endif
                   endfor
 
-                  assign swatch_clr = value.swatch.color | default: value | downcase
-                  if value.swatch.image
+                  assign swatch_clr = nil
+                  if value.swatch.color
+                     assign swatch_clr = value.swatch.color
+                  elsif value.swatch.image
                      assign swatch_img = value.swatch.image | image_url: width: swimg_size
                      assign swatch_clr = 'url(' | append: swatch_img | append: ')'
                   endif
@@ -149,7 +151,7 @@
                           <span class="tooltip-label top">{{ value }}</span>
                       </li>
                 {%- else -%}
-                      <li class="swatch color-swatch swatch-{{ value | handle }}{% if swatch_vi_img != blank %} noImg{% endif %}{% if option_disabled %} disabled{% endif %}{% if cl_count > settings.clcount %} hide{% endif %}" title="{{ value }}" style="background:{{ swatch_clr }};" {% if swatch_vi_img != blank %}data-src="{{ swatch_vi_img | image_url: width: 400 }}"{% endif %}{% if swatch_variant %} data-variant="{{ swatch_variant.id }}"{% endif %}>
+                      <li class="swatch color-swatch swatch-{{ value | handle }}{% if swatch_clr == nil %} sw-fallback{% endif %}{% if swatch_vi_img != blank %} noImg{% endif %}{% if option_disabled %} disabled{% endif %}{% if cl_count > settings.clcount %} hide{% endif %}" title="{{ value }}" style="{% if swatch_clr != nil %}background:{{ swatch_clr }};{% else %}{% render 'swatch-color-fallback', value: value %}{% endif %}" {% if swatch_vi_img != blank %}data-src="{{ swatch_vi_img | image_url: width: 400 }}"{% endif %}{% if swatch_variant %} data-variant="{{ swatch_variant.id }}"{% endif %}>
                           <span class="tooltip-label top">{{ value }}</span>
                       </li>
                 {%- endif -%}

@@ -13,6 +13,14 @@
                         background:{{ block.settings[color_code] }} url({{ block.settings[color_img] | image_url: width:80 }}) no-repeat 50% 50%/cover;
                     {%- endif -%}
                 }
+                {%- comment -%} Swatches without a Shopify swatch: this mapping beats the colour-name guess {%- endcomment -%}
+                .grid-swatches li.sw-fallback.swatch-{{ color_name }}{
+                    {%- if block.settings[color_img] == blank -%}
+                        background-color:{{ block.settings[color_code] }} !important;
+                    {%- else -%}
+                        background:{{ block.settings[color_code] }} url({{ block.settings[color_img] | image_url: width:80 }}) no-repeat 50% 50%/cover !important;
+                    {%- endif -%}
+                }
             {%- endif -%}
         {%- endfor -%}
     {%- endfor -%}
