@@ -13,7 +13,7 @@
   <div class="fl1">
     {% if settings.show_vendor %}<div class="mini-products__vendor mb5">{{ product.vendor }}</div>{% endif %}
     <div class="product-title mb5"><a href="{{ product_url }}" class="{% if settings.gttl_case %}text-upper{% endif %}">{{ product.title }}</a></div>
-    {%- unless settings.hide-price -%}<div class="grid-price mb10">{% render 'product-price', product: product %}</div>{%- endunless -%}        
+    {%- unless settings.hide-price -%}<div class="grid-price mb10">{% render 'product-price', product: product, hide_currency_code: hide_currency_code %}</div>{%- endunless -%}        
     {% if settings.show_product_review %}<div class="product-review mb5">{% render 'ratings', product: product %}</div>{% endif %}
     {%- if showbtn -%}
       <product-card>

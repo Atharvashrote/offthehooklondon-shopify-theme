@@ -1,0 +1,32 @@
+{%- comment -%} Data source for the live search dropdown in snippets/search-drawer.liquid (requested via /search/suggest?section_id=predictive-search-data); mirrors the coming-soon rule in product-card-grid {%- endcomment -%}
+<script type="application/json" data-predictive-products>
+[
+{%- assign printed = false -%}
+{%- for product in predictive_search.resources.products -%}
+  {%- comment -%} Shopify's search index can lag behind unpublishing; skip products with no Online Store publication {%- endcomment -%}
+  {%- if product.published_at == blank -%}{%- continue -%}{%- endif -%}
+  {%- liquid
+    assign coming_soon = false
+    if product.metafields.custom.sold != blank
+      assign custom_status = product.metafields.custom.sold.value | default: product.metafields.custom.sold | strip
+      if custom_status == 'Coming Soon' and product.available == false
+        assign coming_soon = true
+      endif
+    endif
+    assign image_url = ''
+    if product.featured_image != blank
+      assign image_url = product.featured_image | image_url: width: 300
+    endif
+  -%}
+  {%- if printed -%},{%- endif -%}{%- assign printed = true -%}
+  {"title":{{ product.title | json }},"url":{{ product.url | json }},"price":{{ product.price | money | json }},"featured_image":{"url":{{ image_url | json }}},"available":{{ product.available | json }},"coming_soon":{{ coming_soon | json }}}
+{%- endfor -%}
+]
+</script>
+{% schema %}
+{
+  "name": "Predictive search data",
+  "tag": "div",
+  "settings": []
+}
+{% endschema %}

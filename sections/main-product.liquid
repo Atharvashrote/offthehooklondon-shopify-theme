@@ -107,18 +107,21 @@
   column minus the 88px thumbnail rail), about half the screen on tablet. Avone's
   40/50/60% column maths no longer matches the custom layout and requested a
   550px file for a ~600-700px image.
+  Main images: 750px target (750x1000 for the 1800x2400 3:4 uploads; width/height attributes),
+  srcset 375-1500 for 2x screens. image_tag drops srcset widths above the base URL width, so the
+  base URL is the 1500 file. Width-only, so no source is ever cropped; zoom/lightbox keep the large file.
 {%- endcomment -%}
 {%- capture sizes -%}
   (min-width:992px) 600px, (min-width:768px) calc(50vw - 90px), calc(100vw - 30px)
 {%- endcapture -%}
 {%- if pd_grid -%}
-    {%- comment -%} Grid tile: half of the 60% gallery column from 992px, one column on tablet {%- endcomment -%}
+    {%- comment -%} Grid tile: half of the ~77% gallery column (48px column gap, 10px tile gap) from 992px, one column on tablet {%- endcomment -%}
     {%- liquid
-        assign pd_tile = section_st.page_width | times: 0.3 | minus: 20 | round
+        assign pd_tile = section_st.page_width | minus: 30 | times: 0.385 | minus: 23 | round
         assign pd_cap = section_st.page_width | plus: 60
     -%}
     {%- capture sizes -%}
-      {% unless section_st.fullwidth %}(min-width:{{ pd_cap }}px) {{ pd_tile }}px, {% endunless %}(min-width:992px) 29vw, (min-width:768px) calc(50vw - 30px), calc(100vw - 30px)
+      {% unless section_st.fullwidth %}(min-width:{{ pd_cap }}px) {{ pd_tile }}px, {% endunless %}(min-width:992px) calc(38vw - 30px), (min-width:768px) calc(50vw - 30px), calc(100vw - 30px)
     {%- endcapture -%}
     {{ 'product-gallery-grid.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'product-gallery-grid.js' | asset_url }}" defer></script>
@@ -164,6 +167,18 @@
 								endif
 							endif
 						endif
+						# Grid: the first row (two visible tiles) is above the fold, so don't lazy-load the second one
+						if pd_grid
+							if forloop.first
+								assign pd_shown = 0
+							endif
+							unless pd_attr contains 'data-pd-off'
+								assign pd_shown = pd_shown | plus: 1
+								if pd_shown <= 2
+									assign lazy_img = 'eager'
+								endif
+							endunless
+						endif
 					-%}
     				{% case media.media_type %}
     					{% when 'image' %}
@@ -171,7 +186,7 @@
                              {% if section_st.prlightbox %}href="{{ media | image_url: width: media.width }}"{% else %}role="link" aria-disabled="true"{% endif %}
                              {% if enable_zoom %}data-zoom="{{ media | image_url: width: '2000' }}"{% endif %} data-slide="{{ img_index }}">
     							{% if settings.pimg_maxHt != blank %}<span class="img-wrapper" style="max-width:{{ settings.pimg_maxHt | times: media.aspect_ratio }}px;">{% endif %}
-                                    {{ media | image_url: width:media.preview_image.width | image_tag: loading: lazy_img, fetchpriority: fetch_priority, sizes: sizes, widths: '400,550,700,850,1000,1200', class: 'img-auto' }}
+                                    {%- assign pd_h = 750 | divided_by: media.aspect_ratio | round -%}{{ media | image_url: width: 1500 | image_tag: loading: lazy_img, fetchpriority: fetch_priority, sizes: sizes, widths: '375,550,750,1000,1500', width: 750, height: pd_h, class: 'img-auto' }}
     							{% if settings.pimg_maxHt != blank %}</span>{% endif %}
     						</a>
     					{% when 'external_video' %}

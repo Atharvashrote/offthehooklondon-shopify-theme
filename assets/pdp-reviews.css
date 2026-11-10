@@ -1,0 +1,82 @@
+/* =========================================================
+   OFF THE HOOK - PDP REVIEWS GRID (Judge.me v3 review widget)
+   Loaded only by the product-tabs @app (reviews) panel; every rule is scoped to .oth-reviews.
+   Judge.me still renders, sorts, filters and fetches the reviews. Its masonry positions each card
+   absolutely; here the cards sit in a CSS grid instead (2 / 2 / 1 columns, equal row heights).
+   pdp-reviews.js shows 4 cards at a time and drives Judge.me's own "Show more" for further pages.
+   ========================================================= */
+.oth-reviews {
+  --oth-rv-gap: 20px;
+  --oth-rv-border: #e6e6e6;
+  --oth-rv-text: #111111;
+}
+
+/* Judge.me's "peek" clips the list with an inline max-height that grows per native click */
+.oth-reviews .jdgm-masonry-grid { max-height: none !important; overflow: visible !important; }
+
+/* grid instead of masonry (Judge.me sets position/transform/width/height inline) */
+.oth-reviews .jdgm-masonry-grid__container {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--oth-rv-gap);
+  height: auto !important;
+  position: static !important;
+}
+.oth-reviews .jdgm-masonry-grid__masonry-item {
+  position: static !important;
+  transform: none !important;
+  width: auto !important;
+  opacity: 1 !important;
+  display: flex;
+  min-width: 0;
+}
+.oth-reviews .jdgm-masonry-grid__masonry-item[data-oth-hidden] { display: none !important; }
+.oth-reviews .jdgm-masonry-grid__masonry-item-inner { display: flex; flex: 1 1 auto; min-width: 0; }
+
+/* card */
+.oth-reviews .jdgm-masonry-grid__masonry-item .jdgm-review-card {
+  flex: 1 1 auto;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--oth-rv-border);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--oth-rv-text);
+}
+.oth-reviews .jdgm-review-card__content { --jm-box-padding: 24px !important; }
+/* Judge.me tints only the inner content box; in equal-height rows that left a two-tone card */
+.oth-reviews .jdgm-review-card .jm-box { background: transparent !important; }
+
+/* Judge.me's peek fade + its own button: replaced by the button below (still clicked by the script) */
+.oth-reviews .jdgm-masonry-grid__footer { display: none !important; }
+
+/* SHOW MORE REVIEWS */
+.oth-reviews .oth-rv-more { display: flex; justify-content: center; margin-top: 32px; }
+.oth-reviews .oth-rv-more[hidden] { display: none; }
+.oth-reviews .oth-rv-more__btn {
+  min-width: 240px;
+  padding: 14px 32px;
+  background: transparent;
+  border: 1px solid var(--oth-rv-text);
+  border-radius: 0;
+  color: var(--oth-rv-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.oth-reviews .oth-rv-more__btn:hover,
+.oth-reviews .oth-rv-more__btn:focus-visible { background: var(--oth-rv-text); color: #ffffff; }
+.oth-reviews .oth-rv-more__btn[aria-busy="true"] { opacity: 0.6; cursor: progress; }
+
+@media (max-width: 767px) {
+  .oth-reviews { --oth-rv-gap: 14px; }
+  .oth-reviews .jdgm-masonry-grid__container { grid-template-columns: minmax(0, 1fr); }
+  .oth-reviews .jdgm-review-card__content { --jm-box-padding: 18px !important; }
+  .oth-reviews .oth-rv-more { margin-top: 24px; }
+  .oth-reviews .oth-rv-more__btn { width: 100%; min-width: 0; }
+}

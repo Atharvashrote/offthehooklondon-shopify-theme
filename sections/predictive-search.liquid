@@ -20,10 +20,12 @@
                     <hr class="mt0 mb20" />
                     <ul id="predictive-search-results-list" class="fl1 grid gspace rwcols-2 rwcols-md-3 rwcols-lg-4 predictive-search__results-list" aria-labelledby="predictive-search-products" style="--grsp:7.5px;--grspm:5px;">
                         {%- for product in predictive_search.resources.products limit: prlimit -%}
+                            {%- comment -%} Shopify's search index can lag behind unpublishing; skip products with no Online Store publication {%- endcomment -%}
+                            {%- if product.published_at == blank -%}{%- continue -%}{%- endif -%}
                             {%- capture sizes -%}
                                 (min-width:1024px) calc((100vw - 60px) / 5),(min-width:768px) calc((100vw - 45px) / 3), calc((100vw - 10px) / 2)
                             {%- endcapture -%}
-                            <li class="gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-columns',product:product, showSw: false, sizes:sizes %}</li>
+                            <li class="gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-columns',product:product, showSw: false, sizes:sizes, hide_currency_code: true %}</li>
                         {%- endfor -%}
                     </ul>
                 </div>
@@ -44,7 +46,7 @@
             {% endif %}
         </div>
         <p class="tc {% render 'animate-data', css:true %}">
-            <a class="btn {{ settings.sbtn-size }} {{ settings.sbtn-style }}" href="{{ routes.search_url }}?q={{ predictive_search.terms }}&options%5Bprefix%5D=none&options%5Bprefix%5D=last">
+            <a class="btn {{ settings.sbtn-size }} {{ settings.sbtn-style }}" href="{{ routes.search_url }}?q={{ predictive_search.terms }}&options%5Bprefix%5D=none&options%5Bprefix%5D=last&options%5Bunavailable_products%5D=last">
                 {{ 'general.search.all' | t: terms: predictive_search.terms }} 
                 <svg viewBox="0 0 14 10" fill="none" aria-hidden="true" focusable="false" role="presentation" class="at-icon icon-arrow ml5 right" style="height:10px" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.537.808a.5.5 0 01.817-.162l4 4a.5.5 0 010 .708l-4 4a.5.5 0 11-.708-.708L11.793 5.5H1a.5.5 0 010-1h10.793L8.646 1.354a.5.5 0 01-.109-.546z" fill="currentColor"></path></svg>
             </a>

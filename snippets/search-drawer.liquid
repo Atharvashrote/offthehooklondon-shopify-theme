@@ -113,7 +113,7 @@
                                         {{ search_label | escape }}
                                     </a>
                                 {%- else -%}
-                                    <a href="{{ routes.search_url }}?type=product&amp;q={{ search_label | url_encode }}">
+                                    <a href="{{ routes.search_url }}?type=product&amp;q={{ search_label | url_encode }}&amp;options%5Bunavailable_products%5D=last">
                                         {{ search_label | escape }}
                                     </a>
                                 {%- endif -%}
@@ -167,7 +167,8 @@
                                     {%- render 'product-card-columns',
                                         product: product,
                                         secSt: secSt,
-                                        sizes: sizes
+                                        sizes: sizes,
+                                        hide_currency_code: true
                                     -%}
 
                                 </li>
@@ -399,6 +400,27 @@
         font-size: 14px;
         line-height: 1.3;
         margin: 0;
+    }
+
+
+    /* Sold out */
+
+    .search-drawer .live-search-item.is-sold-out .live-search-image img {
+        opacity: .5;
+    }
+
+
+    .search-drawer .live-search-soldout {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 2px 8px;
+        font-size: 11px;
+        line-height: 1.4;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: {{ settings.lbl_sold_cl | default: '#000' }};
+        background: {{ settings.lbl_sold_bg | default: '#fafafa' }};
+        border: 1px solid {{ settings.lbl_sold_cl | default: '#000' | color_modify: 'alpha', 0.15 }};
     }
 
 
@@ -716,11 +738,20 @@
                 product.price || '';
 
 
+            const soldOut =
+                product.available === false;
+
+
+            const comingSoon =
+                soldOut &&
+                product.coming_soon === true;
+
+
             html += `
 
                 <a
                     href="${url}"
-                    class="live-search-item"
+                    class="live-search-item${soldOut ? ' is-sold-out' : ''}"
                 >
 
                     <div class="live-search-image">
@@ -757,6 +788,21 @@
                             : ''
                         }
 
+
+                        ${
+                            soldOut
+                            ? `
+                                <span class="live-search-soldout">
+                                    ${
+                                        comingSoon
+                                        ? 'Coming soon'
+                                        : '{{ 'products.product.sold_out' | t | escape }}'
+                                    }
+                                </span>
+                              `
+                            : ''
+                        }
+
                     </div>
 
                 </a>
@@ -777,7 +823,7 @@
             <div class="live-search-view-all">
 
                 <a
-                    href="{{ routes.search_url }}?type=product&q=${encodeURIComponent(searchTerm)}"
+                    href="{{ routes.search_url }}?type=product&q=${encodeURIComponent(searchTerm)}&options%5Bunavailable_products%5D=last"
                 >
                     View All Results
                 </a>
@@ -833,9 +879,10 @@
             '?q=' +
             encodeURIComponent(searchTerm) +
             '&resources[type]=product' +
-            '&resources[limit]=8' +
+            '&resources[limit]=10' +
             '&resources[limit_scope]=all' +
-            '&resources[options][unavailable_products]=hide';
+            '&resources[options][unavailable_products]=show' +
+            '&section_id=predictive-search-data';
 
 
         fetch(
@@ -846,7 +893,7 @@
 
                 headers: {
                     'Accept':
-                        'application/json'
+                        'text/html'
                 }
             }
         )
@@ -861,19 +908,44 @@
 
             }
 
-            return response.json();
+            return response.text();
 
         })
 
-        .then(function (data) {
+        .then(function (text) {
+
+            /*
+             * predictive-search-data section returns
+             * the products as JSON (incl. coming soon status).
+             */
+
+            const dataNode =
+                new DOMParser()
+                    .parseFromString(text, 'text/html')
+                    .querySelector('script[data-predictive-products]');
+
+
+            const relevant =
+                dataNode
+                    ? JSON.parse(dataNode.textContent)
+                    : [];
+
+
+            /*
+             * Top 10 by relevance (incl. sold out),
+             * then in stock first, keeping relevance order.
+             */
 
             const products =
-                data &&
-                data.resources &&
-                data.resources.results &&
-                data.resources.results.products
-                    ? data.resources.results.products
-                    : [];
+                relevant
+                    .filter(function (product) {
+                        return product.available !== false;
+                    })
+                    .concat(
+                        relevant.filter(function (product) {
+                            return product.available === false;
+                        })
+                    );
 
 
             showLiveResults(

@@ -61,6 +61,39 @@
       endif
     endif
 
+    # Homepage carousel (card_portrait from products-carousel): 20:29 cards, target 400x580.
+    # Portrait sources (3:4, e.g. 1800x2400) are centre-cropped to 20:29 on the CDN (about 4% off each side);
+    # square or landscape sources are never cropped (no cut-off footwear) and are shown whole (pc-fit = contain).
+    # image_tag drops srcset widths above the base URL width, so the base is the 2x file (800) and the
+    # width/height attributes carry the 400x580 target.
+    if card_portrait
+      assign img_widths = '200,300,400,600,800'
+      assign img2_widths = img_widths
+      assign pc_img = product.featured_image
+      # No image (or no second image): skip, image_url on nil would print a Liquid error
+      if pc_img == blank
+      elsif pc_img.aspect_ratio <= 0.8
+        assign pc_src = pc_img | image_url: width: 800, height: 1160, crop: 'center'
+        assign pc_class = image_class | append: ' pc-crop'
+        assign pc_h = 580
+      else
+        assign pc_src = pc_img | image_url: width: 800
+        assign pc_class = image_class | append: ' pc-fit'
+        assign pc_h = 400 | divided_by: pc_img.aspect_ratio | round
+      endif
+      assign pc_img2 = product.images[1]
+      if pc_img2 == blank
+      elsif pc_img2.aspect_ratio <= 0.8
+        assign pc_src2 = pc_img2 | image_url: width: 800, height: 1160, crop: 'center'
+        assign pc_class2 = 'img-fit hover pc-crop'
+        assign pc_h2 = 580
+      else
+        assign pc_src2 = pc_img2 | image_url: width: 800
+        assign pc_class2 = 'img-fit hover pc-fit'
+        assign pc_h2 = 400 | divided_by: pc_img2.aspect_ratio | round
+      endif
+    endif
+
     assign lazy_img = 'lazy'
     assign fetch_priority = 'auto'
     if section.index < 3 and product_index <= 4
@@ -182,18 +215,24 @@ endif
           <span class="lbl sold-out">{{ 'products.product.sold_out' | t}}</span>
         {%- endif -%}
  {% endcapture %}
-<product-card class="db grid-content {{ boxstyle }}{% if settings.grid_box %} {{ settings.grid_boxrd }}{% endif %}{% if product.available == false and coming_soon == false %} sold-out style{{ settings.soldout_style }}{% endif %}">
+<product-card class="db grid-content {{ boxstyle }}{% if settings.grid_box %} {{ settings.grid_boxrd }}{% endif %}{% if product.available == false and coming_soon == false %} sold-out style{{ settings.soldout_style }}{% endif %}"{% if card_portrait %} data-swap-section="product-card-swap-carousel"{% elsif hide_currency_code %} data-swap-section="product-card-swap-search"{% endif %}>
   {%- if boxstyle == "grid-2" -%}<a class="overly h-100 w-100 pa db" href="{{ product_url }}" aria-label="{{ product.title }}"></a>{%- endif -%}
   <div class="grid-image__wrapper mb15 {{ settings.grid-image_rad }}">
     <a class="grid-image" href="{{ product_url }}">
         {% if product_media.media_type == 'video' %}
             {% capture video_tag %}{{ product_media | video_tag: loop:true, autoplay:true, muted:muted, class:image_class }}{% endcapture %}
             {{ video_tag | replace: 'src=', 'data-src=' }}
+        {%- elsif product.featured_image and card_portrait -%}
+            {{ pc_src | image_tag: loading:lazy_img, fetchpriority: fetch_priority, class:pc_class, sizes:sizes, widths:img_widths, width: 400, height: pc_h, alt: product.featured_image.alt }}
         {%- elsif product.featured_image -%}
             {{ product.featured_image | image_url: width: product.featured_image.width | image_tag: loading:lazy_img, fetchpriority: fetch_priority, class:image_class, sizes:sizes, widths:img_widths }}
         {%- endif -%}
         {%- if second_img and product.images.size > 1 and boxstyle != "style2" -%}
+            {%- if card_portrait -%}
+            {{ pc_src2 | image_tag: loading:'lazy', class:pc_class2, sizes:sizes, widths:img2_widths, width: 400, height: pc_h2, alt: product.images[1].alt }}
+            {%- else -%}
             {{ product.images[1] | image_url: width: product.images[1].width | image_tag: loading:'lazy', class:'img-fit hover', sizes:sizes, widths:img2_widths }}
+            {%- endif -%}
         {%- endif -%}
     </a>
     {%- if settings.product-label -%}
@@ -232,7 +271,7 @@ endif
       <a href="{{ product_url }}">{{ product.title }}</a>
       {%- if product.metafields.descriptors.subtitle != blank and settings.is_subttl -%}<div>{{ product.metafields.descriptors.subtitle }}</div>{%- endif -%}
     </div>
-    {%- unless settings.hide-price -%}<div class="grid-price">{% render 'product-price', product: product %}</div>{%- endunless -%}
+    {%- unless settings.hide-price -%}<div class="grid-price">{% render 'product-price', product: product, hide_currency_code: hide_currency_code %}</div>{%- endunless -%}
     {%- if product_review -%}<div class="product-review">{%- render 'ratings', product: product -%}</div>{%- endif -%}
     {%- if color_swatch -%}{%- render 'color-swatches', product: product -%}{%- endif -%}
 	  {%- if boxstyle == "grid-2" -%}{{- btn_cart -}}{%- endif -%}

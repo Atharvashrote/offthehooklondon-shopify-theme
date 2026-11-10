@@ -40,7 +40,7 @@
                         {%- unless product.handle == current_product.handle -%}
                             {%- unless same_vendor and current_product.vendor != product.vendor -%}
                                 {% unless same_type and current_product.type != product.type %}
-                                    <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-grid', product: product, section_st:section_st, sizes:sizes %}</div>
+                                    <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-grid', product: product, section_st:section_st, sizes:sizes, hide_currency_code: true %}</div>
                                 {% endunless %}
                             {%- endunless -%}
                         {%- endunless -%}
@@ -50,7 +50,7 @@
         {%- elsif section_st.type == '2' -%}
             {%- capture related_items -%}
                 {%- for product in product.metafields.custom.related_products.value -%}
-                    <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-grid', product: product, section_st:section_st, sizes:sizes %}</div>
+                    <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-grid', product: product, section_st:section_st, sizes:sizes, hide_currency_code: true %}</div>
                 {%- endfor -%}
             {%- endcapture -%}
         {%- elsif section_st.type == '3' -%}
@@ -60,7 +60,7 @@
             {%- capture related_items -%}
                     {% for product in collections.all.products %}
                         {% if product.handle != current_product.handle and product.type == current_product.type %}
-                            <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-grid', product: product, section_st:section_st, sizes:sizes %}</div>
+                            <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-grid', product: product, section_st:section_st, sizes:sizes, hide_currency_code: true %}</div>
                             {% assign product_count = product_count | plus: 1 %}
                         {% endif %}
                         {% if product_count == number_of_rows %}{% break %}{% endif %}
@@ -74,7 +74,7 @@
             {%- capture related_items -%}
                     {%- for product in collections.all.products -%}
                         {%- if product.handle != current_product.handle and product.vendor == current_product.vendor -%}
-                            <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-grid', product: product, section_st:section_st, sizes:sizes %}</div>
+                            <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>{% render 'product-card-grid', product: product, section_st:section_st, sizes:sizes, hide_currency_code: true %}</div>
                             {% assign product_count = product_count | plus: 1 %}
                         {%- endif -%}
                         {%- if product_count == number_of_rows -%}{% break %}{%- endif -%}

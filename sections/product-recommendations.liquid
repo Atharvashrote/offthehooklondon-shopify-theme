@@ -11,6 +11,40 @@
             assign product_rec = item.product
         endfor
     endif
+
+    # Same-category mode (product template only): the first value of custom.collection_categories
+    # becomes a native Search & Discovery filter on the product's department collection (or 'all').
+    # That URL renders this section in collection context (product is blank there), in-stock first.
+    # The JS drops the current product (data-exclude) and trims to data-limit.
+    # Only one filter value is sent: repeating the param applies just the last value.
+    assign rec_url = routes.product_recommendations_url | append: '?section_id=' | append: section.id | append: '&product_id=' | append: product_rec.id | append: '&limit=' | append: section_st.limit
+    assign cat_value = ''
+    if section_st.cat_match and template.name == 'product' and product
+        assign cat_field = product.metafields.custom.collection_categories
+        if cat_field.type contains 'list.'
+            assign cat_value = cat_field.value | first | strip
+        else
+            assign cat_value = cat_field.value | strip
+        endif
+    endif
+    if cat_value != blank
+        assign cat_scope = 'all'
+        assign dept_handles = section_st.dept_handles | remove: ' ' | split: ','
+        assign product_cols = product.collections | map: 'handle'
+        for dept in dept_handles
+            if product_cols contains dept
+                assign cat_scope = dept
+                break
+            endif
+        endfor
+        assign cat_param = cat_value | url_encode
+        assign rec_url = routes.collections_url | append: '/' | append: cat_scope | append: '?section_id=' | append: section.id | append: '&filter.p.m.custom.collection_categories=' | append: cat_param
+    endif
+
+    assign cat_render = false
+    if section_st.cat_match and product == blank and collection
+        assign cat_render = true
+    endif
 -%}
 {%- capture product_recommendations -%}
 {%- capture sizes -%}(min-width:1024px) calc({{ page_width }} / {{ section_st.grid }}),(min-width:768px) calc(100vw / {{ section_st.gridtb }}), calc(100vw / {{ section_st.gridmb }}){%- endcapture -%}
@@ -18,24 +52,41 @@
     <div class="{% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}">
         {%- render 'sec-title' -%}
     
+        {%- liquid
+            assign rec_products = recommendations.products
+            assign rec_max = section_st.limit
+            if cat_render
+                # In-stock matches first, then sold out; one spare so the limit holds after the current product is dropped
+                assign rec_products = collection.products | where: 'available'
+                for p in collection.products
+                    unless p.available
+                        assign sold_out = collection.products | where: 'id', p.id
+                        assign rec_products = rec_products | concat: sold_out
+                    endunless
+                endfor
+                assign rec_max = section_st.limit | plus: 1
+            endif
+        -%}
         {%- capture products_data -%}
-            {%- for recommendation in recommendations.products -%}
-                <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>
-                    {%- render 'product-card-grid', product:recommendation, section_st:section_st, sizes:sizes, showSw:false -%}
+            {%- for recommendation in rec_products limit: rec_max -%}
+                {%- if recommendation.published_at == blank -%}{%- continue -%}{%- endif -%}
+                <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" data-pid="{{ recommendation.id }}" {% render 'animate-data', i:forloop.index %}>
+                    {%- comment -%} hide_cc is ticked on the product template only: the cart template uses this section too and keeps GBP; the /recommendations render has no template to test {%- endcomment -%}
+                    {%- render 'product-card-grid', product:recommendation, section_st:section_st, sizes:sizes, showSw:false, hide_currency_code: section_st.hide_cc -%}
                 </div>
             {%- endfor -%}
         {%- endcapture -%}
 
         {%- if section_st.carousel -%}
             <product-recommendations data-id="recomSlider" class="complementary-products grid recomPr rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products swiper"
-                data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product_rec.id }}&limit={{ section_st.limit }}"
+                data-url="{{ rec_url }}"{% if cat_value != blank %} data-exclude="{{ product.id }}" data-limit="{{ section_st.limit }}"{% endif %}
                 data-swiper='{ "slidesPerView":"auto", "loop":false, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":false }}'>
                 <div class="swiper-wrapper">{{ products_data }}</div>
                 {%- render 'swiper-navigation', id: section.id, section_st: section_st -%}
             </product-recommendations>
         {%- else -%}
             <product-recommendations data-id="recomSlider" class="complementary-products grid recomPr rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products"
-            data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product_rec.id }}&limit={{ section_st.limit }}">
+            data-url="{{ rec_url }}"{% if cat_value != blank %} data-exclude="{{ product.id }}" data-limit="{{ section_st.limit }}"{% endif %}>
                 {{- products_data -}}
             </product-recommendations>
         {%- endif -%}
@@ -110,6 +161,28 @@
       "min": 2,
       "max": 50,
       "step": 1
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_cc",
+      "label": "Hide currency code in prices",
+      "info": "Shows £46.00 instead of £46.00 GBP",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "cat_match",
+      "label": "Match by Collection Categories",
+      "info": "Product pages show other products with the same first Collection Categories value (custom.collection_categories), from the same department collection. Products without a value keep Shopify's automatic recommendations.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "dept_handles",
+      "label": "Department collection handles",
+      "info": "Comma-separated. Matches come from the first of these collections the product belongs to, otherwise from all products.",
+      "default": "women,men,boys,girls",
+      "visible_if": "{{ section.settings.cat_match }}"
     },
     {
       "type": "header",

@@ -17,8 +17,9 @@
                 data-swiper='{ "slidesPerView":"auto", "loop":false, {% if section_st.autoplay %}"autoplay":{ "delay":"{{ section_st.speed | times: 1000 }}" },{% endif %} "navigation":{ "nextEl":".swn{{ section.id }}","prevEl":".swp{{ section.id }}" },"pagination":{ "el":".swpg{{ section.id }}","clickable":false }}'>
                 <div class="swiper-wrapper recentPrList">
                     {%- for item in search.results -%}
+                    {%- if item.published_at == blank -%}{%- continue -%}{%- endif -%}
                         <div class="{% if section_st.carousel %}swiper-slide {% endif %}gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
-                            {%- render 'product-card-grid', product: item, section_st: section_st, sizes: sizes, showSw: false -%}
+                            {%- render 'product-card-grid', product: item, section_st: section_st, sizes: sizes, showSw: false, hide_currency_code: true -%}
                         </div>
                     {%- endfor -%}
                 </div>
@@ -28,8 +29,9 @@
             <recently-viewed-products data-section-id="{{ section.id }}" data-url="{{ routes.search_url }}?section_id={{ section.id }}" data-id="{{ product.id }}" data-limit="{{ section_st.rows | plus: 1 }}"
                 class="grid rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products recentPrList">
                 {%- for item in search.results -%}
+                    {%- if item.published_at == blank -%}{%- continue -%}{%- endif -%}
                     <div class="gitem {% render 'animate-data', css:true %}" {% render 'animate-data' %}>
-                        {%- render 'product-card-grid', product: item, section_st: section_st, sizes: sizes, showSw: false -%}
+                        {%- render 'product-card-grid', product: item, section_st: section_st, sizes: sizes, showSw: false, hide_currency_code: true -%}
                     </div>
                 {%- endfor -%}
             </recently-viewed-products>

@@ -79,7 +79,7 @@
   <div class="product-title mb5"><a href="{{ product_url }}" class="listview-title">{{ product.title }}</a></div>
   {% if product_review %}<div class="mb10">{% render 'ratings' %}</div>{% endif %}
   {% if product.description != blank %}<p class="mb15">{{ product.description | strip_html | truncatewords: 40 }}</p>{% endif %}  
-  {%- unless settings.hide-price -%}<div class="grid-price mb15">{% render 'product-price', product: product  %}</div>{%- endunless -%}
+  {%- unless settings.hide-price -%}<div class="grid-price mb15">{% render 'product-price', product: product, hide_currency_code: hide_currency_code %}</div>{%- endunless -%}
   {% if color_swatch %} {% render 'color-swatches', product: product, source: "list" %} {% endif %}  
   {% if product.metafields.custom.external_link_text != blank and product.metafields.custom.external_link != blank %} 
           <a href="{{ product.metafields.custom.external_link }}"  class="btn" target="_blank">{{ product.metafields.custom.external_link_text }}</a>

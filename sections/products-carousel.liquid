@@ -13,6 +13,22 @@
   (min-width:1024px) calc({{ page_width }} / {{ section_st.grid }}),(min-width:768px) calc(100vw / {{ section_st.gridtb }}), calc(100vw / {{ section_st.gridmb }})
   {%- endif -%}
 {%- endcapture -%}
+{%- comment -%} Homepage only: 20:29 product images (target 400x580), see card_portrait in product-card-grid {%- endcomment -%}
+{%- liquid
+  assign card_portrait = false
+  if template.name == 'index'
+    assign card_portrait = true
+  endif
+-%}
+{%- if card_portrait -%}
+<style>
+  #shopify-section-{{ section.id }}, #shopify-section-{{ section.id }} .pc-peek { --grid-img_ratio:145%; }
+  #shopify-section-{{ section.id }} .grid-image .img-fit.pc-crop { object-fit:cover; object-position:center; }
+  #shopify-section-{{ section.id }} .grid-image .img-fit.pc-fit { object-fit:contain; object-position:center; }
+  #shopify-section-{{ section.id }} .pc-peek .swiper-arrows { top:calc((100cqw / var(--pc-n) - 2 * var(--grid_productsm)) * 1.45 / 2); }
+  @media (min-width:1025px) { #shopify-section-{{ section.id }} .pc-peek .swiper-arrows { top:calc((100cqw / var(--pc-n) - 2 * var(--grid_products)) * 1.45 / 2); } }
+</style>
+{%- endif -%}
 {%- if section_st.peek -%}
 {%- liquid
   assign glide_ms = section_st.speed | at_least: 4 | times: 1000
@@ -74,11 +90,11 @@
                 {%- if section_st.products != blank or section_st.collection != blank -%}                   
                     {%- if section_st.products != blank -%}                                        
                         {%- for product in section_st.products limit: section_st.rows -%}                      
-                              <div class="swiper-slide gitem">{% render 'product-card-grid', product: product, section_st:section_st, sizes: sizes, widths: card_widths %}</div>
+                              <div class="swiper-slide gitem">{% render 'product-card-grid', product: product, section_st:section_st, sizes: sizes, widths: card_widths, card_portrait: card_portrait, hide_currency_code: true %}</div>
                         {%- endfor -%}                   
                     {%- else -%}
                         {%- for product in section_st.collection.products limit: section_st.rows -%}
-                          <div class="swiper-slide gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>{% render 'product-card-grid', product: product, section_st: section_st, sizes: sizes, widths: card_widths %}</div>
+                          <div class="swiper-slide gitem {% render 'animate-data', css:true %}" {% render 'animate-data', i:forloop.index %}>{% render 'product-card-grid', product: product, section_st: section_st, sizes: sizes, widths: card_widths, card_portrait: card_portrait, hide_currency_code: true %}</div>
                         {%- endfor -%}
                     {%- endif -%}
                 {%- else -%}
@@ -88,7 +104,7 @@
                                 <a href="#" class="grid_lnk">
                                     <div class="grid-image__wrapper">{% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}{{ 'product-apparel-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}</div><br/>
                                     <div class="h5 grid-title">{{ 'homepage.onboarding.product_title' | t }}</div>
-                                    <div class="grid-price">{% render 'product-price' %}</div>
+                                    <div class="grid-price">{% render 'product-price', hide_currency_code: true %}</div>
                                 </a>
                             </div>
                         </div>

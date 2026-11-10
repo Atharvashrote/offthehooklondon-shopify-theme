@@ -17,6 +17,17 @@
   endif
   assign pageurl = canonical_url | split: '?type=' | last
 -%}
+{%- comment -%} Without an explicit option, Shopify's default search ordering drops the Load more link after ~10 pages and mixes sold-out products in; force native "in stock first, sold out last" for every entry point {%- endcomment -%}
+{%- if search.performed and request.design_mode == false -%}
+<script>
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    if (params.has('options[unavailable_products]')) return;
+    params.set('options[unavailable_products]', 'last');
+    window.location.replace(window.location.pathname + '?' + params.toString() + window.location.hash);
+  })();
+</script>
+{%- endif -%}
 
 {%- capture sct_styles -%}
 {%- style -%}
@@ -44,8 +55,23 @@
 
 <div id="{{ section.id }}" data-section-type="collection-template">
 {% paginate search.results by section_st.prpp %}
-	{% unless search.results_count == 0 or search.performed == false %}
-        <h1 class="page-title tc{% if settings.ttl_c %} text-upper{% endif %} mb25 mb40-md">{{ 'general.search.results_with_count' | t: terms: search.terms, count: search.results_count }}</h1>
+	{%- liquid
+	  comment
+	    Unpublished products still in Shopify's search index are skipped below; when all results fit on one page the exact count is known
+	  endcomment
+	  assign unpublished_on_page = 0
+	  for item in search.results
+	    if item.object_type == 'product' and item.published_at == blank
+	      assign unpublished_on_page = unpublished_on_page | plus: 1
+	    endif
+	  endfor
+	  assign shown_count = search.results_count
+	  if paginate.pages <= 1
+	    assign shown_count = search.results_count | minus: unpublished_on_page
+	  endif
+	-%}
+	{% unless shown_count == 0 or search.performed == false %}
+        <h1 class="page-title tc{% if settings.ttl_c %} text-upper{% endif %} mb25 mb40-md">{{ 'general.search.results_with_count' | t: terms: search.terms, count: shown_count }}</h1>
 	{% endunless %}
   
 {%- capture active_filters -%}
@@ -70,6 +96,8 @@
 		<div class="collection">
 			<div id="collection-products" data-id="{{ section.id }}" class="grid rwcols-{{ section_st.gridmb }} rwcols-md-{{ section_st.gridtb }} rwcols-lg-{{ section_st.grid }} grid-products">
             	{% for item in search.results %}
+                    {%- comment -%} Shopify's search index can lag behind unpublishing; skip products with no Online Store publication {%- endcomment -%}
+                    {%- if item.object_type == 'product' and item.published_at == blank -%}{%- continue -%}{%- endif -%}
                     {%- capture sizes -%}
                           {%- if section_st.filters and section_st.sbpos != 'top' and section_st.sbpos != 'popup' -%}
                               (min-width:1024px) calc(({{ page_width }} - {{ settings.grid_space | times: section_st.grid | minus:settings.grid_space | plus:340 }}px) / {{ section_st.grid }}),(min-width:768px) calc((100vw - {{ settings.grid_space | times: section_st.gridtb | minus:section_st.gspace }}px) / {{ section_st.gridtb }}), calc((100vw - {{ settings.grid_spacem | times: section_st.gridmb | minus:settings.grid_spacem }}px) / {{ section_st.gridmb }})
@@ -87,7 +115,7 @@
                                   (min-width:1024px) calc(({{ page_width }} - {{ settings.grid_space | times: section_st.grid | minus:settings.grid_space }}px) / {{ section_st.grid }}),(min-width:768px) calc((100vw - {{ settings.grid_space | times: section_st.gridtb | minus:section_st.gspace }}px) / {{ section_st.gridtb }}), calc((100vw - {{ settings.grid_spacem | times: section_st.gridmb | minus:settings.grid_spacem }}px) / {{ section_st.gridmb }})
                               {%- endif -%}
                           {%- endcapture -%}
-                          {% render 'product-card-grid', product: item, section_st: section.settings, sizes:sizes %}
+                          {% render 'product-card-grid', product: item, section_st: section.settings, sizes:sizes, hide_currency_code: true %}
                         {%- when 'article' -%}
                           {%- assign article = item -%}
                           <div class="grid-content">
@@ -149,7 +177,7 @@
 {% endcapture %}
   
 	<collection-filters-form class="facets db {% if section_st.fullwidth %}fw-section{% else %}page-width{% endif %}" id="Collection">
-      	{%- if search.performed and search.results.size > 0 -%}
+      	{%- if search.performed and search.results.size > 0 and shown_count > 0 -%}
             <div class="{% unless section_st.sbpos == 'top' %}fl f-col f-ais f-row-md{% endunless %}">
                 {%- capture sidebar_blocks -%}
                     {%- content_for 'blocks' -%}
@@ -189,6 +217,7 @@
                 <form action="{{ routes.search_url }}" method="get" class="search pr searchInPage wd50-md m-auto" role="search" style="box-shadow:0 0 25px 5px {{ settings.bodycl | color_modify:'alpha', 0.1 }};border-radius:{{ settings.search_rad }}px;">
                     <div class="adth-inputs fl">
                         <input class="search-input w-100" type="search" name="q" placeholder="{{ settings.search_ph }}" value="{{ search.terms | escape }}" autocomplete="off" />
+                        <input type="hidden" name="options[unavailable_products]" value="last" />
                         <button class="btn search-submit" type="submit"><svg class="at-icon"><use xlink:href="#icon-search"></use></svg> <span class="fallback_txt">{{ 'general.search.submit' | t }}</span></button>
                     </div>
                 </form>

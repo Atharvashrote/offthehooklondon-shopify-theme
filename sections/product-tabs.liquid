@@ -498,6 +498,9 @@
     </div>
 
                             {%- when '@app' -%}
+    {%- comment -%} oth-reviews: 2/2/1 grid + "Show more reviews" (4 at a time) over the Judge.me widget.
+        The stylesheet sits above the accordion: theme.js opens the panel via the title's nextElementSibling {%- endcomment -%}
+    {{ 'pdp-reviews.css' | asset_url | stylesheet_tag }}
     {%- if section_st.acc -%}
         <div class="tab-accordion js-toggle fl f-aic mb5 {{ section_st.rounded }}{% unless section_st.tab_style == '4' %} hide-md hide-lg{% endunless %}">
             PRODUCT REVIEWS
@@ -507,9 +510,10 @@
         </div>
     {%- endif -%}
 
-    <div id="tab-reviews" class="{{ tab_panel }}">
+    <div id="tab-reviews" class="{{ tab_panel }} oth-reviews">
         {% render block %}
     </div>
+    <script src="{{ 'pdp-reviews.js' | asset_url }}" defer="defer"></script>
                     {%- endcase -%}
                 {%- endfor -%}
             </div>

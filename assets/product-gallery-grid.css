@@ -2,8 +2,8 @@
    Product page - two-column image grid gallery
    Loaded by sections/main-product.liquid only when Gallery style is
    "Two columns list" (.product-single.pd-grid). Desktop (>=992px): gallery
-   60% | info 40%, images in two columns at their own aspect ratio, 8px
-   gaps, no thumbnail rail. Tablet: one image column. Mobile (<=767px) keeps
+   60% | info 40%, images in two columns of 3:4 white tiles, 10px gaps,
+   no thumbnail rail. Tablet: one image column. Mobile (<=767px) keeps
    the swipe slider. The !important flags are needed to beat the stacked
    product layout overrides in theme.css.
    ========================================================= */
@@ -47,7 +47,7 @@
   body.template-product .product-single.pd-grid .product-image__slider .swiper-wrapper {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
+    gap: 10px;
     align-items: start;
   }
 
@@ -60,7 +60,7 @@
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden !important;
-    background: #f4f3f1 !important;
+    background: #ffffff !important;
   }
 
   body.template-product .product-single.pd-grid .product-image-lg img {
@@ -71,6 +71,22 @@
     max-height: none !important;
     margin: 0 !important;
     object-fit: contain !important;
+  }
+
+  /* Image tiles are a fixed 3:4 (the 1800x2400 uploads fill them exactly);
+     other shapes sit whole inside on white, never cropped or stretched */
+  body.template-product .product-single.pd-grid a.product-image-lg {
+    aspect-ratio: 3 / 4 !important;
+  }
+
+  body.template-product .product-single.pd-grid a.product-image-lg .img-wrapper {
+    display: block !important;
+    max-width: none !important;
+    height: 100% !important;
+  }
+
+  body.template-product .product-single.pd-grid a.product-image-lg img {
+    height: 100% !important;
   }
 
   /* Drift hover zoom: its pane sits inside the tile, so the tile image rules
@@ -97,13 +113,62 @@
 
 @media screen and (min-width: 992px) {
 
+  /* Gallery exactly 60% | info exactly 40% of the product content width.
+     No grid gap, so the 48px gutter sits inside the info column instead. */
   body.template-product .product-single.pd-grid {
-    grid-template-columns: minmax(0, 60fr) minmax(0, 40fr) !important;
-    gap: 0 56px !important;
+    grid-template-columns: minmax(0, 60%) minmax(0, 40%) !important;
+    gap: 0 !important;
+  }
+
+  body.template-product .product-single.pd-grid > .product-meta__column {
+    padding-left: 48px !important;
+    padding-right: 0 !important;
   }
 
   body.template-product .product-single.pd-grid .product-image__slider .swiper-wrapper {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+/* The info column is too narrow for the labelled thirds that
+   _product-buy-buttons uses from 1280px ([ qty ] [ Add to wishlist ] [ Share ]),
+   so keep its compact layout there: [ qty ][♡][share] / Add to Cart | Buy Now.
+   Labels stay available to screen readers (visually hidden). */
+@media screen and (min-width: 1280px) {
+
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons:has(> .pd-utility-row) {
+    grid-template-columns: minmax(0, 1fr) var(--pd-h1) var(--pd-h1) minmax(0, 1fr);
+  }
+
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > quantity-input.quantity {
+    grid-column: 1;
+  }
+
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons > .pd-utility-row > .pd-wish { grid-column: 2; }
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons > .pd-utility-row > .pd-share { grid-column: 3; }
+
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row > .product-form__submit {
+    grid-column: 1 / 3;
+  }
+
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons:has(> .pd-utility-row) > .buy-now-button,
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons > .fl.gap.mb10.pd-utility-row.has-notify-me > .ot-custom-notify-me {
+    grid-column: 3 / 5;
+  }
+
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons:has(> .pd-utility-row.has-notify-me) > .buy-now-button {
+    grid-column: 1 / -1;
+  }
+
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons > .pd-utility-row .pd-label,
+  body.template-product .product-single.pd-grid .product-form .product-form__buttons > .pd-utility-row .wish-txt {
+    position: absolute !important;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
   }
 
 }

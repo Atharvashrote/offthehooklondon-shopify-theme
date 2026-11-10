@@ -194,7 +194,7 @@
                             {%- break -%}
                         {%- endif -%}
                     {%- endfor -%}
-                    <product-card class="listview-item fl f-row-md f-col mb20 {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" {% render 'animate-data' %}>{% render 'product-card-list', product: product, section_st: section_st, sizes:'(min-width:768px) 250px, 100vw'  %}</product-card>
+                    <product-card class="listview-item fl f-row-md f-col mb20 {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" {% render 'animate-data' %}>{% render 'product-card-list', product: product, section_st: section_st, sizes:'(min-width:768px) 250px, 100vw', hide_currency_code: true %}</product-card>
                     {%- endfor -%}
                 </div>
             {%- else -%}
@@ -214,7 +214,7 @@
                                 {%- break -%}
                             {%- endif -%}
                         {%- endfor -%}
-                        <div class="gitem fl {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" {% render 'animate-data' %}>{% render 'product-card-grid', product:product, section_st:section_st, sizes:sizes %}</div>
+                        <div class="gitem fl {% render 'animate-data', css:true %}" data-availability="{{ product.available }}" data-all-variants-sold-out="{{ all_variants_sold_out }}" {% render 'animate-data' %}>{% render 'product-card-grid', product:product, section_st:section_st, sizes:sizes, hide_currency_code: true %}</div>
                     {%- endfor -%}
                 </div>
             {%- endif -%}

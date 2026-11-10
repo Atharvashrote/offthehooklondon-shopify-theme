@@ -650,15 +650,18 @@ class ProductCard extends HTMLElement {
   relatedSwatch(){
     var cache = ProductCard.cardCache || (ProductCard.cardCache = {}),
         style = (this.className.match(/\bgrid-\d\b/) || [])[0],
+        // search cards ask for a card rendered without the currency code (sections/product-card-swap-search)
+        swapSection = this.dataset.swapSection || "product-card-swap",
         card = this;
     var load = function(href){
-      if(!cache[href]){
-        cache[href] = fetch(href + (href.indexOf("?") > -1 ? "&" : "?") + "section_id=product-card-swap")
+      var key = swapSection + "|" + href;
+      if(!cache[key]){
+        cache[key] = fetch(href + (href.indexOf("?") > -1 ? "&" : "?") + "section_id=" + swapSection)
           .then(function(r){ if(!r.ok) throw r.status; return r.text(); })
           .then(function(t){ return new DOMParser().parseFromString(t, "text/html").querySelector("product-card"); })
-          .catch(function(e){ delete cache[href]; throw e; });
+          .catch(function(e){ delete cache[key]; throw e; });
       }
-      return cache[href];
+      return cache[key];
     };
     this.addEventListener("pointerover", function(e){
       var a = e.target.closest(".related-swatch a");
@@ -1170,7 +1173,14 @@ class ProductRecommendations extends SlideSection {
         fetch(this.dataset.url).then(response => response.text()).then(responseText => {
             var html = new DOMParser().parseFromString(responseText, "text/html"),
                 recommendations = html.querySelector('product-recommendations');
-  
+
+            /* Same-category mode: drop the current product, then trim to the section limit */
+            if(recommendations && this.dataset.exclude) {
+                recommendations.querySelectorAll(`.gitem[data-pid="${this.dataset.exclude}"]`).forEach(el => el.remove());
+                const max = parseInt(this.dataset.limit, 10);
+                if(max) recommendations.querySelectorAll('.gitem').forEach((el, i) => { if(i >= max) el.remove(); });
+            }
+
             if(recommendations && recommendations.querySelector('.gitem') != null) {
                 this.innerHTML = recommendations.innerHTML;
                 wrapper.classList.remove('hide');

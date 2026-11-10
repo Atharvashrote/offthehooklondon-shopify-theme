@@ -1,0 +1,13 @@
+{%- comment -%}
+  Search-results variant of sections/product-card-swap: same grid card, price shown without the
+  currency code (£35.00). Fetched by ProductCard (assets/theme.js) when a related-colour swatch is
+  clicked on a card that carries data-swap-section="product-card-swap-search".
+{%- endcomment -%}
+{%- if product -%}{%- render 'product-card-grid', product: product, sizes: '(min-width:768px) 33vw, 50vw', hide_currency_code: true -%}{%- endif -%}
+
+{% schema %}
+{
+  "name": "Search card swap",
+  "settings": []
+}
+{% endschema %}

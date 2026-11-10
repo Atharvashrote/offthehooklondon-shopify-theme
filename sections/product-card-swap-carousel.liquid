@@ -1,0 +1,14 @@
+{%- comment -%}
+  Homepage-carousel variant of sections/product-card-swap: same grid card with the 20:29 image
+  (card_portrait). Fetched by ProductCard (assets/theme.js) when a related-colour swatch is clicked
+  on a card that carries data-swap-section="product-card-swap-carousel"; theme.js keeps the
+  original card's sizes attribute.
+{%- endcomment -%}
+{%- if product -%}{%- render 'product-card-grid', product: product, sizes: '(min-width:1024px) 350px, (min-width:768px) 33vw, 100vw', card_portrait: true, hide_currency_code: true -%}{%- endif -%}
+
+{% schema %}
+{
+  "name": "Carousel card swap",
+  "settings": []
+}
+{% endschema %}

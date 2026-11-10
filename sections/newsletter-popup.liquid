@@ -5,19 +5,21 @@
       assign imgsize = '700px'
     endif
     comment
-      Welcome offer eligibility, matching the welcome code's customer segment and the welcome email automation:
-      signed in, 0 orders, subscribed to email marketing (confirmed). Pending = signed in, 0 orders, not subscribed yet.
+      Welcome offer eligibility, checked server-side on the customer Shopify signed in: 0 orders.
+      Email marketing consent plays no part. Signed in with orders = not eligible (shown only on return from the popup's sign-in).
     endcomment
     assign nl_code = section_st.welcome_code | strip
+    assign nl_login_ready = false
+    if section_st.design != 'classic' and nl_code != blank and shop.customer_accounts_enabled
+      assign nl_login_ready = true
+    endif
     assign nl_unlocked = false
-    assign nl_pending = false
-    if customer and section_st.design != 'classic' and nl_code != blank
+    assign nl_ineligible = false
+    if customer and nl_login_ready
       if customer.orders_count == 0
-        if customer.accepts_marketing
-          assign nl_unlocked = true
-        else
-          assign nl_pending = true
-        endif
+        assign nl_unlocked = true
+      else
+        assign nl_ineligible = true
       endif
     endif
 -%}
@@ -25,7 +27,11 @@
 {%- liquid
   assign nl_show = false
   if showexitpp contains request.page_type
-    if customer == blank or nl_unlocked or nl_pending
+    if customer == blank
+      if section_st.design == 'classic' or nl_login_ready
+        assign nl_show = true
+      endif
+    elsif nl_unlocked or nl_ineligible
       assign nl_show = true
     endif
   endif
@@ -83,22 +89,14 @@
   .oth-nl__grid{display:grid;grid-template-columns:1fr 1fr;min-height:min(620px,calc(100dvh - 48px));max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px)}
 
   /* Campaign image */
-  .oth-nl__media{position:relative;overflow:hidden;background:#000 radial-gradient(120% 90% at 30% 20%,color-mix(in srgb,var(--nl-accent) 45%,transparent) 0%,transparent 60%)}
-  .oth-nl__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .oth-nl__media::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 32%,rgba(0,0,0,0) 52%,rgba(0,0,0,.68) 100%);z-index:1}
-  .oth-nl__media::after{content:"";position:absolute;inset:16px;border:1px solid rgba(255,255,255,.28);border-radius:10px;z-index:1;pointer-events:none}
-  .oth-nl__brand{position:absolute;top:36px;left:38px;right:38px;z-index:2;color:#fff;display:flex;flex-direction:column;gap:6px;line-height:1}
-  .oth-nl__brand-name{font-family:var(--nl-head);font-size:16px;font-weight:700;letter-spacing:.32em;text-transform:uppercase}
-  .oth-nl__brand-sub{font-family:var(--nl-head);font-size:10px;font-weight:700;letter-spacing:.5em;text-transform:uppercase;color:var(--nl-accent-2);text-shadow:0 1px 6px rgba(0,0,0,.35)}
-  .oth-nl__media-copy{position:absolute;left:38px;right:38px;bottom:38px;z-index:2;color:#fff}
-  .oth-nl__kicker{margin:0 0 10px;font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--nl-accent-2)}
-  .oth-nl__tagline{margin:0;font-family:var(--nl-head);font-size:30px;font-weight:700;line-height:1.12;letter-spacing:-.005em;max-width:15ch;font-variant-numeric:lining-nums}
+  .oth-nl__media{position:relative;overflow:hidden;background:var(--nl-neutral)}
+  .oth-nl__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--nl-focal,50% 50%)}
 
   /* Signup panel */
-  .oth-nl__body{position:relative;overflow-y:auto;max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);padding:58px 52px 34px;display:flex;flex-direction:column;justify-content:safe center;text-align:center;overscroll-behavior:contain}
+  .oth-nl__body{position:relative;overflow-y:auto;max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);padding:60px 56px 40px;display:flex;flex-direction:column;justify-content:safe center;text-align:center;overscroll-behavior:contain}
   .oth-nl__eyebrow{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 0 18px;font-size:11px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--nl-ink)}
   .oth-nl__eyebrow::before,.oth-nl__eyebrow::after{content:"";width:22px;height:2px;background:var(--nl-accent);flex:none}
-  .oth-nl__heading,.oth-nl__done-heading,.oth-nl__offer{font-family:var(--nl-head);font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
+  .oth-nl__heading,.oth-nl__offer{font-family:var(--nl-head);font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
   .oth-nl__heading{margin:0;font-size:58px;font-weight:700;line-height:.98;letter-spacing:-.01em;text-transform:uppercase;color:var(--nl-ink)}
   .oth-nl__accent{padding:0 .06em;color:var(--nl-ink);background:linear-gradient(transparent 60%,var(--nl-accent-2) 60%,var(--nl-accent-2) 92%,transparent 92%)}
   .oth-nl__sub{margin:14px 0 0;font-size:16px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--nl-ink)}
@@ -119,34 +117,24 @@
   .oth-nl__btn[disabled]{opacity:.7;cursor:progress}
   .oth-nl__error{min-height:0;margin:0;font-size:12.5px;line-height:1.4;color:#b3261e;text-align:left}
   .oth-nl__error:empty{display:none}
-  .oth-nl__benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:30px 0 0;padding:24px 0 0;list-style:none;border-top:1px solid var(--nl-line)}
-  .oth-nl__benefit{display:flex;flex-direction:column;align-items:center;gap:10px;margin:0;font-size:10.5px;font-weight:600;line-height:1.35;letter-spacing:.12em;text-transform:uppercase;color:var(--nl-ink)}
-  .oth-nl__icon{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid var(--nl-accent-2);border-radius:50%;background:var(--nl-neutral);color:var(--nl-ink)}
+  .oth-nl__benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:14px;margin:30px 0 0;padding:24px 0 0;list-style:none;border-top:1px solid var(--nl-line)}
+  .oth-nl__benefit{display:flex;flex-direction:column;align-items:center;gap:10px;margin:0;font-size:10.5px;font-weight:600;line-height:1.4;letter-spacing:.12em;text-transform:uppercase;text-align:center;text-wrap:balance;color:var(--nl-ink)}
+  .oth-nl__icon{display:flex;flex:none;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid var(--nl-accent-2);border-radius:50%;background:var(--nl-neutral);color:var(--nl-ink)}
   .oth-nl__icon svg{width:19px;height:19px}
-  .oth-nl__note{margin:24px 0 0;font-size:12px;color:var(--nl-muted)}
+  .oth-nl__note{margin:24px auto 0;max-width:340px;font-size:12px;line-height:1.5;color:var(--nl-muted);text-align:center}
   .oth-nl__dismiss{margin:10px auto 0;padding:4px;border:0;background:none;color:var(--nl-ink);font-family:var(--nl-body);font-size:12px;text-decoration:underline;text-decoration-color:var(--nl-accent);text-decoration-thickness:1.5px;text-underline-offset:4px;cursor:pointer}
   .oth-nl__dismiss:hover,.oth-nl__dismiss:focus-visible{text-decoration-color:var(--nl-ink)}
   .oth-nl__dismiss:focus-visible{outline:2px solid var(--nl-accent);outline-offset:2px}
   .oth-nl svg{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 
-  /* Success state */
-  .oth-nl__done{display:none;flex-direction:column;align-items:center}
-  .oth-nl--done .oth-nl__pre{display:none}
-  .oth-nl--done .oth-nl__done{display:flex}
-  .oth-nl__check{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 0 22px;border-radius:50%;background:var(--nl-accent);color:var(--nl-ink)}
-  .oth-nl__check svg{width:28px;height:28px;stroke-width:2}
-  .oth-nl__done-heading{margin:0;font-size:44px;font-weight:700;line-height:1;text-transform:uppercase}
-  .oth-nl__done-text{margin:16px auto 26px;max-width:340px;font-size:14px;line-height:1.6;color:var(--nl-muted)}
-  .oth-nl__done-text strong{color:var(--nl-ink)}
   a.oth-nl__btn{text-decoration:none}
   /* Link buttons: keep the popup's colours over the theme's global link hover/focus colour. */
   .oth-nl a.oth-nl__btn,.oth-nl a.oth-nl__btn:visited,.oth-nl a.oth-nl__btn:hover,.oth-nl a.oth-nl__btn:focus{color:#fff}
   .oth-nl__btn[aria-busy="true"]{opacity:.7;cursor:progress}
-  .oth-nl__done .oth-nl__dismiss{margin-top:14px}
 
   /* Verified, eligible customer: welcome offer reveal */
   .oth-nl__unlocked .oth-nl__heading{font-size:30px;line-height:1.15;letter-spacing:.08em}
-  .oth-nl__pending .oth-nl__heading{font-size:40px;line-height:1.02}
+  .oth-nl__ineligible .oth-nl__heading{font-size:40px;line-height:1.02}
   .oth-nl__offer{display:inline-block;margin:18px auto 0;padding:0 .08em;font-size:68px;font-weight:800;line-height:.95;letter-spacing:-.01em;text-transform:uppercase;color:var(--nl-ink);background:linear-gradient(transparent 58%,var(--nl-accent-2) 58%,var(--nl-accent-2) 90%,transparent 90%)}
   .oth-nl__code{display:flex;flex-direction:column;align-items:center;gap:6px;margin:0 0 18px;padding:14px 20px;border:1.5px dashed var(--nl-accent);border-radius:6px;background:var(--nl-neutral)}
   .oth-nl__code-label{font-size:10px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--nl-muted)}
@@ -173,10 +161,13 @@
   .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close:focus-visible{outline:2px solid #A2A569!important;outline-offset:2px!important}
 
   @media (min-width:768px) and (max-width:989px){
-    .oth-nl__grid{grid-template-columns:.85fr 1.15fr}
+    .oth-nl__grid{grid-template-columns:1fr 1fr}
+    .oth-nl__eyebrow{font-size:10px;letter-spacing:.16em;gap:8px}
+    .oth-nl__eyebrow::before,.oth-nl__eyebrow::after{width:14px}
     .oth-nl__body{padding:52px 34px 30px}
     .oth-nl__heading{font-size:46px}
-    .oth-nl__tagline{font-size:24px}
+    .oth-nl__benefits{gap:10px}
+    .oth-nl__benefit{font-size:9.5px;letter-spacing:.08em}
   }
   @media (min-width:768px) and (max-height:760px){
     .oth-nl__body{padding:38px 44px 22px}
@@ -185,74 +176,88 @@
     .oth-nl__rule{margin:16px auto}
     .oth-nl__desc{margin-bottom:18px}
     .oth-nl__benefits{margin-top:20px;padding-top:16px}
-    .oth-nl__note{margin-top:14px}
+    .oth-nl__note{margin:24px auto 0;max-width:340px;font-size:12px;line-height:1.5;color:var(--nl-muted);text-align:center}
     .oth-nl__dismiss{margin-top:4px}
   }
   @media (max-width:767px){
     .tingle-modal.nwPopup:has(.oth-nl){padding:12px!important}
     .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal-box{max-width:440px!important}
-    .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close{top:12px!important;right:12px!important;width:34px!important;height:34px!important}
+    /* Close button sits on the image's top-right corner: white disc + soft shadow keeps it readable on the photo. */
+    .tingle-modal.nwPopup:has(.oth-nl) .tingle-modal__close{top:10px!important;right:10px!important;width:36px!important;height:36px!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important}
     .oth-nl.tinglebox{border-radius:16px;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
-    .oth-nl__grid{grid-template-columns:1fr;min-height:0;max-height:none}
-    .oth-nl__media{height:min(150px,22dvh);min-height:96px}
-    .oth-nl__media::after{inset:10px;border-radius:8px}
-    .oth-nl__brand{top:auto;bottom:22px;left:24px;right:60px}
-    .oth-nl__brand-name{font-size:14px}
-    .oth-nl__media-copy{display:none}
-    .oth-nl__body{max-height:none;overflow:visible;padding:26px 22px 20px}
-    .oth-nl__eyebrow{margin-bottom:12px;font-size:9.5px;letter-spacing:.2em;gap:8px}
+    /* Image runs edge to edge at the top (the popup's rounded corners clip it); content carries the side padding. */
+    .oth-nl__grid{grid-template-columns:1fr;min-height:0;max-height:none;padding:0}
+    .oth-nl__media{height:auto;aspect-ratio:4/3;border-radius:0}
+    .oth-nl__img{object-position:50% var(--nl-my,76%)}
+    .oth-nl__body{max-height:none;overflow:visible;padding:22px 20px 22px}
+    .oth-nl__eyebrow{margin-bottom:12px;font-size:9.5px;letter-spacing:.18em;gap:8px}
     .oth-nl__eyebrow::before,.oth-nl__eyebrow::after{width:14px}
     .oth-nl__heading{font-size:38px}
     .oth-nl__sub{margin-top:8px;font-size:13px;letter-spacing:.2em}
     .oth-nl__rule{margin:14px auto}
-    .oth-nl__desc{margin-bottom:18px;font-size:13px;line-height:1.5}
+    .oth-nl__desc{margin-bottom:18px;font-size:13px;line-height:1.5;text-wrap:balance}
     .oth-nl__field{gap:10px}
     .oth-nl__input{height:50px;font-size:16px}
     .oth-nl__btn{height:52px;font-size:12px;letter-spacing:.14em}
-    .oth-nl__benefits{gap:8px;margin-top:20px;padding-top:16px}
-    .oth-nl__benefit{gap:7px;font-size:9px;letter-spacing:.08em}
-    .oth-nl__icon{width:34px;height:34px}
+    .oth-nl__benefits{gap:8px;margin-top:20px;padding-top:18px}
+    .oth-nl__benefit{gap:8px;font-size:9.5px;line-height:1.35;letter-spacing:.06em}
+    .oth-nl__icon{width:36px;height:36px}
     .oth-nl__icon svg{width:16px;height:16px}
-    .oth-nl__note{margin-top:16px;font-size:11px}
-    .oth-nl__dismiss{margin-top:6px;font-size:11.5px}
-    .oth-nl__done-heading{font-size:34px}
+    .oth-nl__note{margin-top:18px;font-size:11.5px}
+    .oth-nl__dismiss{margin-top:8px;font-size:12px}
     .oth-nl__unlocked .oth-nl__heading{font-size:22px;letter-spacing:.06em}
-    .oth-nl__pending .oth-nl__heading{font-size:28px}
+    .oth-nl__ineligible .oth-nl__heading{font-size:28px}
     .oth-nl__offer{margin-top:10px;font-size:50px}
     .oth-nl__code{padding:12px 14px;margin-bottom:14px}
     .oth-nl__code-value{font-size:22px;letter-spacing:.18em}
     .oth-nl__ready{margin-bottom:16px;font-size:14px}
     .oth-nl__actions{grid-template-columns:1fr;gap:10px}
   }
+  @media (max-width:360px){
+    .oth-nl__body{padding-left:14px;padding-right:14px}
+    .oth-nl__eyebrow{font-size:8.5px;letter-spacing:.12em;gap:6px}
+    .oth-nl__eyebrow::before,.oth-nl__eyebrow::after{width:10px}
+    .oth-nl__heading{font-size:33px}
+    .oth-nl__sub{font-size:12px;letter-spacing:.16em}
+    .oth-nl__btn{font-size:11px;letter-spacing:.1em}
+    .oth-nl__benefits{gap:4px}
+    .oth-nl__benefit{font-size:8.5px;letter-spacing:.04em}
+    .oth-nl__icon{width:32px;height:32px}
+    .oth-nl__actions .oth-nl__btn{font-size:11px}
+    .oth-nl__offer{font-size:44px}
+  }
+  /* Shorter phones: tighter spacing first, so the 4:3 image keeps both shoes in frame */
+  @media (max-width:767px) and (max-height:760px){
+    .oth-nl__body{padding-top:18px;padding-bottom:12px}
+    .oth-nl__rule{margin:12px auto}
+    .oth-nl__desc{margin-bottom:14px}
+    .oth-nl__benefits{margin-top:16px;padding-top:14px}
+    .oth-nl__note{margin-top:12px}
+    .oth-nl__dismiss{margin-top:6px}
+  }
+  /* Short phones only: a 3:2 crop (same mobile vertical position setting) so the form stays in view */
+  @media (max-width:767px) and (max-height:680px){
+    .oth-nl__media{aspect-ratio:3/2}
+  }
   @media (max-width:767px) and (max-height:640px){
-    .oth-nl__media{height:96px}
+    .oth-nl__body{padding-top:18px}
     .oth-nl__desc{display:none}
     .oth-nl__rule{margin:10px auto 14px}
   }
 </style>
-<newsletter-popup id="{{ section.id }}" class="tinglebox oth-nl pp-hide{% if nl_unlocked %} oth-nl--unlocked{% elsif nl_pending %} oth-nl--pending{% endif %}" data-time="{{ section_st.seconds | times: 1000 }}" role="dialog" aria-modal="true" aria-labelledby="OthNlHeading-{{ section.id }}">
+<newsletter-popup id="{{ section.id }}" class="tinglebox oth-nl pp-hide{% if nl_unlocked %} oth-nl--unlocked{% elsif nl_ineligible %} oth-nl--ineligible{% endif %}" data-time="{{ section_st.seconds | times: 1000 }}" role="dialog" aria-modal="true" aria-labelledby="OthNlHeading-{{ section.id }}">
   <div class="oth-nl__grid">
     <div class="oth-nl__media">
       {%- if section_st.image != blank -%}
-        {%- assign img_pos = section_st.image.presentation.focal_point | prepend: 'object-position:' -%}
-        {%- comment -%} sizes covers the ~680px-tall desktop panel, so square images cropped by object-fit stay sharp. {%- endcomment -%}
+        {%- comment -%} Image only, no overlays. Desktop crop follows the image's focal point; mobile uses its own vertical position (setting). {%- endcomment -%}
+        {%- assign img_pos = section_st.image.presentation.focal_point | default: '50% 50%' | prepend: '--nl-focal:' | append: ';--nl-focal-m:50% ' | append: section_st.image_position_mobile | append: '%;--nl-my:' | append: section_st.image_position_mobile | append: '%' -%}
         {{ section_st.image | image_url: width: 1600 | image_tag: loading: 'lazy', class: 'oth-nl__img', sizes: '(min-width: 768px) 700px, 100vw', widths: '400,600,800,1000,1200,1400,1600', style: img_pos, alt: section_st.image.alt }}
-      {%- endif -%}
-      <div class="oth-nl__brand">
-        {%- if section_st.overlay_brand != blank -%}<span class="oth-nl__brand-name">{{ section_st.overlay_brand | escape }}</span>{%- endif -%}
-        {%- if section_st.overlay_sub != blank -%}<span class="oth-nl__brand-sub">{{ section_st.overlay_sub | escape }}</span>{%- endif -%}
-      </div>
-      {%- if section_st.overlay_kicker != blank or section_st.overlay_title != blank -%}
-        <div class="oth-nl__media-copy">
-          {%- if section_st.overlay_kicker != blank -%}<p class="oth-nl__kicker">{{ section_st.overlay_kicker | escape }}</p>{%- endif -%}
-          {%- if section_st.overlay_title != blank -%}<p class="oth-nl__tagline">{{ section_st.overlay_title | escape }}</p>{%- endif -%}
-        </div>
       {%- endif -%}
     </div>
 
     <div class="oth-nl__body">
       {%- if nl_unlocked -%}
-        {%- comment -%} Rendered server-side only for a signed-in customer who matches the discount's segment, so the code never reaches other visitors. {%- endcomment -%}
+        {%- comment -%} Rendered server-side only for a signed-in customer with 0 orders, so the code never reaches other visitors. {%- endcomment -%}
         <div class="oth-nl__unlocked">
           {%- if section_st.unlocked_eyebrow != blank -%}<p class="oth-nl__eyebrow">{{ section_st.unlocked_eyebrow | escape }}</p>{%- endif -%}
           <div class="oth-nl__heading" role="heading" aria-level="2" id="OthNlHeading-{{ section.id }}">{{ section_st.unlocked_heading | escape }}</div>
@@ -271,45 +276,40 @@
           </div>
           {%- if section_st.unlocked_note != blank -%}<p class="oth-nl__note">{{ section_st.unlocked_note | escape }}</p>{%- endif -%}
         </div>
-      {%- elsif nl_pending -%}
-        {%- comment -%} Signed in with 0 orders but not subscribed yet (unconfirmed double opt-in). No code here. {%- endcomment -%}
-        <div class="oth-nl__pending">
-          {%- if section_st.pending_eyebrow != blank -%}<p class="oth-nl__eyebrow">{{ section_st.pending_eyebrow | escape }}</p>{%- endif -%}
-          <div class="oth-nl__heading" role="heading" aria-level="2" id="OthNlHeading-{{ section.id }}">{{ section_st.pending_heading | escape }}</div>
+      {%- elsif nl_ineligible -%}
+        {%- comment -%} Signed in with one or more orders: the welcome offer is for first orders only. No code here. {%- endcomment -%}
+        <div class="oth-nl__ineligible">
+          {%- if section_st.ineligible_eyebrow != blank -%}<p class="oth-nl__eyebrow">{{ section_st.ineligible_eyebrow | escape }}</p>{%- endif -%}
+          <div class="oth-nl__heading" role="heading" aria-level="2" id="OthNlHeading-{{ section.id }}">{{ section_st.ineligible_heading | escape }}</div>
           <span class="oth-nl__rule" aria-hidden="true"></span>
-          {%- if section_st.pending_text != blank -%}<p class="oth-nl__desc">{{ section_st.pending_text | escape }}</p>{%- endif -%}
-          <a class="oth-nl__btn" href="{{ routes.root_url | append: '?oth_welcome=1' }}">
-            <span>{{ section_st.pending_button | escape }}</span>
+          {%- if section_st.ineligible_text != blank -%}<p class="oth-nl__desc">{{ section_st.ineligible_text | escape }}</p>{%- endif -%}
+          <a class="oth-nl__btn" href="{{ routes.root_url }}" data-oth-nl-continue>
+            <span>{{ section_st.continue_button | escape }}</span>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
           </a>
-          <button type="button" class="oth-nl__dismiss" data-oth-nl-close>{{ section_st.later_text | escape }}</button>
         </div>
       {%- else -%}
-      {%- form 'customer', id: 'newsletter-popup', class: 'oth-nl__form', novalidate: 'novalidate' -%}
-        {%- if form.posted_successfully? -%}{%- assign form_posted = true -%}{%- endif -%}
-        <div class="oth-nl__pre"{% if form_posted %} hidden{% endif %}>
+      {%- comment -%}
+        Guests: the email goes straight to Shopify's hosted customer sign-in (prefilled via login_hint), which sends and
+        checks the 6-digit code, then returns here signed in. Nothing is posted to the store from this form, so no customer
+        record, tag or email marketing subscription is created, and no subscription confirmation email is sent.
+      {%- endcomment -%}
+      {%- assign nl_return = routes.root_url | append: '?oth_welcome=1' -%}
+      <form class="oth-nl__form" action="/customer_authentication/login" method="get" novalidate>
+        <input type="hidden" name="return_to" value="{{ nl_return }}">
+        <div class="oth-nl__pre">
           {%- if section_st.eyebrow != blank -%}<p class="oth-nl__eyebrow">{{ section_st.eyebrow | escape }}</p>{%- endif -%}
           <div class="oth-nl__heading" role="heading" aria-level="2" id="OthNlHeading-{{ section.id }}">{{ heading_html }}</div>
           {%- if section_st.subheading != blank -%}<p class="oth-nl__sub">{{ section_st.subheading | escape }}</p>{%- endif -%}
           <span class="oth-nl__rule" aria-hidden="true"></span>
-          {%- if section_st.description != blank -%}<p class="oth-nl__desc">{{ section_st.description | escape }}</p>{%- endif -%}
+          {%- if section_st.intro != blank -%}<p class="oth-nl__desc">{{ section_st.intro | escape }}</p>{%- endif -%}
 
           <div class="oth-nl__field">
-            <input type="hidden" name="contact[tags]" value="newsletter,popup-welcome-10">
             <label for="OthNlEmail-{{ section.id }}" class="hidden_txt">{{ section_st.placeholder | escape }}</label>
-            <input id="OthNlEmail-{{ section.id }}" class="oth-nl__input" type="email" name="contact[email]" required
+            <input id="OthNlEmail-{{ section.id }}" class="oth-nl__input" type="email" name="login_hint" required
               autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
-              placeholder="{{ section_st.placeholder | escape }}" aria-describedby="OthNlError-{{ section.id }}"
-              {% if form.errors %}aria-invalid="true"{% endif %}>
-            <p class="oth-nl__error" id="OthNlError-{{ section.id }}" role="alert" aria-live="assertive">
-              {%- if form.errors -%}
-                {%- assign nl_err = form.errors.messages.email -%}
-                {%- if nl_err contains 'taken' -%}{{ section_st.msg_duplicate | escape }}
-                {%- elsif nl_err != blank -%}{{ form.errors.translated_fields.email | capitalize }} {{ nl_err }}
-                {%- else -%}{{ form.errors | default_errors | strip_html | strip }}
-                {%- endif -%}
-              {%- endif -%}
-            </p>
+              placeholder="{{ section_st.placeholder | escape }}" aria-describedby="OthNlError-{{ section.id }}">
+            <p class="oth-nl__error" id="OthNlError-{{ section.id }}" role="alert" aria-live="assertive"></p>
             <button type="submit" class="oth-nl__btn">
               <span>{{ section_st.button | escape }}</span>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
@@ -330,25 +330,7 @@
           {%- if section_st.note != blank -%}<p class="oth-nl__note">{{ section_st.note | escape }}</p>{%- endif -%}
           {%- if section_st.dismiss_text != blank -%}<button type="button" class="oth-nl__dismiss" data-oth-nl-close>{{ section_st.dismiss_text | escape }}</button>{%- endif -%}
         </div>
-
-        <div class="oth-nl__done" tabindex="-1">
-          <span class="oth-nl__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-          <p class="oth-nl__done-heading">{{ section_st.success_heading | escape }}</p>
-          {%- if nl_code != blank and shop.customer_accounts_enabled -%}
-            {%- comment -%} Shopify's hosted sign-in sends and checks the one-time code, then returns here signed in. {%- endcomment -%}
-            {%- assign nl_return = routes.root_url | append: '?oth_welcome=1' -%}
-            <p class="oth-nl__done-text">{{ section_st.verify_text | escape }}<span data-oth-nl-email-line hidden> {{ section_st.verify_lead | escape }} <strong data-oth-nl-email></strong>.</span></p>
-            <a class="oth-nl__btn" href="/customer_authentication/login?return_to={{ nl_return | url_encode }}" data-oth-nl-verify>
-              <span>{{ section_st.verify_button | escape }}</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
-            </a>
-            <button type="button" class="oth-nl__dismiss" data-oth-nl-close>{{ section_st.later_text | escape }}</button>
-          {%- else -%}
-            <p class="oth-nl__done-text">{{ section_st.success_text_plain | escape }}</p>
-            <button type="button" class="oth-nl__btn" data-oth-nl-close>{{ section_st.success_button | escape }}</button>
-          {%- endif -%}
-        </div>
-      {%- endform -%}
+      </form>
       {%- endif -%}
       <input type="checkbox" id="dontshowpp" hidden aria-hidden="true" tabindex="-1">
     </div>
@@ -358,8 +340,6 @@
   (function () {
     var root = document.getElementById({{ section.id | json }});
     if (!root) return;
-    var signupDays = {{ section_st.signup_days | default: 365 | json }};
-    var EMAIL_KEY = 'othNlEmail';
     var designMode = window.Shopify && Shopify.designMode;
 
     /* nwSignup is the cookie the theme's NewsletterPopup checks. No days = session cookie, cleared when the browser closes. */
@@ -377,24 +357,8 @@
       return new RegExp('(^|;\\s*)' + name + '=closed').test(document.cookie);
     }
 
-    /* Only holds the typed email so Shopify's sign-in page can be prefilled. It never marks anyone as verified or signed in. */
-    function session(fn) {
-      try { return fn(window.sessionStorage); } catch (e) { return null; }
-    }
-
-    /* Remembers that this browser signed up through the popup (a timestamp, nothing else), so the
-       "confirm your subscription" reminder only appears for people who are actually waiting on that email. */
-    var SIGNUP_KEY = 'othNlSignup';
-    function local(fn) {
-      try { return fn(window.localStorage); } catch (e) { return null; }
-    }
-    function signedUpRecently() {
-      var at = Number(local(function (s) { return s.getItem(SIGNUP_KEY); }));
-      return at > 0 && Date.now() - at < 14 * 864e5;
-    }
-
     /* Signed-in states open only when this script decides, never on the theme's own timer. */
-    var manualOnly = root.classList.contains('oth-nl--unlocked') || root.classList.contains('oth-nl--pending');
+    var manualOnly = root.classList.contains('oth-nl--unlocked') || root.classList.contains('oth-nl--ineligible');
     var allowOpen = !manualOnly;
 
     /* The theme builds a new modal on every init(), so open at most once per page.
@@ -441,24 +405,29 @@
       if (close) close.click();
     });
 
-    /* Signed in, 0 orders, subscription not confirmed yet (checked server-side). Liquid can't tell "pending" from
-       "never subscribed", so only remind browsers that signed up through this popup, once per browser session. */
-    if (root.classList.contains('oth-nl--pending')) {
-      var askedToConfirm = dropWelcomeFlag();
-      if (askedToConfirm || (signedUpRecently() && !hasCookie('othNlPending'))) {
-        setCookie('othNlPending', 0);
-        onReady(function () { openNow(); });
-      }
+    /* Continue shopping: close the popup and go to the homepage (already there: just close). */
+    root.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-oth-nl-continue]');
+      if (!btn) return;
+      e.preventDefault();
+      var close = document.querySelector('.nwPopup .tingle-modal__close');
+      if (close) close.click();
+      var home = new URL(btn.getAttribute('href') || '/', location.href);
+      if (location.pathname !== home.pathname) location.assign(home.href);
+    });
+
+    /* Signed in with orders (checked server-side): only say so when the customer has just come back from the
+       popup's sign-in (?oth_welcome=1); otherwise returning customers never see this popup. */
+    if (root.classList.contains('oth-nl--ineligible')) {
+      if (dropWelcomeFlag()) onReady(function () { openNow(); });
       return;
     }
 
-    /* Signed-in customer in the welcome segment (checked server-side): show the code once per browser session,
-       whether or not Shopify kept ?oth_welcome=1 on the way back from sign-in, and even if the 365-day signup cookie is set. */
+    /* Signed-in customer with 0 orders (checked server-side): show the code once per browser session,
+       whether or not Shopify kept ?oth_welcome=1 on the way back from sign-in. */
     if (root.classList.contains('oth-nl--unlocked')) {
-      local(function (s) { s.removeItem(SIGNUP_KEY); });
       var code = root.querySelector('[data-oth-nl-code]').textContent.trim();
       var applyBtn = root.querySelector('[data-oth-nl-apply]');
-      var continueBtn = root.querySelector('[data-oth-nl-continue]');
       var statusEl = root.querySelector('[data-oth-nl-status]');
       var cartRoot = (window.Shopify && Shopify.routes && Shopify.routes.root) || '/';
       var MSG_APPLY = {
@@ -537,15 +506,6 @@
         });
       });
 
-      /* Close the popup and go to the homepage (already there: just close). */
-      continueBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        var close = document.querySelector('.nwPopup .tingle-modal__close');
-        if (close) close.click();
-        var home = new URL(continueBtn.getAttribute('href') || '/', location.href);
-        if (location.pathname !== home.pathname) location.assign(home.href);
-      });
-
       var fromVerify = dropWelcomeFlag();
       if (fromVerify || !hasCookie('othNlCode')) {
         setCookie('othNlCode', 0);
@@ -559,7 +519,6 @@
     var input = form.querySelector('.oth-nl__input');
     var errorEl = form.querySelector('.oth-nl__error');
     var button = form.querySelector('button[type="submit"]');
-    var verify = form.querySelector('[data-oth-nl-verify]');
     var MSG_INVALID = {{ section_st.msg_invalid | json }};
     var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     var submitting = false;
@@ -582,71 +541,27 @@
       else button.removeAttribute('aria-busy');
     }
 
-    function showSuccess() {
-      var email = session(function (s) { return s.getItem(EMAIL_KEY); });
-      var line = form.querySelector('[data-oth-nl-email-line]');
-      if (email && line) {
-        form.querySelector('[data-oth-nl-email]').textContent = email;
-        line.hidden = false;
-      }
-      if (email && verify) verify.href += '&login_hint=' + encodeURIComponent(email);
-      form.querySelector('.oth-nl__pre').hidden = true;
-      root.classList.add('oth-nl--done');
-      local(function (s) { s.setItem(SIGNUP_KEY, String(Date.now())); });
-      /* Stop the theme's close handler replacing the long signup cookie with the 1-day dismiss cookie. */
-      var keep = document.getElementById('dontshowpp');
-      if (keep) keep.checked = false;
-      setCookie('nwSignup', signupDays);
-    }
-
-    if (verify) {
-      verify.addEventListener('click', function () {
-        session(function (s) { s.removeItem(EMAIL_KEY); });
-      });
-    }
-
-    /* After the native submit Shopify reloads the page with ?customer_posted=true (or renders form errors). */
-    var postedBack = /[?&]customer_posted=true/.test(location.search) && location.hash === '#newsletter-popup';
-    if (form.querySelector('.oth-nl__pre[hidden]') || postedBack) {
-      setCookie('nwSignup', signupDays);
-      onReady(function () {
-        if (designMode) return;
-        showSuccess();
-        openNow(function () {
-          var done = form.querySelector('.oth-nl__done');
-          if (done) done.focus({ preventScroll: true });
-        });
-      });
-    } else if (errorEl.textContent.trim()) {
-      onReady(function () {
-        openNow(function () { input.focus({ preventScroll: true }); });
-      });
-    }
-
     input.addEventListener('input', clearError);
 
-    /* Registered before Shopify's spam protection binds to this form, so stopping the event here also stops its submit. */
+    /* A valid email submits natively (GET) to Shopify's sign-in with login_hint, so Shopify sends the code.
+       The email is not stored or sent anywhere else, and entering it signs no one in. */
     form.addEventListener('submit', function (e) {
       if (submitting) {
         e.preventDefault();
-        e.stopImmediatePropagation();
         return;
       }
       var email = input.value.trim();
       input.value = email;
       if (!EMAIL_RE.test(email)) {
         e.preventDefault();
-        e.stopImmediatePropagation();
         showError(MSG_INVALID);
         input.focus();
         return;
       }
       clearError();
-      session(function (s) { s.setItem(EMAIL_KEY, email); });
       setBusy(true);
       clearTimeout(busyTimer);
       busyTimer = setTimeout(function () { setBusy(false); }, 15000);
-      /* No preventDefault: the form submits natively. When hCaptcha is on, Shopify checks the visitor first, then submits. */
     });
 
     window.addEventListener('pageshow', function (e) {
@@ -701,38 +616,15 @@
       "info": "Luxury split: portrait campaign image, at least 1000 × 1300px. Classic horizontal --> maximum width:1000px. Classic vertical --> width:500px, height:650px."
     },
     {
-      "type": "number",
-      "id": "signup_days",
-      "label": "Hide popup after signup (days)",
-      "default": 365
-    },
-    {
-      "type": "header",
-      "content": "Luxury split: image overlay"
-    },
-    {
-      "type": "text",
-      "id": "overlay_brand",
-      "label": "Brand name",
-      "default": "Off The Hook"
-    },
-    {
-      "type": "text",
-      "id": "overlay_sub",
-      "label": "Brand subline",
-      "default": "London"
-    },
-    {
-      "type": "text",
-      "id": "overlay_kicker",
-      "label": "Caption label",
-      "default": "The new season edit"
-    },
-    {
-      "type": "text",
-      "id": "overlay_title",
-      "label": "Caption",
-      "default": "Step out in something unforgettable."
+      "type": "range",
+      "id": "image_position_mobile",
+      "label": "Mobile image vertical position",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 76,
+      "info": "Where the mobile crop (full width, 4:3) sits on the image: 0% top, 100% bottom."
     },
     {
       "type": "header",
@@ -765,9 +657,9 @@
     },
     {
       "type": "textarea",
-      "id": "description",
+      "id": "intro",
       "label": "Description",
-      "default": "Join our mailing list and be the first to know about new arrivals, exclusive offers and more."
+      "default": "Verify your email to unlock 10% off your first order."
     },
     {
       "type": "text",
@@ -819,60 +711,12 @@
       "type": "text",
       "id": "welcome_code",
       "label": "Shared welcome discount code",
-      "info": "Create it in Discounts first: eligible segment email_subscription_status = 'SUBSCRIBED' AND number_of_orders = 0, with one use per customer. Only signed-in customers who are subscribed and have no orders ever see it here. Leave empty to turn off the verify step and the code."
-    },
-    {
-      "type": "header",
-      "content": "Luxury split: after signup"
-    },
-    {
-      "type": "text",
-      "id": "success_heading",
-      "label": "Success heading",
-      "default": "You're in."
-    },
-    {
-      "type": "textarea",
-      "id": "verify_text",
-      "label": "Verify message",
-      "default": "Two quick steps to unlock your 10% welcome code: confirm your subscription using the link in your inbox, then verify your email by signing in.",
-      "info": "Shown when a welcome code is set and customer accounts are on."
-    },
-    {
-      "type": "text",
-      "id": "verify_lead",
-      "label": "Verify email line",
-      "default": "We'll send a one-time sign-in code to"
-    },
-    {
-      "type": "text",
-      "id": "verify_button",
-      "label": "Verify button",
-      "default": "Verify email & get my code"
-    },
-    {
-      "type": "text",
-      "id": "later_text",
-      "label": "Verify later link",
-      "default": "Maybe later"
-    },
-    {
-      "type": "textarea",
-      "id": "success_text_plain",
-      "label": "Success message without a code",
-      "default": "Thanks for subscribing. Look out for new arrivals and exclusive offers in your inbox.",
-      "info": "Shown when no welcome code is set."
-    },
-    {
-      "type": "text",
-      "id": "success_button",
-      "label": "Close button",
-      "default": "Continue shopping"
+      "info": "Existing shared code (e.g. NEW10). In Discounts, limit it to a segment with number_of_orders = 0 and one use per customer so checkout enforces it. The popup sends guests to Shopify's own sign-in (6-digit email code) and shows the code only to signed-in customers with no orders. Email marketing consent is not checked or changed. Leave empty to turn off the welcome offer popup."
     },
     {
       "type": "header",
       "content": "Luxury split: welcome offer unlocked",
-      "info": "Shown to signed-in customers who are subscribed and have no orders."
+      "info": "Shown to signed-in customers with no orders."
     },
     {
       "type": "text",
@@ -950,44 +794,32 @@
     },
     {
       "type": "header",
-      "content": "Luxury split: subscription not confirmed",
-      "info": "Signed-in customers with no orders who haven't confirmed their email subscription yet. Shown only in a browser that signed up through this popup."
+      "content": "Luxury split: not eligible",
+      "info": "Shown once, right after the popup's sign-in, to customers who already have orders. No code is shown."
     },
     {
       "type": "text",
-      "id": "pending_eyebrow",
+      "id": "ineligible_eyebrow",
       "label": "Eyebrow",
-      "default": "Almost there"
+      "default": "Welcome back"
     },
     {
       "type": "text",
-      "id": "pending_heading",
+      "id": "ineligible_heading",
       "label": "Heading",
-      "default": "Confirm your subscription"
+      "default": "Good to see you again"
     },
     {
       "type": "textarea",
-      "id": "pending_text",
+      "id": "ineligible_text",
       "label": "Message",
-      "default": "Your 10% welcome code unlocks once your email subscription is confirmed. Open the confirmation email in your inbox (or spam folder), click the link, then come back here."
-    },
-    {
-      "type": "text",
-      "id": "pending_button",
-      "label": "Button",
-      "default": "I've confirmed, show my code"
+      "default": "Our 10% welcome offer is for first orders only, so it isn't available on this account. Thank you for shopping with us again."
     },
     {
       "type": "text",
       "id": "msg_invalid",
       "label": "Invalid email message",
       "default": "Please enter a valid email address."
-    },
-    {
-      "type": "text",
-      "id": "msg_duplicate",
-      "label": "Already subscribed message",
-      "default": "This email is already on our list. The welcome offer is for new subscribers only."
     },
     {
       "type": "color",

@@ -63,7 +63,7 @@
                              {% if section_st.prlightbox %} href="{{ media | image_url: width: media.width }}"{% else %}role="link" aria-disabled="true"{% endif %}
                              {% if enable_zoom %}data-zoom="{{ media | image_url: width:zoom_img }}"{% endif %} data-slide="{{ img_index }}">
     							{% if settings.pimg_maxHt != blank %}<span class="img-wrapper" style="max-width:{{ settings.pimg_maxHt | times: media.aspect_ratio }}px;">{% endif %}
-                                    {{ media | image_url: width:media.preview_image.width | image_tag: loading: lazy_img, fetchpriority: fetch_priority, sizes: sizes, widths: '400,550,700,850,1000,1200', class: 'img-auto' }}
+                                    {%- assign pd_h = 750 | divided_by: media.aspect_ratio | round -%}{{ media | image_url: width: 1500 | image_tag: loading: lazy_img, fetchpriority: fetch_priority, sizes: sizes, widths: '375,550,750,1000,1500', width: 750, height: pd_h, class: 'img-auto' }}
     							{% if settings.pimg_maxHt != blank %}</span>{% endif %}
     						</a>
                             {% endif %}
