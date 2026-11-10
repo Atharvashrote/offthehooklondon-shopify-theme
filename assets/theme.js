@@ -426,6 +426,7 @@ document.querySelectorAll('form.search').forEach((form) => {
 });
 
 function searchFocus(e){
+  if(window.__offTheHookPredictiveSearchInitialized) return; // live dropdown in snippets/search-drawer.liquid owns #serch-list
   var term = e.target.value,
     sdrawer = document.querySelector('.search-drawer'),
     resultsWr = sdrawer.querySelector('.search-result'),

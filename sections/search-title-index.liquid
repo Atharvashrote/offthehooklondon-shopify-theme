@@ -1,0 +1,33 @@
+{%- comment -%} Compact product list for the live search dropdown in snippets/search-drawer.liquid (requested once per session via /collections/all?section_id=search-title-index&page=N) so titles starting with the query can be shown from the first character; mirrors the coming-soon rule in predictive-search-data {%- endcomment -%}
+{%- paginate collection.products by 250 -%}
+<script type="application/json" data-search-title-index data-pages="{{ paginate.pages }}">
+[
+{%- assign printed = false -%}
+{%- for product in collection.products -%}
+  {%- if product.published_at == blank -%}{%- continue -%}{%- endif -%}
+  {%- liquid
+    assign coming_soon = false
+    if product.metafields.custom.sold != blank
+      assign custom_status = product.metafields.custom.sold.value | default: product.metafields.custom.sold | strip
+      if custom_status == 'Coming Soon' and product.available == false
+        assign coming_soon = true
+      endif
+    endif
+    assign image_url = ''
+    if product.featured_image != blank
+      assign image_url = product.featured_image | image_url: width: 300
+    endif
+  -%}
+  {%- if printed -%},{%- endif -%}{%- assign printed = true -%}
+  {"handle":{{ product.handle | json }},"title":{{ product.title | json }},"url":{{ product.url | json }},"price":{{ product.price | money | json }},"featured_image":{"url":{{ image_url | json }}},"available":{{ product.available | json }},"coming_soon":{{ coming_soon | json }}}
+{%- endfor -%}
+]
+</script>
+{%- endpaginate -%}
+{% schema %}
+{
+  "name": "Search title index",
+  "tag": "div",
+  "settings": []
+}
+{% endschema %}

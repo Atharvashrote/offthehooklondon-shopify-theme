@@ -19,7 +19,7 @@
     endif
   -%}
   {%- if printed -%},{%- endif -%}{%- assign printed = true -%}
-  {"title":{{ product.title | json }},"url":{{ product.url | json }},"price":{{ product.price | money | json }},"featured_image":{"url":{{ image_url | json }}},"available":{{ product.available | json }},"coming_soon":{{ coming_soon | json }}}
+  {"handle":{{ product.handle | json }},"title":{{ product.title | json }},"url":{{ product.url | json }},"price":{{ product.price | money | json }},"featured_image":{"url":{{ image_url | json }}},"available":{{ product.available | json }},"coming_soon":{{ coming_soon | json }}}
 {%- endfor -%}
 ]
 </script>
